@@ -372,6 +372,20 @@ body {
   font-weight: 800;
   letter-spacing: -0.02em;
 }
+/* Échelle du héros : le mot promis doit dominer nettement « Obtenir » au-dessus
+   et « Pas à pas. » en retrait — d'où deux paliers supplémentaires. */
+.t-display-xl {
+  font-size: clamp(44px, 6.4vw, 76px);
+  line-height: 1.04;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.t-display-sm {
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.24;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
 .t-h1 {
   font-size: 32px;
   line-height: 40px;
@@ -481,6 +495,31 @@ svg [class*="a-"] {
 .a-typing { animation: typing 1.2s ease-in-out infinite; }
 .a-pulse { animation: pulse-dot 2.4s ease-in-out infinite; }
 
+/* ------------------------------------------------------------------
+   Révélation au défilement (cf. components/Reveal.tsx)
+   ------------------------------------------------------------------
+   Le composant ne fait que poser `data-shown` ; tout le mouvement est
+   ici, en `transform`/`opacity` uniquement — donc sans reflow ni
+   peinture, et composé sur le GPU.
+
+   Le masquage initial vit sous `@media (scripting: enabled)` : sans
+   JavaScript, le contenu reste visible au lieu d'être bloqué à
+   `opacity: 0`.
+   ------------------------------------------------------------------ */
+@media (scripting: enabled) {
+  .reveal {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    transition:
+      opacity 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .reveal[data-shown="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
@@ -488,6 +527,8 @@ svg [class*="a-"] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  /* Pas de glissement : la révélation se fait en place, sans déplacement. */
+  .reveal { transform: none !important; }
 }
 
 /* Couleurs du symbole (négatif automatique en thème sombre) */

@@ -17,17 +17,22 @@ import {
  * ravinala couvrent toute la largeur ; le village, les deux élèves et le
  * taxi-brousse occupent la moitié droite, le titre la moitié gauche.
  *
- * Le viewBox est large (1440 × 540) et le svg est monté en `slice` : le décor
+ * Le viewBox est large (1400 × 457) et le svg est monté en `slice` : le décor
  * est recadré par son conteneur plutôt que déformé. `YMax` ancre le premier
  * plan (route, élèves) pour que le ciel soit la seule partie rognée quand la
- * fenêtre est plus large que 2,67:1.
+ * fenêtre est plus large que 3:1.
+ *
+ * La hauteur du viewBox va jusqu'à y=540, le bas exact du décor : plus haute,
+ * elle laisserait une bande vide sous les élèves — visible en écran large, où
+ * `slice` rogne les côtés mais garde le bas du viewBox. Le fond reste donc
+ * transparent (hérité de `.hero-band`) plutôt que blanc.
  */
 export function HeroScene({ greeting = "Salama !", className }: { greeting?: string; className?: string }) {
   return (
     <svg
-      viewBox="10 83 1400 540"
+      viewBox="10 83 1400 457"
       preserveAspectRatio="xMidYMax slice"
-      className={`ill h-full w-full ${className ?? ""} bg-white`}
+      className={`ill h-full w-full ${className ?? ""}`}
       role="img"
       aria-labelledby="hero-title"
     >

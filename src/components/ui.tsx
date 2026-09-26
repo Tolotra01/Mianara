@@ -1,6 +1,7 @@
 import { CircleHelp, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Reveal } from "@/components/Reveal";
 
 export function Container({ className, children }: { className?: string; children: ReactNode }) {
   return <div className={`mx-auto w-full max-w-[1200px] px-4 sm:px-8 ${className ?? ""}`}>{children}</div>;
@@ -12,14 +13,17 @@ export function SectionTitle({
   lead,
   action,
   center,
+  animate = true,
 }: {
   overline?: string;
   title: string;
   lead?: string;
   action?: ReactNode;
   center?: boolean;
+  /** `false` quand la section parente est déjà révélée : évite un double mouvement. */
+  animate?: boolean;
 }) {
-  return (
+  const body = (
     <div
       className={`mb-10 flex gap-4 ${
         center ? "flex-col items-center text-center" : "flex-wrap items-end justify-between"
@@ -33,6 +37,8 @@ export function SectionTitle({
       {action}
     </div>
   );
+
+  return animate ? <Reveal>{body}</Reveal> : body;
 }
 
 export function ButtonLink({
@@ -109,13 +115,17 @@ export function PageHero({
   return (
     <section className="border-b border-line bg-raised">
       <Container className="grid items-center gap-6 py-10 md:grid-cols-[1.2fr_1fr] md:py-14">
-        <div>
+        {/* Le décalage de 90 ms fait arriver l'illustration après le titre :
+            la page se lit dans l'ordre, au lieu d'apparaître d'un bloc. */}
+        <Reveal>
           <p className="t-overline text-mena">{overline}</p>
           <h1 className="t-display mt-3 text-balance">{title}</h1>
           {lead && <p className="t-body-lg mt-4 max-w-xl text-muted">{lead}</p>}
           {children}
-        </div>
-        <div className="mx-auto w-full max-w-md">{art}</div>
+        </Reveal>
+        <Reveal delay={90} className="mx-auto w-full max-w-md">
+          {art}
+        </Reveal>
       </Container>
     </section>
   );
