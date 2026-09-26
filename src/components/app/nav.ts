@@ -104,7 +104,7 @@ export const NAV: Record<Role, NavGroup[]> = {
     {
       label: "Pilotage",
       items: [
-        { href: "/admin/offices", label: "Offices du Bac", icon: Building },
+        { href: "/admin/offices", label: "Offices du Bacc", icon: Building },
         { href: "/admin/ecoles", label: "Écoles", icon: School },
         { href: "/admin/candidats-libres", label: "Candidats libres", icon: UserRound },
         { href: "/admin/session", label: "Paramètres de session", icon: Settings2 },

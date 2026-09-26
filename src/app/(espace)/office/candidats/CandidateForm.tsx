@@ -117,7 +117,7 @@ export function CandidateForm({
             return (
               <div key={track} className="mb-3">
                 <p className="mb-2 text-sm font-semibold text-muted">
-                  {track === "general" ? "Bac général" : "Bac technique"}
+                  {track === "general" ? "Bacc général" : "Bacc technique"}
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   {list.map((s) => (

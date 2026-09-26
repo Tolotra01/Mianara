@@ -65,7 +65,7 @@ export const getBacData = cache(async (): Promise<BacData> => {
   if (!db) return localBacData();
 
   const [series, coefficients, fees, dossier, calendar, tips, faqs, sources] = await Promise.all([
-    // La vitrine présente le Bac général ; le Bac technique est géré dans les espaces.
+    // La vitrine présente le Bacc général ; le Bacc technique est géré dans les espaces.
     db.select().from(t.series).where(eq(t.series.track, "general")).orderBy(asc(t.series.sortOrder)),
     db
       .select({

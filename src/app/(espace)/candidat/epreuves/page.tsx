@@ -36,7 +36,7 @@ export default async function EpreuvesPage() {
           <EmptyState
             icon={CalendarDays}
             title="Emploi du temps à venir"
-            description="Il apparaîtra ici dès sa publication par l'Office du Bac."
+            description="Il apparaîtra ici dès sa publication par l'Office du Bacc."
           />
         ) : (
           <DataTable>

@@ -41,7 +41,7 @@ export default async function ComptePage() {
             />
             {user.role === "candidate" && (
               <p className="mt-4 text-sm text-muted">
-                Nom, date de naissance et série ne sont modifiables que par l&apos;Office du Bac.
+                Nom, date de naissance et série ne sont modifiables que par l&apos;Office du Bacc.
               </p>
             )}
           </Card>

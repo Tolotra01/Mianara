@@ -127,7 +127,7 @@ export default async function SessionPage() {
           <div className="flex items-center gap-3 border-t border-line pt-5">
             <SubmitButton className={buttonClass("primary")}>Enregistrer les paramètres</SubmitButton>
             <p className="text-sm text-muted">
-              Tarifs à confirmer avec le règlement de l&apos;Office du Bac.
+              Tarifs à confirmer avec le règlement de l&apos;Office du Bacc.
             </p>
           </div>
         </ActionForm>

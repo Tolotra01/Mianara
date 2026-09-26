@@ -10,7 +10,7 @@ import { requireUser } from "@/lib/auth";
 import { toggleOffice } from "../actions";
 import { AgentDialog, OfficeDialog } from "./OfficeDialogs";
 
-export const metadata: Metadata = { title: "Offices du Bac" };
+export const metadata: Metadata = { title: "Offices du Bacc" };
 
 export default async function OfficesPage() {
   await requireUser(["admin"]);
@@ -30,7 +30,7 @@ export default async function OfficesPage() {
   return (
     <>
       <PageHeader
-        title="Offices du Bac"
+        title="Offices du Bacc"
         description="Un Office par université. Visitez l'espace d'un Office pour voir ce que voient ses agents, en consultation."
         actions={<OfficeDialog />}
       />

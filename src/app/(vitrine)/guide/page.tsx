@@ -8,9 +8,9 @@ import { COMMON } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 
 export const metadata: Metadata = {
-  title: "Guide du Bac",
+  title: "Guide du Bacc",
   description:
-    "Séries, coefficients, dossier, calendrier, jour J et résultats : le Bac malgache expliqué en images.",
+    "Séries, coefficients, dossier, calendrier, jour J et résultats : le Bacc malgache expliqué en images.",
 };
 
 /** Teinte de chaque étape : plaque claire de l'illustration et couleur du jalon. */
@@ -23,8 +23,8 @@ const TINTS = {
 
 const T = {
   fr: {
-    overline: "Guide du Bac",
-    title: "Tout le Bac, en sept étapes",
+    overline: "Guide du Bacc",
+    title: "Tout le Bacc, en sept étapes",
     accent: "en sept étapes",
     lead: "Choisis une rubrique. Chaque page va à l'essentiel.",
     pathOverline: "Le parcours",

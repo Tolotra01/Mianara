@@ -18,13 +18,13 @@ const MESSAGES = {
     invalid: "Question invalide.",
     tooMany: "Beaucoup de questions d'un coup ! Réessaie dans quelques minutes.",
     refusal:
-      "Je ne peux pas répondre à cette question. Pour toute aide, adressez-vous à l'Office du Bac de votre université.",
+      "Je ne peux pas répondre à cette question. Pour toute aide, adressez-vous à l'Office du Bacc de votre université.",
   },
   mg: {
     invalid: "Tsy mety ny fanontaniana.",
     tooMany: "Be loatra ny fanontaniana ! Andramo indray afaka minitra vitsy.",
     refusal:
-      "Tsy afaka mamaly an'io fanontaniana io aho. Manatona ny Office du Bac eo amin'ny oniversitenao raha mila fanampiana.",
+      "Tsy afaka mamaly an'io fanontaniana io aho. Manatona ny Office du Bacc eo amin'ny oniversitenao raha mila fanampiana.",
   },
 };
 

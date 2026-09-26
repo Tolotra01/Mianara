@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 
 const TINT = { L: "bg-mena-soft", S: "bg-vert-soft", OSE: "bg-soleil-soft" } as const;
 
-/** Icône et couleur de chaque secteur du Bac technique. */
+/** Icône et couleur de chaque secteur du Bacc technique. */
 const TECH_LOOK: Record<TechSerieCode, { Icon: typeof Cog; tile: string; text: string }> = {
   TI: { Icon: Cog, tile: "bg-info-soft text-info", text: "text-info" },
   TGC: { Icon: HardHat, tile: "bg-mena-soft text-mena", text: "text-mena" },
@@ -53,10 +53,10 @@ const T = {
     after: "Et après ?",
     coefs: "Coefficients en terminale",
     simulate: "Calculer ma moyenne en série",
-    techOverline: "Et le Bac technique ?",
+    techOverline: "Et le Bacc technique ?",
     techTitle: "Quatre secteurs, un métier au bout",
     techLead:
-      "Le Bac technologique se prépare dans les lycées techniques du Ministère de l'Enseignement technique et de la Formation professionnelle.",
+      "Le Bacc technologique se prépare dans les lycées techniques du Ministère de l'Enseignement technique et de la Formation professionnelle.",
     facts: [
       { Icon: Clock, label: "Durée", value: "3 ans après le BEPC" },
       { Icon: School, label: "Où", value: "Lycées techniques (METFP)" },
@@ -222,7 +222,7 @@ export default async function SeriesPage() {
 
         <SourceLink lang={lang} source={data.sources.coefficients2027} />
 
-        {/* ---------- Bac technique ---------- */}
+        {/* ---------- Bacc technique ---------- */}
         {/* Un panneau à part : introduction et repères à gauche, les quatre
             secteurs à droite, chacun avec son icône, sa couleur et ses métiers. */}
         <section className="relative overflow-hidden rounded-3xl border border-line bg-raised p-6 shadow-sm sm:rounded-4xl sm:p-10">

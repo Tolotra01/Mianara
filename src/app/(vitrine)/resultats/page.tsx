@@ -10,7 +10,7 @@ import { COMMON, mentionLabel } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 
 export const metadata: Metadata = {
-  title: "Résultats du Bac",
+  title: "Résultats du Bacc",
   description:
     "Consultez votre résultat au Baccalauréat par matricule, ou par nom, prénom et date de naissance.",
 };
@@ -24,8 +24,8 @@ const DECISION_MG: Record<keyof typeof DECISION_LABEL, string> = {
 
 const T = {
   fr: {
-    title: "Résultats du Bac",
-    accent: "du Bac",
+    title: "Résultats du Bacc",
+    accent: "du Bacc",
     lead: "Recherchez par matricule, ou par nom, prénom et date de naissance.",
     notYet: "Résultats pas encore publiés",
     publishOn: (d: string) => `Publication le ${d}.`,
@@ -108,7 +108,7 @@ export default async function ResultatsPublicPage({ searchParams }: PageProps<"/
   return (
     <>
       <PageHero
-        overline={`Bac ${session?.year ?? ""}`}
+        overline={`Bacc ${session?.year ?? ""}`}
         title={t.title}
         accent={t.accent}
         lead={t.lead}

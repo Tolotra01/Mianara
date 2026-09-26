@@ -82,7 +82,7 @@ export default async function DossiersPage({ searchParams }: PageProps<"/ecole/d
           <EmptyState
             icon={FolderOpen}
             title="Aucun dossier"
-            description="Créez le dossier de chaque élève inscrit au Bac."
+            description="Créez le dossier de chaque élève inscrit au Bacc."
           />
         ) : (
           <DataTable>

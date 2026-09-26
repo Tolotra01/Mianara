@@ -82,7 +82,7 @@ export function NewsDialog({
               <input
                 name="category"
                 required
-                defaultValue={item?.category ?? "Office du Bac"}
+                defaultValue={item?.category ?? "Office du Bacc"}
                 className="field-input mt-1.5"
               />
             </label>

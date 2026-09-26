@@ -149,7 +149,7 @@ export async function publishResults(_: ActionState, form: FormData): Promise<Ac
       people.map((p) => p.userId),
       {
         title: "Date de publication des résultats",
-        body: `Les résultats du Bac seront publiés le ${formatDateTime(at)}.`,
+        body: `Les résultats du Bacc seront publiés le ${formatDateTime(at)}.`,
         link: "/candidat/resultats",
       },
     );
@@ -158,7 +158,7 @@ export async function publishResults(_: ActionState, form: FormData): Promise<Ac
     await notifyMany(
       people.map((p) => p.userId),
       {
-        title: "Résultats du Bac disponibles",
+        title: "Résultats du Bacc disponibles",
         body: "Votre résultat est publié. Consultez-le dans votre espace Mianara.",
         link: "/candidat/resultats",
       },

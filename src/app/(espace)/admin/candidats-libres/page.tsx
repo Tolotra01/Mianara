@@ -54,7 +54,7 @@ export default async function CandidatsLibresPage({ searchParams }: PageProps<"/
     <>
       <PageHeader
         title="Candidats libres"
-        description="Personnes qui se présentent au Bac sans établissement, enregistrées directement par les Offices."
+        description="Personnes qui se présentent au Bacc sans établissement, enregistrées directement par les Offices."
       />
       <div className="grid gap-6 xl:grid-cols-[1fr_2fr]">
         <Card title="Par Office">

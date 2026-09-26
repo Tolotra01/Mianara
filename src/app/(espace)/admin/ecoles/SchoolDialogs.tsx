@@ -71,7 +71,7 @@ export function SchoolDialog({
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="text-sm font-semibold">Office du Bac</span>
+              <span className="text-sm font-semibold">Office du Bacc</span>
               <select
                 name="officeId"
                 defaultValue={school?.officeId ?? ""}

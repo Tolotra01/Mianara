@@ -114,7 +114,7 @@ export default async function CandidatsPage({ searchParams }: PageProps<"/office
             basePath="/office/candidats"
             options={[
               { value: "", label: "Toutes", count: all },
-              // Séries ayant des candidats (Bac général puis technique).
+              // Séries ayant des candidats (Bacc général puis technique).
               ...bySerie
                 .map((b) => b.serie)
                 .sort((a, b) => SERIE_ORDER.indexOf(a) - SERIE_ORDER.indexOf(b))

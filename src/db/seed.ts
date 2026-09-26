@@ -1,5 +1,5 @@
 /**
- * Remplit la base avec les données de référence du Bac (src/content/bac.ts).
+ * Remplit la base avec les données de référence du Bacc (src/content/bac.ts).
  * Idempotent : met à jour le référentiel et recharge les contenus du guide.
  *
  *   pnpm db:push   # crée les tables
@@ -118,7 +118,7 @@ async function main() {
     }
   });
 
-  console.log("✓ Données du Bac chargées.");
+  console.log("✓ Données du Bacc chargées.");
   await client.end();
 }
 

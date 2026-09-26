@@ -50,7 +50,7 @@ export default async function DemandesPage() {
     <>
       <PageHeader
         title="Relevé et diplôme"
-        description="Les documents ne sont pas numériques : vous les retirez au guichet de l'Office du Bac, à la date fixée."
+        description="Les documents ne sont pas numériques : vous les retirez au guichet de l'Office du Bacc, à la date fixée."
       />
       <div className="grid gap-6 lg:grid-cols-2">
         {cards.map(({ type, title, icon: Icon, text, row, open, fee }) => (

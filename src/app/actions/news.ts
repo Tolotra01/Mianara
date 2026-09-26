@@ -35,7 +35,7 @@ export async function proposeNews(_: ActionState, form: FormData): Promise<Actio
   if (!parsed.success) return fail("Vérifiez le formulaire.", zodErrors(parsed.error.issues));
   const db = requireDb();
   const label =
-    user.role === "school" ? (user.schoolName ?? "Établissement") : (user.officeName ?? "Office du Bac");
+    user.role === "school" ? (user.schoolName ?? "Établissement") : (user.officeName ?? "Office du Bacc");
   const [created] = await db
     .insert(news)
     .values({

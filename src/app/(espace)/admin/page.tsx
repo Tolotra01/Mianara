@@ -60,7 +60,7 @@ export default async function AdminDashboard() {
     <>
       <PageHeader
         eyebrow="Administration nationale"
-        title={`Bac ${session?.year ?? ""} : vue nationale`}
+        title={`Bacc ${session?.year ?? ""} : vue nationale`}
         description={
           session?.resultsPublishAt
             ? `Résultats ${published ? "publiés" : "programmés"} le ${formatDateTime(session.resultsPublishAt)}.`

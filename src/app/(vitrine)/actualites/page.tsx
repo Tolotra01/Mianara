@@ -7,7 +7,7 @@ import { newsCategory } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 
 export const metadata: Metadata = {
-  title: "Actualités du Bac",
+  title: "Actualités du Bacc",
   description:
     "Réforme, calendrier, inscriptions : les dernières nouvelles du Baccalauréat à Madagascar, avec leurs sources.",
 };
@@ -15,8 +15,8 @@ export const metadata: Metadata = {
 const T = {
   fr: {
     overline: "Actualités",
-    title: "Les nouvelles du Bac",
-    accent: "du Bac",
+    title: "Les nouvelles du Bacc",
+    accent: "du Bacc",
     lead: "Chaque information est datée et renvoie à sa source.",
     categories: "Catégories",
     all: "Tout",

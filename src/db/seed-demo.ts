@@ -1,7 +1,7 @@
 /**
- * Jeu de démonstration de la gestion du Bac : Offices, écoles et leurs comptes,
+ * Jeu de démonstration de la gestion du Bacc : Offices, écoles et leurs comptes,
  * centres et salles, emploi du temps 2027 (EPS théorique comprise), candidats du
- * Bac général et technique, dossiers d'écoles à traiter, actualité proposée.
+ * Bacc général et technique, dossiers d'écoles à traiter, actualité proposée.
  *
  *   pnpm db:seed:demo      (ou pnpm db:reset-demo pour repartir de zéro)
  *
@@ -277,7 +277,7 @@ async function main() {
       .values(
         OFFICES.map((o) => ({
           ...o,
-          name: `Office du Bac de ${o.city}`,
+          name: `Office du Bacc de ${o.city}`,
           address: `${o.university}, ${o.city}`,
         })),
       )
@@ -467,10 +467,10 @@ async function main() {
     // Actualité proposée par l'Office, en attente de l'Admin
     await tx.insert(news).values({
       slug: `permanence-office-antananarivo-${Date.now().toString(36)}`,
-      title: "Permanence de l'Office du Bac d'Antananarivo pour les candidats libres",
+      title: "Permanence de l'Office du Bacc d'Antananarivo pour les candidats libres",
       excerpt: "Accueil des candidats libres tous les mercredis matin jusqu'à la clôture des inscriptions.",
-      body: "L'Office du Bac d'Antananarivo accueille les candidats libres tous les mercredis, de 8 h à 12 h, pour les aider à constituer leur dossier.\n\nMunissez-vous de votre acte de naissance, de deux photos d'identité et du reçu du droit d'inscription.",
-      category: "Office du Bac",
+      body: "L'Office du Bacc d'Antananarivo accueille les candidats libres tous les mercredis, de 8 h à 12 h, pour les aider à constituer leur dossier.\n\nMunissez-vous de votre acte de naissance, de deux photos d'identité et du reçu du droit d'inscription.",
+      category: "Office du Bacc",
       importance: "normal",
       illustration: "inscription",
       reviewStatus: "pending",
@@ -481,11 +481,11 @@ async function main() {
     console.log("\n✓ Jeu de démonstration chargé.\n");
     console.log(`Personnel et écoles (mot de passe : ${PASSWORD})`);
     console.log("  admin               Administration nationale");
-    console.log("  office.tana         Office du Bac d'Antananarivo");
+    console.log("  office.tana         Office du Bacc d'Antananarivo");
     console.log("  surveillant.tana1   Surveillant (Salles 1 et 2)");
     console.log("  ecole.andohalo      Lycée Andohalo (dossiers envoyés, un incomplet)");
     console.log("  ecole.rabearivelo   Lycée Jean-Joseph Rabearivelo");
-    console.log("  ecole.alarobia      Lycée technique d'Alarobia (Bac technique)\n");
+    console.log("  ecole.alarobia      Lycée technique d'Alarobia (Bacc technique)\n");
     console.log("Candidats (mot de passe temporaire, à changer à la 1re connexion)");
     for (const c of created.slice(0, 4)) console.log(`  ${c.matricule}   ${c.password}   ${c.name}`);
     console.log("  … les autres identifiants figurent sur leur convocation.\n");

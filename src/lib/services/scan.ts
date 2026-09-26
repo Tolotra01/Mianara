@@ -58,7 +58,7 @@ export async function findCandidate(code: string, user: CurrentUser) {
   const [c] = await db.select().from(candidates).where(where).limit(1);
   if (!c) return { error: "Aucun candidat ne correspond à ce code." } as const;
   if (user.role !== "admin" && c.officeId !== user.officeId)
-    return { error: "Ce candidat dépend d'un autre Office du Bac." } as const;
+    return { error: "Ce candidat dépend d'un autre Office du Bacc." } as const;
   return { candidate: c } as const;
 }
 

@@ -10,7 +10,7 @@ export function SendButton({ count }: { count: number }) {
       action={sendApplications}
       icon={<Send className="size-5" />}
       label={`Envoyer à l'Office (${count})`}
-      title={`Envoyer ${count} dossier(s) à l'Office du Bac ?`}
+      title={`Envoyer ${count} dossier(s) à l'Office du Bacc ?`}
       description="Une fois envoyés, les dossiers ne sont plus modifiables, sauf s'ils vous sont renvoyés comme incomplets."
       confirmLabel="Envoyer"
     />

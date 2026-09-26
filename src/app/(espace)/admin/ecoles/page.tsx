@@ -56,7 +56,7 @@ export default async function EcolesAdminPage({ searchParams }: PageProps<"/admi
     <>
       <PageHeader
         title="Écoles"
-        description="Établissements qui présentent des candidats au Bac, rattachés à leur Office. Chaque école reçoit un compte pour envoyer ses dossiers."
+        description="Établissements qui présentent des candidats au Bacc, rattachés à leur Office. Chaque école reçoit un compte pour envoyer ses dossiers."
         actions={<SchoolDialog offices={officeList} />}
       />
       <Card padded={false}>

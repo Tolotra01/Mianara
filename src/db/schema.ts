@@ -3,7 +3,7 @@
  *
  * Les tables reprennent les noms du cahier des charges BacConnect
  * (series, subjects, serie_subjects, exam_sessions, news) pour que les
- * espaces Candidat, Office du Bac et Admin viennent s'y greffer ensuite.
+ * espaces Candidat, Office du Bacc et Admin viennent s'y greffer ensuite.
  */
 import {
   boolean,
@@ -34,7 +34,7 @@ export const sources = pgTable("sources", {
 
 export const series = pgTable("series", {
   code: text("code").primaryKey(), // 'L', 'S', 'OSE', 'TI', 'TGC'…
-  /** Filière : Bac général (L, S, OSE) ou Bac technique (secteurs du METFP). */
+  /** Filière : Bacc général (L, S, OSE) ou Bacc technique (secteurs du METFP). */
   track: text("track").notNull().default("general"),
   name: text("name").notNull(),
   nameMg: text("name_mg").notNull(),
@@ -70,7 +70,7 @@ export const serieSubjects = pgTable(
   (t) => [primaryKey({ columns: [t.serieCode, t.subjectId] })],
 );
 
-/** Session du Bac : une par an, sans rattrapage (RG-16). Paramètres réglés par l'Admin. */
+/** Session du Bacc : une par an, sans rattrapage (RG-16). Paramètres réglés par l'Admin. */
 export const examSessions = pgTable("exam_sessions", {
   id: serial("id").primaryKey(),
   year: integer("year").notNull().unique(),

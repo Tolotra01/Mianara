@@ -6,12 +6,12 @@
  *  - de repli quand DATABASE_URL n'est pas défini (développement sans base).
  *
  * Chaque information porte `confirmed` : false signifie « à vérifier auprès de
- * l'Office du Bac » et s'affiche comme tel dans l'interface.
+ * l'Office du Bacc » et s'affiche comme tel dans l'interface.
  */
 
-/** Séries du Bac général (guide de la vitrine). */
+/** Séries du Bacc général (guide de la vitrine). */
 export type SerieCode = "L" | "S" | "OSE";
-/** Séries du Bac technique (secteurs du METFP). */
+/** Séries du Bacc technique (secteurs du METFP). */
 export type TechSerieCode = "TI" | "TGC" | "TT" | "TA";
 export type CandidateType = "tous" | "ecole" | "libre";
 export type NewsImportance = "low" | "normal" | "high" | "urgent";
@@ -50,7 +50,7 @@ export const SOURCES = {
     url: "https://moov.mg/article/111203-enseignement-lannee-scolaire-2025-2026-des-candidats-au-baccalaureat-setendra-sur-11-mois",
   },
   metfp: {
-    label: "METFP — Parcours diplômants (Bac technologique : industriel, génie civil, tertiaire, agricole)",
+    label: "METFP — Parcours diplômants (Bacc technologique : industriel, génie civil, tertiaire, agricole)",
     url: "https://www.metfp.gov.mg/formation/diplomant",
   },
   eps: {
@@ -164,7 +164,7 @@ const AUTRES_NOTE =
   "Complément jusqu'au total de 30 annoncé (philosophie…) : répartition exacte à confirmer par l'arrêté officiel.";
 const EPS_NOTE =
   "Coefficient 2 dans les séries L, S et OSE (notée sur 40) ; épreuve théorique inscrite à l'emploi du temps.";
-const TECH_NOTE = "Bac technique : coefficients à confirmer avec le METFP.";
+const TECH_NOTE = "Bacc technique : coefficients à confirmer avec le METFP.";
 
 export const SERIE_SUBJECTS: SerieSubject[] = [
   // Série L — total 30
@@ -233,7 +233,7 @@ export const SERIE_SUBJECTS: SerieSubject[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Bac technique (secteurs du Bac technologique, METFP)               */
+/* Bacc technique (secteurs du Bacc technologique, METFP)               */
 /* ------------------------------------------------------------------ */
 
 export type TechSerie = Omit<Serie, "code"> & { code: TechSerieCode };
@@ -248,11 +248,11 @@ const techSerie = (
   code,
   name,
   nameMg,
-  tagline: `Bac technique · secteur ${name.toLowerCase()}.`,
+  tagline: `Bacc technique · secteur ${name.toLowerCase()}.`,
   description: `Baccalauréat technologique du secteur ${name.toLowerCase()} (Ministère de l'Enseignement technique et de la Formation professionnelle).`,
   forWhom: ["Tu aimes le concret", "Tu veux un métier technique", "Tu apprends en pratiquant"],
   careers,
-  formerOptions: "Bac technique",
+  formerOptions: "Bacc technique",
   sortOrder,
 });
 
@@ -636,7 +636,7 @@ export const TIPS: Tip[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Universités (Offices du Bac)                                       */
+/* Universités (Offices du Bacc)                                       */
 /* ------------------------------------------------------------------ */
 
 export const UNIVERSITIES = [

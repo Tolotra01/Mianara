@@ -1,6 +1,6 @@
 import { Bust, P } from "./parts";
 
-/** L'assistant Mianara : une « grande sœur » qui a réussi son Bac. */
+/** L'assistant Mianara : une « grande sœur » qui a réussi son Bacc. */
 export function AssistantAvatar({
   className,
   title = "Assistant Mianara",

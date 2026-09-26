@@ -50,7 +50,7 @@ export async function addToBlacklist(_: ActionState, form: FormData): Promise<Ac
   });
   await notify(c.userId, {
     title: "Demandes de documents suspendues",
-    body: "Votre dossier fait l'objet d'une mesure de l'Office du Bac. Contactez-le pour plus d'informations.",
+    body: "Votre dossier fait l'objet d'une mesure de l'Office du Bacc. Contactez-le pour plus d'informations.",
   });
   refresh();
   return ok(`${c.firstName} ${c.lastName} inscrit en liste noire.`);

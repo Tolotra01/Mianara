@@ -35,7 +35,7 @@ export default async function EcolesOfficePage() {
     <>
       <PageHeader
         title="Écoles"
-        description={`${withCandidates.length} établissement(s) présentent des candidats au Bac dans votre Office. Les écoles sont créées par l'Administration.`}
+        description={`${withCandidates.length} établissement(s) présentent des candidats au Bacc dans votre Office. Les écoles sont créées par l'Administration.`}
       />
       <Link
         href="/office/candidats?type=libre"

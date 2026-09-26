@@ -26,8 +26,8 @@ const T = {
     ecole: "Vous êtes candidat d'école",
     ecoleText: "Votre lycée (direction ou secrétariat) : il dépose et suit votre dossier.",
     libre: "Vous êtes candidat libre",
-    libreText: "L'Office du Bac de l'université de votre province.",
-    offices: "Les six Offices du Bac",
+    libreText: "L'Office du Bacc de l'université de votre province.",
+    offices: "Les six Offices du Bacc",
   },
   mg: {
     overline: "Fanampiana",
@@ -42,8 +42,8 @@ const T = {
     ecoleText:
       "Ny lycée-nao (fitantanana na sekretera) : izy no mametraka sy manaraka ny antontan-taratasinao.",
     libre: "Kandida tsy miankina ianao",
-    libreText: "Ny Office du Bac an'ny oniversiten'ny faritanao.",
-    offices: "Ireo Office du Bac enina",
+    libreText: "Ny Office du Bacc an'ny oniversiten'ny faritanao.",
+    offices: "Ireo Office du Bacc enina",
   },
 };
 

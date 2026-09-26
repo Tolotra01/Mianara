@@ -62,7 +62,7 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
     };
   }
 
-  if (!user.isActive) return { message: "Compte désactivé. Adressez-vous à l'Office du Bac." };
+  if (!user.isActive) return { message: "Compte désactivé. Adressez-vous à l'Office du Bacc." };
 
   if (user.role === "candidate") {
     const [c] = await db
@@ -85,7 +85,7 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
         c.publishAt &&
         Date.now() > c.publishAt.getTime() + c.days * 86400000);
     if (closed)
-      return { message: "Votre compte est désactivé. L'Office du Bac peut le réactiver sur demande." };
+      return { message: "Votre compte est désactivé. L'Office du Bacc peut le réactiver sur demande." };
   }
 
   await db

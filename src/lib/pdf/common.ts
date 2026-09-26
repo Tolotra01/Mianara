@@ -39,7 +39,7 @@ export type Fonts = { regular: PDFFont; bold: PDFFont; mono: PDFFont; monoBold: 
 export async function newDocument(title: string) {
   const pdf = await PDFDocument.create();
   pdf.setTitle(title);
-  pdf.setAuthor("Mianara — Office du Bac");
+  pdf.setAuthor("Mianara — Office du Bacc");
   pdf.setCreator("Mianara");
   const fonts: Fonts = {
     regular: await pdf.embedFont(StandardFonts.Helvetica),

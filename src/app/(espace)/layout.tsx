@@ -101,7 +101,7 @@ export default async function EspaceLayout({ children }: { children: React.React
             {session && (
               <span className="mr-auto ml-12 hidden items-center gap-2 rounded-full border border-line bg-raised px-3 py-1 text-sm font-semibold sm:inline-flex lg:ml-0">
                 <span className="size-2 rounded-full bg-soleil" aria-hidden />
-                Session du Bac {session.year}
+                Session du Bacc {session.year}
               </span>
             )}
             <Link

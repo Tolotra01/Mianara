@@ -28,10 +28,10 @@ export type NewCandidate = {
   photo?: { mime: string; data: Buffer } | null;
 };
 
-/** Session du Bac en cours (une seule à la fois). */
+/** Session du Bacc en cours (une seule à la fois). */
 export async function currentSession(exec: Executor) {
   const [session] = await exec.select().from(examSessions).where(eq(examSessions.isCurrent, true)).limit(1);
-  if (!session) throw new Error("Aucune session du Bac en cours : l'Admin doit en ouvrir une.");
+  if (!session) throw new Error("Aucune session du Bacc en cours : l'Admin doit en ouvrir une.");
   return session;
 }
 

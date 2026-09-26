@@ -95,7 +95,7 @@ export async function convocationPdf(candidateId: string): Promise<Uint8Array | 
   text(page, "CONVOCATION", M + 10, y - 16, fonts.bold, 13, C.white);
   text(
     page,
-    `Bac ${technique ? "technique" : "de l'enseignement général"} · Session ${session.year} (${schoolYear(session.year)})`,
+    `Bacc ${technique ? "technique" : "de l'enseignement général"} · Session ${session.year} (${schoolYear(session.year)})`,
     M + 10,
     y - 27,
     fonts.regular,

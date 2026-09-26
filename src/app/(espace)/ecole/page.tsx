@@ -39,9 +39,9 @@ export default async function EcoleHome() {
   return (
     <>
       <PageHeader
-        eyebrow={user.officeName ?? "Office du Bac"}
+        eyebrow={user.officeName ?? "Office du Bacc"}
         title={user.schoolName ?? "Mon établissement"}
-        description="Préparez les dossiers de vos élèves, envoyez-les à l'Office du Bac et suivez leur validation."
+        description="Préparez les dossiers de vos élèves, envoyez-les à l'Office du Bacc et suivez leur validation."
         actions={
           <>
             <LinkButton href="/ecole/dossiers/nouveau" variant="secondary">

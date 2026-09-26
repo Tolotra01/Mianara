@@ -52,7 +52,7 @@ export default async function ConvocationPage() {
           <Alert tone="warning" title="Une erreur sur votre convocation ?">
             <span className="inline-flex items-start gap-1">
               <IdCard className="mt-0.5 size-4 shrink-0" /> Nom, date de naissance ou série : seul
-              l&apos;Office du Bac peut les corriger. Présentez-vous avec vos pièces.
+              l&apos;Office du Bacc peut les corriger. Présentez-vous avec vos pièces.
             </span>
           </Alert>
           <p className="flex items-start gap-2 text-sm text-muted">

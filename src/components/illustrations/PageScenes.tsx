@@ -410,7 +410,7 @@ function DossierScene() {
       <Hills far="#22405A" mid="#2B5566" near="#2F6E58" />
       <Jacaranda x={760} y={452} scale={1.3} />
       <Jacaranda x={1330} y={456} scale={1.4} />
-      {/* Office du Bac : façade à colonnes, marches, fronton */}
+      {/* Office du Bacc : façade à colonnes, marches, fronton */}
       <g transform="translate(860 470)">
         <rect x="0" y="-150" width="360" height="150" fill="#E9E1D0" />
         <path d="M-16 -150 L180 -214 L376 -150 Z" fill="#C9BFA9" />
@@ -422,7 +422,7 @@ function DossierScene() {
         <rect x="150" y="-110" width="60" height="110" rx="30" fill={P.glass} />
         <rect x="110" y="-140" width="140" height="22" rx="3" fill={P.vert} />
         <text x="180" y="-124" fontSize="13" textAnchor="middle" fill={P.white} style={TXT}>
-          OFFICE DU BAC
+          OFFICE DU BACC
         </text>
         <rect x="-20" y="-6" width="400" height="8" fill="#BFB49C" />
         <rect x="-34" y="2" width="428" height="8" fill="#A99E86" />
@@ -750,7 +750,7 @@ function ActualitesScene() {
         <rect x="0" y="-262" width="400" height="206" rx="4" fill="#7A5236" />
         <rect x="12" y="-250" width="376" height="182" fill="#C9A77A" />
         <Notice x={30} y={-240} w={92} h={112} r={-3} head={P.mena} label="URGENT" pin={P.mena} />
-        <Notice x={140} y={-236} w={108} h={78} r={2} head={P.vert} label="BAC 2027" pin={P.soleil} />
+        <Notice x={140} y={-236} w={108} h={78} r={2} head={P.vert} label="BACC 2027" pin={P.soleil} />
         <Notice x={266} y={-242} w={100} h={96} r={-2} head={P.navy} label="COMMUNIQUÉ" pin={P.vertLight} />
         <Notice x={146} y={-148} w={96} h={70} r={-4} head={P.soleil} label="DATES" pin={P.mena} />
         <Notice x={40} y={-118} w={80} h={44} r={3} head={P.glass} pin={P.soleil} />

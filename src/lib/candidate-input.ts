@@ -35,7 +35,7 @@ export const IdentityInput = z
       ctx.addIssue({ code: "custom", path: ["birthDate"], message: "Date de naissance improbable." });
   });
 
-/** La série doit exister (Bac général ou technique). */
+/** La série doit exister (Bacc général ou technique). */
 export async function serieExists(code: string, exec: Executor) {
   const [row] = await exec.select({ code: series.code }).from(series).where(eq(series.code, code));
   return Boolean(row);

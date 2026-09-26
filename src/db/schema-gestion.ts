@@ -1,5 +1,5 @@
 /**
- * Schéma de la gestion du Bac (cahier des charges BacConnect, sections 5 et 10) :
+ * Schéma de la gestion du Bacc (cahier des charges BacConnect, sections 5 et 10) :
  * comptes, Offices, candidats et convocations, épreuves et scans, notes et
  * résultats, demandes de relevé et de diplôme, notifications, journal d'audit.
  *
@@ -87,7 +87,7 @@ export const offices = pgTable("offices", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-/** Établissements qui présentent des candidats, rattachés à un Office du Bac. */
+/** Établissements qui présentent des candidats, rattachés à un Office du Bacc. */
 export const schools = pgTable("schools", {
   id: serial("id").primaryKey(),
   officeId: integer("office_id")

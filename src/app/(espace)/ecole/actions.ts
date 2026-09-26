@@ -164,5 +164,5 @@ export async function sendApplications(): Promise<ActionState> {
     );
   });
   refresh();
-  return ok(`${drafts.length} dossier(s) envoyé(s) à l'Office du Bac.`);
+  return ok(`${drafts.length} dossier(s) envoyé(s) à l'Office du Bacc.`);
 }

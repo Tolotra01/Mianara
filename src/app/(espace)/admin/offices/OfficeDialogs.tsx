@@ -46,7 +46,7 @@ export function OfficeDialog({ office }: { office?: Office }) {
   return (
     <ModalButton
       label={office ? <span className="sr-only">Modifier</span> : "Nouvel Office"}
-      title={office ? `Modifier · ${office.name}` : "Nouvel Office du Bac"}
+      title={office ? `Modifier · ${office.name}` : "Nouvel Office du Bacc"}
       variant={office ? "ghost" : "primary"}
       size={office ? "sm" : "md"}
       icon={office ? <Pencil className="size-4" aria-hidden /> : <Plus className="size-5" />}

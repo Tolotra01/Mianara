@@ -55,7 +55,7 @@ export default async function SurveillantPage() {
           <EmptyState
             icon={DoorOpen}
             title="Aucune salle attribuée"
-            description="L'Office du Bac vous affectera à une ou plusieurs salles."
+            description="L'Office du Bacc vous affectera à une ou plusieurs salles."
           />
         </Card>
       ) : (

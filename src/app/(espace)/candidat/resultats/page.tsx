@@ -110,7 +110,7 @@ export default async function ResultatsPage() {
           </p>
         ) : (
           <p className="relative mt-3 text-muted">
-            Pour toute question sur votre résultat, adressez-vous à l&apos;Office du Bac.
+            Pour toute question sur votre résultat, adressez-vous à l&apos;Office du Bacc.
           </p>
         )}
         {admitted && (

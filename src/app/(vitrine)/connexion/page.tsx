@@ -26,7 +26,7 @@ const T = {
     spaces: [
       { label: "Candidat", desc: "Suivre son dossier" },
       { label: "Établissement", desc: "Gérer ses élèves" },
-      { label: "Office du Bac", desc: "Pilotage national" },
+      { label: "Office du Bacc", desc: "Pilotage national" },
       { label: "Administration", desc: "Supervision" },
     ],
     login: "Connexion",
@@ -34,7 +34,7 @@ const T = {
     subtitle: "Avec les identifiants de votre convocation.",
     noAccount: "Pas encore de compte ?",
     noAccountText:
-      "Rien à créer : votre compte est ouvert par l'Office du Bac à partir de la liste envoyée par votre lycée. Vos identifiants figurent sur votre convocation.",
+      "Rien à créer : votre compte est ouvert par l'Office du Bacc à partir de la liste envoyée par votre lycée. Vos identifiants figurent sur votre convocation.",
     help: "Besoin d'aide ?",
   },
   mg: {
@@ -46,7 +46,7 @@ const T = {
     spaces: [
       { label: "Kandida", desc: "Hanaraka ny antontan-taratasiny" },
       { label: "Sekoly", desc: "Hitantana ny mpianany" },
-      { label: "Office du Bac", desc: "Fitantanana nasionaly" },
+      { label: "Office du Bacc", desc: "Fitantanana nasionaly" },
       { label: "Fitantanana", desc: "Fanaraha-maso" },
     ],
     login: "Fidirana",
@@ -54,7 +54,7 @@ const T = {
     subtitle: "Amin'ny laharana fidirana hita ao amin'ny taratasy fiantsoana anao.",
     noAccount: "Mbola tsy manana kaonty ?",
     noAccountText:
-      "Tsy mila mamorona ianao : ny Office du Bac no manokatra ny kaontinao avy amin'ny lisitra nalefan'ny lycée-nao. Hita ao amin'ny taratasy fiantsoana anao ny laharana fidiranao.",
+      "Tsy mila mamorona ianao : ny Office du Bacc no manokatra ny kaontinao avy amin'ny lisitra nalefan'ny lycée-nao. Hita ao amin'ny taratasy fiantsoana anao ny laharana fidiranao.",
     help: "Mila fanampiana ?",
   },
 };

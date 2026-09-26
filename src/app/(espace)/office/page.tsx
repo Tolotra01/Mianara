@@ -22,7 +22,7 @@ import { requireOffice } from "@/lib/auth";
 import { formatDateTime, formatDay, formatTime } from "@/lib/bac-rules";
 import { actionLabel } from "@/lib/labels";
 
-export const metadata: Metadata = { title: "Office du Bac" };
+export const metadata: Metadata = { title: "Office du Bacc" };
 
 export default async function OfficeDashboard() {
   const user = await requireOffice();
@@ -135,9 +135,9 @@ export default async function OfficeDashboard() {
   return (
     <>
       <PageHeader
-        eyebrow={user.officeName ?? "Office du Bac"}
+        eyebrow={user.officeName ?? "Office du Bacc"}
         title={
-          user.visiting ? (user.officeName ?? "Office du Bac") : `Bonjour, ${user.fullName.split(" ")[0]}`
+          user.visiting ? (user.officeName ?? "Office du Bacc") : `Bonjour, ${user.fullName.split(" ")[0]}`
         }
         description={`Session ${session?.year ?? ""} : voici où en est votre Office.`}
         actions={

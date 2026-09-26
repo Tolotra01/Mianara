@@ -17,12 +17,12 @@ export type QrCandidate = {
   qrToken: string;
 };
 
-/** Année scolaire d'une session : Bac 2027 → 2026-2027. */
+/** Année scolaire d'une session : Bacc 2027 → 2026-2027. */
 export const schoolYear = (year: number) => `${year - 1}-${year}`;
 
 export function qrText(c: QrCandidate) {
   return [
-    `MIANARA - Convocation Bac ${c.sessionYear}`,
+    `MIANARA - Convocation Bacc ${c.sessionYear}`,
     `Nom : ${c.lastName}`,
     `Prénom : ${c.firstName}`,
     `Adresse : ${c.address || "-"}`,

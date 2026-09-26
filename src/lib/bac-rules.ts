@@ -1,5 +1,5 @@
 /**
- * Règles métier du Bac (décret n° 2021-242 et cahier BacConnect, section 6).
+ * Règles métier du Bacc (décret n° 2021-242 et cahier BacConnect, section 6).
  * Fonctions pures, sans accès à la base : elles se testent isolément.
  */
 

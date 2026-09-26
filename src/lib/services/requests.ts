@@ -46,7 +46,7 @@ export async function eligibility(candidateId: string, type: DocType, exec: Exec
   if (row.decision !== "admitted")
     return { open: false, reason: "Les demandes sont réservées aux candidats admis." };
   if (await activeBlacklist(candidateId, exec))
-    return { open: false, reason: "Votre dossier est bloqué par l'Office du Bac. Contactez-le." };
+    return { open: false, reason: "Votre dossier est bloqué par l'Office du Bacc. Contactez-le." };
 
   const existing = await exec
     .select()
