@@ -1,7 +1,10 @@
-import { ExternalLink } from "lucide-react";
+import { ChevronRight, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import type { Dict } from "@/lib/i18n";
+
+const LINK =
+  "group inline-flex items-center gap-1.5 font-medium text-ink/80 transition-colors hover:text-vert";
 
 export function SiteFooter({ t }: { t: Dict }) {
   const guide = [
@@ -24,46 +27,39 @@ export function SiteFooter({ t }: { t: Dict }) {
   ];
 
   return (
-    <footer className="mt-24 bg-sunken">
+    <footer className="footer-band mt-24">
+      {/* Toujours sombre (cf. `.footer-band`) : le pied de page ferme le site
+          sur le même aplat que l'accueil, quel que soit le thème. */}
       <div className="lamba" aria-hidden />
-      <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-12 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-        <div>
-          <Logo className="h-10 w-auto" />
-          <p className="mt-4 font-semibold">{t.footer.tagline}</p>
-          <p className="mt-3 max-w-sm text-sm text-muted">{t.footer.disclaimer}</p>
+      <div className="mx-auto max-w-[1240px] px-4 sm:px-6">
+        <div className="grid gap-12 py-16 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-8">
+          <div>
+            <Link href="/" aria-label="Mianara — accueil">
+              <Logo className="h-10 w-auto" />
+            </Link>
+            <p className="t-h3 mt-6 text-balance">{t.footer.tagline}</p>
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">{t.footer.disclaimer}</p>
+          </div>
+          <FooterCol title={t.footer.guide}>
+            {guide.map((l) => (
+              <FooterLink key={l.href} {...l} />
+            ))}
+          </FooterCol>
+          <FooterCol title={t.footer.about}>
+            {site.map((l) => (
+              <FooterLink key={l.href} {...l} />
+            ))}
+          </FooterCol>
+          <FooterCol title={t.footer.official}>
+            {official.map((l) => (
+              <FooterLink key={l.href} {...l} external />
+            ))}
+          </FooterCol>
         </div>
-        <FooterCol title={t.footer.guide}>
-          {guide.map((l) => (
-            <Link key={l.href} href={l.href} className="hover:text-vert hover:underline">
-              {l.label}
-            </Link>
-          ))}
-        </FooterCol>
-        <FooterCol title={t.footer.about}>
-          {site.map((l) => (
-            <Link key={l.href} href={l.href} className="hover:text-vert hover:underline">
-              {l.label}
-            </Link>
-          ))}
-        </FooterCol>
-        <FooterCol title={t.footer.official}>
-          {official.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-vert hover:underline"
-            >
-              {l.label} <ExternalLink className="ml-0.5 inline size-3.5 align-[-2px]" aria-hidden />
-            </a>
-          ))}
-        </FooterCol>
-      </div>
-      <div className="border-t border-line">
-        <p className="mx-auto max-w-[1200px] px-4 py-5 text-sm text-muted sm:px-8">
-          © {new Date().getFullYear()} Mianara
-        </p>
+        <div className="flex flex-col items-center justify-between gap-2 border-t border-line py-6 text-sm text-muted sm:flex-row">
+          <p>© {new Date().getFullYear()} Mianara</p>
+          <p className="font-mono text-xs uppercase tracking-[0.22em]">FR · MG</p>
+        </div>
       </div>
     </footer>
   );
@@ -73,7 +69,30 @@ function FooterCol({ title, children }: { title: string; children: React.ReactNo
   return (
     <div>
       <p className="t-overline text-muted">{title}</p>
-      <div className="mt-4 flex flex-col gap-2.5">{children}</div>
+      <ul className="mt-5 flex flex-col gap-3.5">{children}</ul>
     </div>
+  );
+}
+
+/** Un lien de colonne : la flèche n'apparaît qu'au survol, pour éviter que la
+ *  colonne ne se lise comme une liste de puces. */
+function FooterLink({ href, label, external }: { href: string; label: string; external?: boolean }) {
+  return (
+    <li>
+      {external ? (
+        <a href={href} target="_blank" rel="noreferrer" className={LINK}>
+          {label}
+          <ExternalLink className="size-3.5 shrink-0 opacity-60" aria-hidden />
+        </a>
+      ) : (
+        <Link href={href} className={LINK}>
+          {label}
+          <ChevronRight
+            className="size-4 shrink-0 -translate-x-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
+            aria-hidden
+          />
+        </Link>
+      )}
+    </li>
   );
 }

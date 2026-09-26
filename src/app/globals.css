@@ -120,11 +120,47 @@
   color-scheme: dark;
 }
 
-/* Hero d'accueil : bandeau de marque volontairement sombre dans les deux
-   thèmes. La scène, le dégradé de lisibilité et les boutons partagent la même
-   palette — sans cela, un voile sombre obscurcirait un ciel crème en thème
-   clair et le titre y perdrait son contraste. */
-.hero-band {
+/* ------------------------------------------------------------------
+   Accueil « Nuit malgache »
+   ------------------------------------------------------------------
+   La page d'accueil est volontairement sombre dans les deux thèmes : ses
+   tokens sont réimposés sur le conteneur racine. Les utilitaires Tailwind
+   (bg-raised, text-muted, border-line…) résolvent ces tokens par cascade,
+   donc toute la page bascule sans dupliquer les couleurs dans le JSX.
+   Le pied de page partage le même jeu de tokens : il ferme le site sur le
+   même aplat, quel que soit le thème.
+
+   `color: var(--ink)` est indispensable : `body` a déjà résolu `color`
+   une fois pour toutes, sans quoi le texte hériterait du noir du thème
+   clair. `--ill-*` sert aux illustrations (HeroScene), qui n'ont pas leur
+   propre jeton de fond.
+   ------------------------------------------------------------------ */
+.home-dark,
+.footer-band {
+  --surface: #0b1411;
+  --surface-raised: #16241f;
+  --surface-sunken: #080f0d;
+  --line: #24352d;
+  --line-strong: #5e736a;
+  --ink: #eef3ef;
+  --ink-muted: #9fb0a8;
+  --vert: #4cc08f;
+  --vert-hover: #7ad3ac;
+  --vert-soft: #123a2c;
+  --on-vert: #0b1411;
+  --tany-mena: #f08a6c;
+  --tany-mena-soft: #3a1d14;
+  --soleil: #f5c35f;
+  --soleil-soft: #3a2c0e;
+  --danger: #f97066;
+  --danger-soft: #3a1614;
+  --warning: #f5c35f;
+  --warning-soft: #3a2c0e;
+  --info: #7db4f0;
+  --info-soft: #12263d;
+  --focus-ring: #7db4f0;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
+  --shadow-md: 0 12px 34px rgb(0 0 0 / 0.45);
   --ill-sky: #1e3a33;
   --ill-sky-2: #16241f;
   --ill-hill-far: #24493c;
@@ -134,48 +170,144 @@
   --ill-laterite: #b9532f;
   --ill-laterite-light: #c77a58;
   --ill-cloud: #d9e6df;
-  --ink: #eef3ef;
-  --ink-muted: #a7b5ae;
-  --vert: #4cc08f;
-  --vert-hover: #7ad3ac;
-  --on-vert: #0f1a16;
-  --surface-raised: #16241f;
-  --line-strong: #6b7f76;
-  --soleil-soft: rgb(242 179 61 / 0.18);
-  --warning: #f5c35f;
-  /* `body` résout `color: var(--ink)` une fois pour toutes : sans cette
-     déclaration, le titre hériterait du noir du thème clair sur la scène
-     sombre. */
+  --logo-feuille: #ffffff;
+  --logo-livre: #f08a6c;
+  --logo-tranche: #c2492b;
   color: var(--ink);
   color-scheme: dark;
 }
 
-/* Section « Cinq étapes jusqu'au diplôme » : volontairement claire dans les
-   deux thèmes — elle sert de respiration entre le bandeau sombre du hero et la
-   section « Séries ». Les cartes blanches se posent sur un dégradé vert pâle
-   vers crème, d'où les tokens du thème clair reimposés ici. */
+.home-dark {
+  /* Ambiance : trois halos de marque (vert, soleil, tany-mena) posés sur un
+     dégradé nuit vertical. */
+  background-color: #0b1411;
+  background-image:
+    radial-gradient(72rem 46rem at 6% -8%, rgb(76 192 143 / 0.16), transparent 62%),
+    radial-gradient(56rem 38rem at 98% 2%, rgb(245 195 95 / 0.1), transparent 60%),
+    radial-gradient(80rem 60rem at 50% 104%, rgb(240 138 108 / 0.1), transparent 58%),
+    linear-gradient(180deg, #0b1411 0%, #0a1210 44%, #0b1411 100%);
+  background-repeat: no-repeat;
+}
+
+/* Trame de points très fine : de la matière sur le grand aplat nuit, sans
+   aucun poids visuel. Estompée vers le bas pour laisser les sections
+   respirer. */
+.home-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(rgb(238 243 239 / 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 92%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 92%);
+}
+
+/* Pied de page : toujours sombre, dans les deux thèmes. */
+.footer-band {
+  background-color: #0b1411;
+  background-image:
+    radial-gradient(60rem 30rem at 12% 0%, rgb(76 192 143 / 0.12), transparent 62%),
+    linear-gradient(180deg, #0c1613 0%, #0a1210 100%);
+}
+
+/* Hero d'accueil : la scène lit les tokens --ill-*, désormais hérités du
+   thème sombre. Seule la pastille « Bacc 2027 » a besoin d'un ambre
+   translucide plutôt que du brun du thème sombre. */
+.hero-band {
+  --soleil-soft: rgb(245 195 95 / 0.16);
+  --warning: #f5c35f;
+}
+
+/* Section « Cinq étapes jusqu'au diplôme » : la respiration entre le bandeau
+   sombre du hero et la section « Séries ». Plus de bascule en thème clair —
+   la bande est simplement plus claire que l'aplat nuit et encadrée de deux
+   filets, pour que les cartes inclinées s'y détachent. */
 .journey-band {
-  --surface: #f8f6f1;
-  --surface-raised: #ffffff;
-  --line: #dce3de;
-  --line-strong: #7a8b83;
-  --ink: #12241d;
-  --ink-muted: #4f5e57;
-  --vert: #0e6b4f;
-  --vert-hover: #0a4a37;
+  background-image:
+    linear-gradient(180deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0) 62%),
+    radial-gradient(64rem 32rem at 50% 0%, rgb(76 192 143 / 0.1), transparent 70%);
+  border-block: 1px solid var(--line);
+}
+
+/* « Le Bacc en quatre chiffres » : le seul aplat plein de la page. Le dégradé
+   vert profond et les halos de soleil et de tany-mena en font un panneau
+   d'affichage plutôt qu'un simple bandeau de couleur. Les tokens locaux
+   (surface / raised) servent aux tuiles, qui s'assombrissent au survol. */
+.figures-band {
+  --surface: #0d1f18;
+  --surface-raised: #16382b;
+  --surface-sunken: #0a1611;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.09);
+  border-radius: 40px;
+  background-color: #10281f;
+  background-image:
+    radial-gradient(38rem 22rem at 6% 0%, rgb(122 211 172 / 0.22), transparent 62%),
+    radial-gradient(34rem 20rem at 94% 100%, rgb(242 179 61 / 0.14), transparent 60%),
+    radial-gradient(30rem 18rem at 80% 0%, rgb(240 138 108 / 0.13), transparent 62%),
+    linear-gradient(158deg, #164a36 0%, #0f2a20 48%, #0b1a15 100%);
+  color: #eef3ef;
+  color-scheme: dark;
+  box-shadow: 0 34px 80px -34px rgb(0 0 0 / 0.8);
+}
+
+/* Bande lamba en filigrane, légèrement inclinée : rappelle le textile
+   malgache sans jamais passer derrière du texte (charte). */
+.figures-band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("/brand/motif-lamba.svg") repeat-x left bottom / auto 30%;
+  opacity: 0.07;
+  transform: rotate(-1.5deg) scale(1.06);
+}
+
+/* Bandeau « Actualités » : un simple creux de ton pour clore la page. */
+.news-band {
+  background-image: linear-gradient(180deg, transparent, rgb(4 11 9 / 0.6) 40%, rgb(4 11 9 / 0.15));
+  border-top: 1px solid var(--line);
+}
+
+/* ------------------------------------------------------------------
+   Plaques lumineuses
+   ------------------------------------------------------------------
+   Les illustrations (Spots) sont dessinées sur des fonds clairs : leur
+   « tache » de fond lit --vert-soft, --tany-mena-soft, --soleil-soft ou
+   --info-soft, des teintes pastel. Sur la page nuit ces tokens sombres
+   aplatiraient les dessins — chaque illustration est donc montée sur une
+   plaque qui lui rend ses teintes d'origine. C'est ce contraste
+   clair-sur-sombre, et non un halo, qui fait ressortir l'image.
+   ------------------------------------------------------------------ */
+.plate {
   --vert-soft: #e6f2ec;
-  --on-vert: #ffffff;
-  --tany-mena: #c2492b;
-  --soleil: #f2b33d;
-  --info: #1d5fa8;
-  background: radial-gradient(
-    118% 96% at 50% 0%,
-    #eaf4ee 0%,
-    #f6f4e4 58%,
-    #fdf7e8 100%
-  );
+  --tany-mena-soft: #fbeae4;
+  --soleil-soft: #fef4dc;
+  --info-soft: #e8f0fa;
+  --vert: #0e6b4f;
+  --ink: #12241d;
+  --line: #dce3de;
   color: var(--ink);
   color-scheme: light;
+}
+/* Un dégradé par série, pour que la carte « s'allume » de la couleur de
+   sa voie. */
+.plate-l {
+  background-image: linear-gradient(152deg, #fdf2ed 0%, #fbeae4 100%);
+}
+.plate-s {
+  background-image: linear-gradient(152deg, #eff8f2 0%, #e6f2ec 100%);
+}
+.plate-ose {
+  background-image: linear-gradient(152deg, #fefaf0 0%, #fef4dc 100%);
+}
+/* Plaque neutre : actualités et portrait de l'assistant, dont la teinte est
+   portée par l'illustration elle-même. */
+.plate-plain {
+  background-image: linear-gradient(152deg, #fbfaf4 0%, #f1efe6 100%);
 }
 
 @theme inline {
@@ -329,6 +461,11 @@ svg [class*="a-"] {
   0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
   40% { opacity: 1; transform: translateY(-3px); }
 }
+/* Pastille « en ligne » : respiration lente, sans clignotement. */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.72); }
+}
 
 .a-sway { animation: sway 6s ease-in-out infinite; transform-origin: 50% 100%; }
 .a-sway-slow { animation: sway 9s ease-in-out infinite; transform-origin: 50% 100%; }
@@ -342,6 +479,7 @@ svg [class*="a-"] {
 .a-dash { animation: dash 2.4s linear infinite; }
 .a-pop { animation: pop-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .a-typing { animation: typing 1.2s ease-in-out infinite; }
+.a-pulse { animation: pulse-dot 2.4s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

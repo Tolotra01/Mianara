@@ -12,8 +12,9 @@ const fr = {
   menu: "Menu",
   langLabel: "Langue",
   hero: {
-    overline: "Bacc 2027 · Séries L, S, OSE",
-    title: "Tongasoa ! Ton Bacc, pas à pas.",
+    mini: "Obtenir",
+    overline: "Ton Bacc,",
+    title: "Pas à pas.",
     lead: "Séries, coefficients, dossier, jour J : tout ce qu'il faut savoir, en images.",
     ctaGuide: "Ouvrir le guide",
     ctaAssistant: "Poser une question",
@@ -30,6 +31,7 @@ const fr = {
     more: "Découvrir",
   },
   figures: {
+    overline: "L'essentiel en un coup d'œil",
     title: "Le Bacc en quatre chiffres",
     items: [
       { value: "30", label: "coefficients au total" },
@@ -49,7 +51,12 @@ const fr = {
       "Quelle moyenne pour avoir une mention Bien ?",
     ],
   },
-  news: { overline: "Actualités", title: "Les dernières nouvelles du Bacc", all: "Toutes les actualités" },
+  news: {
+    overline: "Actualités",
+    title: "Les dernières nouvelles du Bacc",
+    all: "Toutes les actualités",
+    read: "Lire la suite",
+  },
   footer: {
     tagline: "Mianara, mandroso. — Apprendre, avancer.",
     guide: "Guide du Bacc",
@@ -82,8 +89,9 @@ const mg: Dict = {
   menu: "Menio",
   langLabel: "Fiteny",
   hero: {
-    overline: "Bacc 2027 · Andiany L, S, OSE",
-    title: "Tongasoa ! Ny Bacc-nao, dingana tsikelikely.",
+    mini: "Mahazoa",
+    overline: "Ny Bacc-nao, ",
+    title: "Dingana tsikelikely.",
     lead: "Andiany, coefficient, antontan-taratasy, andro fanadinana : izay rehetra tokony ho fantatra, an-tsary.",
     ctaGuide: "Jereo ny torolalana",
     ctaAssistant: "Hametraka fanontaniana",
@@ -106,6 +114,7 @@ const mg: Dict = {
     more: "Hijery",
   },
   figures: {
+    overline: "Ny zava-drehetra amin'ny fijerena iray",
     title: "Ny Bacc amin'ny isa efatra",
     items: [
       { value: "30", label: "coefficient raha atambatra" },
@@ -125,7 +134,12 @@ const mg: Dict = {
       "Firy ny salan'isa ilaina amin'ny mention Bien ?",
     ],
   },
-  news: { overline: "Vaovao", title: "Vaovao farany momba ny Bacc", all: "Ny vaovao rehetra" },
+  news: {
+    overline: "Vaovao",
+    title: "Vaovao farany momba ny Bacc",
+    all: "Ny vaovao rehetra",
+    read: "Hijery ny vaovao",
+  },
   footer: {
     tagline: "Mianara, mandroso.",
     guide: "Torolalana Bacc",

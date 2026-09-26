@@ -26,9 +26,11 @@ export function NavLinks({ items, menuLabel, login }: { items: Item[]; menuLabel
           onClick={() => setOpen(false)}
           className={
             mobile
-              ? `block rounded-md px-4 py-3 text-lg font-semibold ${active ? "bg-vert-soft text-vert" : "text-ink"}`
-              : `relative rounded-full px-4 py-2 font-semibold transition-colors ${
-                  active ? "bg-vert-soft text-vert" : "text-ink hover:bg-sunken"
+              ? `flex items-center justify-between rounded-2xl px-4 py-3 text-lg font-semibold transition-colors ${
+                  active ? "bg-vert text-on-vert" : "text-ink hover:bg-sunken"
+                }`
+              : `rounded-full px-4 py-2 text-sm font-bold transition-colors ${
+                  active ? "bg-vert text-on-vert shadow-sm" : "text-muted hover:bg-sunken hover:text-ink"
                 }`
           }
         >
@@ -39,22 +41,26 @@ export function NavLinks({ items, menuLabel, login }: { items: Item[]; menuLabel
 
   return (
     <>
-      <nav aria-label="Principal" className="hidden items-center gap-1 md:flex">
+      {/* Rail : les liens vivent dans une capsule, l'onglet actif s'y allume. */}
+      <nav
+        aria-label="Principal"
+        className="hidden items-center gap-1 rounded-full border border-line/70 bg-raised/50 p-1 md:flex"
+      >
         {links(false)}
       </nav>
       <button
         type="button"
-        className="grid size-12 place-items-center rounded-full hover:bg-sunken md:hidden"
+        className="grid size-11 place-items-center rounded-full border border-line/70 bg-raised/50 transition-colors hover:border-vert/60 md:hidden"
         aria-expanded={open}
         aria-label={menuLabel}
         onClick={() => setOpen((o) => !o)}
       >
-        {open ? <X className="size-6" /> : <Menu className="size-6" />}
+        {open ? <X className="size-5" /> : <Menu className="size-5" />}
       </button>
       {open && (
         <nav
           aria-label="Principal"
-          className="absolute inset-x-0 top-full border-b border-line bg-raised p-3 shadow-md md:hidden"
+          className="absolute inset-x-4 top-[calc(100%+0.5rem)] rounded-3xl border border-line bg-raised p-2.5 shadow-xl md:hidden"
         >
           {links(true)}
         </nav>

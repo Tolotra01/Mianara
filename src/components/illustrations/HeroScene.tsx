@@ -25,7 +25,7 @@ import {
 export function HeroScene({ greeting = "Salama !", className }: { greeting?: string; className?: string }) {
   return (
     <svg
-      viewBox="0 83 1440 540"
+      viewBox="10 83 1400 540"
       preserveAspectRatio="xMidYMax slice"
       className={`ill h-full w-full ${className ?? ""} bg-white`}
       role="img"

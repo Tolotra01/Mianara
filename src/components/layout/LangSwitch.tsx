@@ -8,7 +8,11 @@ import type { Lang } from "@/lib/i18n";
 export function LangSwitch({ lang, label }: { lang: Lang; label: string }) {
   const [pending, startTransition] = useTransition();
   return (
-    <div role="group" aria-label={label} className="flex rounded-full bg-sunken p-1 text-sm font-bold">
+    <div
+      role="group"
+      aria-label={label}
+      className="flex items-center gap-0.5 rounded-full border border-line/70 bg-raised/50 p-1 text-xs font-extrabold"
+    >
       {(["fr", "mg"] as const).map((l) => (
         <button
           key={l}
@@ -16,8 +20,8 @@ export function LangSwitch({ lang, label }: { lang: Lang; label: string }) {
           aria-pressed={lang === l}
           disabled={pending}
           onClick={() => startTransition(() => setLang(l))}
-          className={`rounded-full px-3 py-1 transition-colors ${
-            lang === l ? "bg-raised text-vert shadow-sm" : "text-muted hover:text-ink"
+          className={`rounded-full px-3 py-1.5 tracking-[0.12em] transition-colors ${
+            lang === l ? "bg-vert text-on-vert shadow-sm" : "text-muted hover:text-ink"
           }`}
         >
           {l.toUpperCase()}
