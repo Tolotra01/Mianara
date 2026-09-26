@@ -10,9 +10,9 @@ import { RULES } from "@/content/bac";
 import { getBacData } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Résultats du Bac et après",
+  title: "Résultats du Bacc et après",
   description:
-    "Moyenne d'admission, mentions, où consulter les résultats du Bac et comment préparer la suite.",
+    "Moyenne d'admission, mentions, où consulter les résultats du Bacc et comment préparer la suite.",
 };
 
 const BANDS = [
@@ -111,7 +111,7 @@ export default async function ResultatsPage() {
           Les universités de chaque province publient aussi les listes d&apos;admis, au fil des corrections.
         </p>
 
-        <h2 className="t-h1 mt-16">Après le Bac</h2>
+        <h2 className="t-h1 mt-16">Après le Bacc</h2>
         <div className="mt-6">
           <TipGrid tips={data.tips.filter((t) => t.category === "apres")} />
         </div>
@@ -146,7 +146,7 @@ export default async function ResultatsPage() {
             </p>
           </div>
           <AskButton
-            question="J'ai eu mon Bac en série OSE. Quelles études puis-je faire ?"
+            question="J'ai eu mon Bacc en série OSE. Quelles études puis-je faire ?"
             className={buttonClass.primary}
           >
             <MessageCircleQuestion className="size-5" /> Explorer mes options

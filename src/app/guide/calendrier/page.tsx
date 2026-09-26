@@ -7,9 +7,9 @@ import { Breadcrumb, Container, PageHero, ToConfirm } from "@/components/ui";
 import { getBacData } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Calendrier du Bac",
+  title: "Calendrier du Bacc",
   description:
-    "Inscriptions, épreuves et résultats : les dates clés du Bac à Madagascar, session 2026 et Bac 2027.",
+    "Inscriptions, épreuves et résultats : les dates clés du Bacc à Madagascar, session 2026 et Bacc 2027.",
 };
 
 const KIND: Record<string, { icon: LucideIcon; label: string; className: string }> = {
@@ -30,7 +30,7 @@ export default async function CalendrierPage() {
       <PageHero
         overline="Guide · 4"
         title="Les dates à ne pas manquer"
-        lead="La session 2026 sert de repère : les dates du Bac 2027 seront ajoutées dès leur publication."
+        lead="La session 2026 sert de repère : les dates du Bacc 2027 seront ajoutées dès leur publication."
         art={<CalendrierArt />}
       />
       <Container className="pt-8">
@@ -82,7 +82,7 @@ export default async function CalendrierPage() {
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="t-overline rounded-full bg-sunken px-2.5 py-1 text-muted">
-                        Bac {e.sessionYear}
+                        Bacc {e.sessionYear}
                       </span>
                       {past && <span className="text-sm font-semibold text-muted">Passé</span>}
                       {!e.confirmed && <ToConfirm label="Date à publier" />}

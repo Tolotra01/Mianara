@@ -9,7 +9,7 @@ import { getBacData } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Coefficients et simulateur de moyenne",
   description:
-    "Les coefficients de terminale des séries L, S et OSE (total 30) et un simulateur pour calculer ta moyenne au Bac.",
+    "Les coefficients de terminale des séries L, S et OSE (total 30) et un simulateur pour calculer ta moyenne au Bacc.",
 };
 
 const KEY_RULES = [

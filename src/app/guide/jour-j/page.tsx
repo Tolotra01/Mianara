@@ -7,8 +7,8 @@ import { Breadcrumb, Container, PageHero, SourceLink } from "@/components/ui";
 import { getBacData } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Le jour J du Bac",
-  description: "Ce qu'il faut emporter le jour du Bac et les règles à connaître : horaires, absence, fraude.",
+  title: "Le jour J du Bacc",
+  description: "Ce qu'il faut emporter le jour du Bacc et les règles à connaître : horaires, absence, fraude.",
 };
 
 const BAG = [

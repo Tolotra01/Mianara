@@ -9,9 +9,9 @@ import { UNIVERSITIES } from "@/content/bac";
 import { getBacData } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Dossier d'inscription au Bac",
+  title: "Dossier d'inscription au Bacc",
   description:
-    "Les pièces à préparer, les frais d'inscription et où déposer votre dossier du Bac à Madagascar.",
+    "Les pièces à préparer, les frais d'inscription et où déposer votre dossier du Bacc à Madagascar.",
 };
 
 export default async function DossierPage() {
@@ -47,7 +47,7 @@ export default async function DossierPage() {
             <Info className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden />
             <p>
               <span className="font-bold text-warning">Liste indicative.</span> Les pièces marquées{" "}
-              <ToConfirm /> sont à vérifier auprès de votre lycée ou de l&apos;Office du Bac.
+              <ToConfirm /> sont à vérifier auprès de votre lycée ou de l&apos;Office du Bacc.
             </p>
           </div>
         </div>
@@ -88,7 +88,7 @@ export default async function DossierPage() {
           <div className="rounded-3xl border border-line bg-raised p-6 shadow-sm">
             <p className="t-h3">Candidat libre</p>
             <p className="mt-2 text-muted">
-              À l&apos;Office du Bac de l&apos;université de votre province. Vous passez l&apos;examen dans le
+              À l&apos;Office du Bacc de l&apos;université de votre province. Vous passez l&apos;examen dans le
               secteur où vous habitez.
             </p>
             <ul className="mt-4 flex flex-wrap gap-2">

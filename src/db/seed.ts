@@ -6,9 +6,8 @@
  *   pnpm db:seed   # charge les données
  */
 import "dotenv/config";
-import "./network";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { Pool } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
 import * as schema from "./schema";
 import {
   CALENDAR,
@@ -27,8 +26,13 @@ async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL manquant (voir .env.example).");
 
-  const client = postgres(url, { prepare: false, max: 1, connect_timeout: 30 });
-  const db = drizzle(client, { schema });
+  // `Pool` (WebSocket) et non `neon()` (HTTP) : le seed a besoin d'une
+  // transaction interactive — il lit les `returning()` des subjects pour
+  // alimenter serie_subjects — et ni `drizzle-orm/neon-http` ni la fonction
+  // HTTP n'en acceptent une. Le port 5432 étant injoignable depuis ce réseau,
+  // les deux pilotes passent par le 443.
+  const client = new Pool({ connectionString: url });
+  const db = drizzle({ client, schema });
 
   await db.transaction(async (tx) => {
     // Ordre inverse des clés étrangères.

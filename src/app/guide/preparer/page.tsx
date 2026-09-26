@@ -8,8 +8,8 @@ import { Breadcrumb, buttonClass, Container, PageHero } from "@/components/ui";
 import { getBacData } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Bien se préparer au Bac",
-  description: "Une méthode simple pour réviser le Bac : priorités, annales, planning de la semaine.",
+  title: "Bien se préparer au Bacc",
+  description: "Une méthode simple pour réviser le Bacc : priorités, annales, planning de la semaine.",
 };
 
 /** Semaine type : les matières à coefficient 5 d'abord, un sujet blanc, un jour léger. */

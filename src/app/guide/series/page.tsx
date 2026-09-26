@@ -10,7 +10,7 @@ import { getBacData } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Les séries L, S et OSE",
   description:
-    "Littéraire, Scientifique ou Organisation-Société-Économie : matières, coefficients et débouchés de chaque série du Bac malgache.",
+    "Littéraire, Scientifique ou Organisation-Société-Économie : matières, coefficients et débouchés de chaque série du Bacc malgache.",
 };
 
 const TINT = { L: "bg-mena-soft", S: "bg-vert-soft", OSE: "bg-soleil-soft" } as const;
@@ -23,7 +23,7 @@ export default async function SeriesPage() {
       <PageHero
         overline="Guide · 1"
         title="Trois séries, trois chemins"
-        lead="Dès le Bac 2027, tu choisis entre L, S et OSE. Une seule série par an."
+        lead="Dès le Bacc 2027, tu choisis entre L, S et OSE. Une seule série par an."
         art={<SerieLArt />}
       >
         <div className="mt-6 flex flex-wrap gap-2">
@@ -44,7 +44,7 @@ export default async function SeriesPage() {
         <div className="flex items-start gap-3 rounded-2xl bg-info-soft p-4 text-info">
           <TriangleAlert className="mt-0.5 size-5 shrink-0" aria-hidden />
           <div>
-            <p className="font-bold">Les séries A, C et D disparaissent au Bac 2027.</p>
+            <p className="font-bold">Les séries A, C et D disparaissent au Bacc 2027.</p>
             <p className="mt-1 text-ink">
               L remplace A1 et A2, S remplace C et D. Des mesures de transition protègent les élèves de
               l&apos;ancien système.

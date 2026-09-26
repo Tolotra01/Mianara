@@ -23,19 +23,19 @@ export const SOURCES = {
     url: "https://www.2424.mg/education-les-coefficients-du-baccalaureat-des-series-l-s-et-ose-revises-dans-le-nouveau-programme-detudes/",
   },
   reforme2027: {
-    label: "2424.mg — Le Bac 2027 limité aux séries L, S et OSE",
-    url: "https://www.2424.mg/education-le-baccalaureat-general-de-2027-limite-aux-series-l-s-et-ose-avec-la-mise-a-lechelle-du-nouveau-programme-scolaire-et-la-disparitions-des-series-a-c-et-d/",
+    label: "2424.mg — Le Bacc 2027 limité aux séries L, S et OSE",
+    url: "https://www.2424.mg/education-le-baccalaureat-general-de-2027-limite-auxseries-l-s-et-ose-avec-la-mise-a-lechelle-du-nouveau-programme-scolaire-et-la-disparitions-des-series-a-c-et-d/",
   },
   suppressionACD: {
     label: "L'Express / allAfrica — Les séries A, C et D supprimées (10/09/2026)",
     url: "https://fr.allafrica.com/stories/202609100504.html",
   },
   calendrier2026: {
-    label: "2424.mg — Le Bac 2026 fixé du 17 au 27 août (13/01/2026)",
+    label: "2424.mg — Le Bacc 2026 fixé du 17 au 27 août (13/01/2026)",
     url: "https://2424.mg/news/examen-officiel-le-baccalaureat-2026-fixe-du-17-au-27-aout/",
   },
   dateLimite2026: {
-    label: "2424.mg — Date limite d'inscription au Bac 2026 fixée au 27 mars",
+    label: "2424.mg — Date limite d'inscription au Bacc 2026 fixée au 27 mars",
     url: "https://2424.mg/examen-officiel-la-date-limite-dinscription-au-baccalaureat-2026-fixee-au-27-mars/",
   },
   inscriptions2026: {
@@ -43,7 +43,7 @@ export const SOURCES = {
     url: "https://fr.allafrica.com/stories/202603190247.html",
   },
   frais2026: {
-    label: "Moov.mg — Année scolaire 2025-2026 des candidats au Bac (14/01/2026)",
+    label: "Moov.mg — Année scolaire 2025-2026 des candidats au Bacc (14/01/2026)",
     url: "https://moov.mg/article/111203-enseignement-lannee-scolaire-2025-2026-des-candidats-au-baccalaureat-setendra-sur-11-mois",
   },
   eps: {
@@ -59,7 +59,7 @@ export const SOURCES = {
     url: "https://www.mesupres.gov.mg/resultatsBac",
   },
   postBac: {
-    label: "Simoon CV — Bac 2026 : proclamation et post-Bac",
+    label: "Simoon CV — Bacc 2026 : proclamation et post-Bacc",
     url: "https://simoon-cv.com/blog/resultats-bac-2026-madagascar-mesupres-proclamation",
   },
 } as const;
@@ -116,7 +116,7 @@ export const SERIES: Serie[] = [
       "Mathématiques, histoire-géographie et sciences économiques et sociales (SES), une matière propre à cette série.",
     forWhom: ["Tu t'intéresses à l'économie", "Tu aimes l'actualité", "Tu veux gérer, organiser"],
     careers: ["Économie et gestion", "Droit", "Sociologie", "Commerce", "Banque", "Administration"],
-    formerOptions: "Série créée par la réforme, au Bac depuis 2021",
+    formerOptions: "Série créée par la réforme, au Bacc depuis 2021",
     sortOrder: 3,
   },
 ];
@@ -283,7 +283,7 @@ export type DossierItem = {
 export const DOSSIER_ITEMS: DossierItem[] = [
   {
     label: "Fiche d'inscription remplie",
-    detail: "Fournie par votre lycée ou par l'Office du Bac. Vérifiez chaque lettre de votre nom.",
+    detail: "Fournie par votre lycée ou par l'Office du Bacc. Vérifiez chaque lettre de votre nom.",
     candidateType: "tous",
     icon: "file-pen",
     confirmed: false,
@@ -375,7 +375,7 @@ export const CALENDAR: CalendarEvent[] = [
   },
   {
     sessionYear: 2026,
-    title: "Épreuves du Bac général (dès 7 h)",
+    title: "Épreuves du Bacc général (dès 7 h)",
     startsOn: "2026-08-17",
     endsOn: "2026-08-21",
     dateLabel: "17 → 21 août 2026",
@@ -404,7 +404,7 @@ export const CALENDAR: CalendarEvent[] = [
   },
   {
     sessionYear: 2027,
-    title: "Ouverture des inscriptions au Bac 2027 (séries L, S, OSE)",
+    title: "Ouverture des inscriptions au Bacc 2027 (séries L, S, OSE)",
     startsOn: "2027-01-01",
     dateLabel: "Janvier 2027",
     kind: "inscription",
@@ -413,7 +413,7 @@ export const CALENDAR: CalendarEvent[] = [
   },
   {
     sessionYear: 2027,
-    title: "Dates des épreuves du Bac 2027",
+    title: "Dates des épreuves du Bacc 2027",
     startsOn: "2027-08-01",
     dateLabel: "À publier par le ministère",
     kind: "examen",
@@ -564,7 +564,7 @@ export const FAQS: Faq[] = [
     category: "Séries",
     question: "Les séries A, C et D existent-elles encore ?",
     answer:
-      "Non. Le décret adopté le 31 août 2026 les supprime : à partir du Bac 2027, on choisit entre L, S et OSE. Des mesures de transition protègent les élèves de l'ancien système.",
+      "Non. Le décret adopté le 31 août 2026 les supprime : à partir du Bacc 2027, on choisit entre L, S et OSE. Des mesures de transition protègent les élèves de l'ancien système.",
     sortOrder: 1,
   },
   {
@@ -577,7 +577,7 @@ export const FAQS: Faq[] = [
     category: "Inscription",
     question: "Je suis candidat libre, où déposer mon dossier ?",
     answer:
-      "Auprès de l'Office du Bac de l'université de votre province. Vous passez l'examen dans le secteur de votre résidence.",
+      "Auprès de l'Office du Bacc de l'université de votre province. Vous passez l'examen dans le secteur de votre résidence.",
     sortOrder: 3,
   },
   {
@@ -604,7 +604,7 @@ export const FAQS: Faq[] = [
   {
     category: "Résultats",
     question: "Y a-t-il une session de rattrapage ?",
-    answer: "Non. Le Bac comporte une session unique par an, à la fin de l'année scolaire.",
+    answer: "Non. Le Bacc comporte une session unique par an, à la fin de l'année scolaire.",
     sortOrder: 7,
   },
   {
@@ -646,9 +646,9 @@ export const NEWS: NewsItem[] = [
   },
   {
     slug: "series-a-c-d-supprimees-bac-2027",
-    title: "Bac 2027 : les séries A, C et D disparaissent",
+    title: "Bacc 2027 : les séries A, C et D disparaissent",
     excerpt: "Place aux séries L, S et OSE. Les inscriptions ouvriront en janvier 2027.",
-    body: "Les ministères de l'Éducation nationale et de l'Enseignement supérieur ont supprimé les séries A, C et D du baccalauréat général. Dès les inscriptions au Bac 2027, les candidats choisissent entre Littéraire (L), Scientifique (S) et Organisation, Société et Économie (OSE).\n\nLes inscriptions débuteront en janvier 2027. Des mesures de transition sont prévues pour ne pas pénaliser les élèves ayant commencé leur cycle dans l'ancien système.",
+    body: "Les ministères de l'Éducation nationale et de l'Enseignement supérieur ont supprimé les séries A, C et D du baccalauréat général. Dès les inscriptions au Bacc 2027, les candidats choisissent entre Littéraire (L), Scientifique (S) et Organisation, Société et Économie (OSE).\n\nLes inscriptions débuteront en janvier 2027. Des mesures de transition sont prévues pour ne pas pénaliser les élèves ayant commencé leur cycle dans l'ancien système.",
     category: "Réforme",
     importance: "urgent",
     illustration: "reforme",
@@ -657,9 +657,9 @@ export const NEWS: NewsItem[] = [
   },
   {
     slug: "calendrier-bac-2026",
-    title: "Bac 2026 : épreuves du 17 au 21 août",
-    excerpt: "Le Bac technique se poursuit du 24 au 27 août.",
-    body: "Le baccalauréat général 2026 s'est déroulé du lundi 17 au vendredi 21 août, à partir de 7 heures. Pour le Bac technologique, technique et professionnel, une seconde série d'épreuves a eu lieu du 24 au 27 août.\n\nCe calendrier sert de repère pour anticiper la session 2027, dont les dates restent à publier.",
+    title: "Bacc 2026 : épreuves du 17 au 21 août",
+    excerpt: "Le Bacc technique se poursuit du 24 au 27 août.",
+    body: "Le baccalauréat général 2026 s'est déroulé du lundi 17 au vendredi 21 août, à partir de 7 heures. Pour le Bacc technologique, technique et professionnel, une seconde série d'épreuves a eu lieu du 24 au 27 août.\n\nCe calendrier sert de repère pour anticiper la session 2027, dont les dates restent à publier.",
     category: "Calendrier",
     importance: "normal",
     illustration: "calendrier",
@@ -670,7 +670,7 @@ export const NEWS: NewsItem[] = [
     slug: "cloture-inscriptions-bac-2026",
     title: "Inscriptions : clôture le 27 mars, sans dérogation",
     excerpt: "Environ 70 000 candidats attendus à l'Office d'Antananarivo.",
-    body: "La date limite d'inscription au Bac 2026 était fixée au vendredi 27 mars à 18 heures. Aucune dérogation n'a été accordée pour les dossiers déposés hors délai.\n\nÀ une semaine de l'échéance, seuls 17 % des quelque 70 000 candidats attendus à l'Office d'Antananarivo avaient déposé leur dossier. Pour 2027 : déposez tôt, et vérifiez que votre établissement a bien transmis votre dossier.",
+    body: "La date limite d'inscription au Bacc 2026 était fixée au vendredi 27 mars à 18 heures. Aucune dérogation n'a été accordée pour les dossiers déposés hors délai.\n\nÀ une semaine de l'échéance, seuls 17 % des quelque 70 000 candidats attendus à l'Office d'Antananarivo avaient déposé leur dossier. Pour 2027 : déposez tôt, et vérifiez que votre établissement a bien transmis votre dossier.",
     category: "Inscription",
     importance: "normal",
     illustration: "inscription",

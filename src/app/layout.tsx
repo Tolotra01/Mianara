@@ -21,7 +21,7 @@ const jetbrains = localFont({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Mianara — Ton Bac, pas à pas", template: "%s · Mianara" },
+  title: { default: "Mianara — Ton Bacc, pas à pas", template: "%s · Mianara" },
   description:
     "Le guide illustré du Baccalauréat à Madagascar : séries L, S et OSE, coefficients, dossier d'inscription, calendrier, jour J et résultats. Avec un assistant IA en français et en malagasy.",
   applicationName: "Mianara",

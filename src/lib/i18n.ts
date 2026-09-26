@@ -12,8 +12,8 @@ const fr = {
   menu: "Menu",
   langLabel: "Langue",
   hero: {
-    overline: "Bac 2027 · Séries L, S, OSE",
-    title: "Tongasoa ! Ton Bac, pas à pas.",
+    overline: "Bacc 2027 · Séries L, S, OSE",
+    title: "Tongasoa ! Ton Bacc, pas à pas.",
     lead: "Séries, coefficients, dossier, jour J : tout ce qu'il faut savoir, en images.",
     ctaGuide: "Ouvrir le guide",
     ctaAssistant: "Poser une question",
@@ -30,7 +30,7 @@ const fr = {
     more: "Découvrir",
   },
   figures: {
-    title: "Le Bac en quatre chiffres",
+    title: "Le Bacc en quatre chiffres",
     items: [
       { value: "30", label: "coefficients au total" },
       { value: "10/20", label: "pour être admis" },
@@ -49,15 +49,15 @@ const fr = {
       "Quelle moyenne pour avoir une mention Bien ?",
     ],
   },
-  news: { overline: "Actualités", title: "Les dernières nouvelles du Bac", all: "Toutes les actualités" },
+  news: { overline: "Actualités", title: "Les dernières nouvelles du Bacc", all: "Toutes les actualités" },
   footer: {
     tagline: "Mianara, mandroso. — Apprendre, avancer.",
-    guide: "Guide du Bac",
+    guide: "Guide du Bacc",
     about: "Mianara",
     official: "Liens officiels",
-    results: "Résultats du Bac",
+    results: "Résultats du Bacc",
     disclaimer:
-      "Mianara n'est pas un site officiel du ministère. Vérifiez toujours les dates et pièces auprès de votre établissement ou de l'Office du Bac.",
+      "Mianara n'est pas un site officiel du ministère. Vérifiez toujours les dates et pièces auprès de votre établissement ou de l'Office du Bacc.",
   },
   chat: {
     title: "Assistant Mianara",
@@ -67,8 +67,8 @@ const fr = {
     open: "Ouvrir l'assistant",
     close: "Fermer",
     hello:
-      "Salama ! Je réponds à tes questions sur le Bac : séries, coefficients, dossier, dates, résultats.",
-    disclaimer: "L'IA peut se tromper. Pour une décision officielle, adressez-vous à l'Office du Bac.",
+      "Salama ! Je réponds à tes questions sur le Bacc : séries, coefficients, dossier, dates, résultats.",
+    disclaimer: "L'IA peut se tromper. Pour une décision officielle, adressez-vous à l'Office du Bacc.",
     error: "L'assistant n'est pas disponible pour le moment. Réessaie dans un instant.",
     reset: "Nouvelle conversation",
   },
@@ -82,8 +82,8 @@ const mg: Dict = {
   menu: "Menio",
   langLabel: "Fiteny",
   hero: {
-    overline: "Bac 2027 · Andiany L, S, OSE",
-    title: "Tongasoa ! Ny Bac-nao, dingana tsikelikely.",
+    overline: "Bacc 2027 · Andiany L, S, OSE",
+    title: "Tongasoa ! Ny Bacc-nao, dingana tsikelikely.",
     lead: "Andiany, coefficient, antontan-taratasy, andro fanadinana : izay rehetra tokony ho fantatra, an-tsary.",
     ctaGuide: "Jereo ny torolalana",
     ctaAssistant: "Hametraka fanontaniana",
@@ -106,7 +106,7 @@ const mg: Dict = {
     more: "Hijery",
   },
   figures: {
-    title: "Ny Bac amin'ny isa efatra",
+    title: "Ny Bacc amin'ny isa efatra",
     items: [
       { value: "30", label: "coefficient raha atambatra" },
       { value: "10/20", label: "vao afaka" },
@@ -125,15 +125,15 @@ const mg: Dict = {
       "Firy ny salan'isa ilaina amin'ny mention Bien ?",
     ],
   },
-  news: { overline: "Vaovao", title: "Vaovao farany momba ny Bac", all: "Ny vaovao rehetra" },
+  news: { overline: "Vaovao", title: "Vaovao farany momba ny Bacc", all: "Ny vaovao rehetra" },
   footer: {
     tagline: "Mianara, mandroso.",
-    guide: "Torolalana Bac",
+    guide: "Torolalana Bacc",
     about: "Mianara",
     official: "Rohy ofisialy",
-    results: "Valim-panadinana Bac",
+    results: "Valim-panadinana Bacc",
     disclaimer:
-      "Tsy tranonkala ofisialin'ny minisitera i Mianara. Hamarino foana ny daty sy ny taratasy any amin'ny sekolinao na ny Office du Bac.",
+      "Tsy tranonkala ofisialin'ny minisitera i Mianara. Hamarino foana ny daty sy ny taratasy any amin'ny sekolinao na ny Office du Bacc.",
   },
   chat: {
     title: "Mpanampy Mianara",
@@ -143,8 +143,8 @@ const mg: Dict = {
     open: "Sokafy ny mpanampy",
     close: "Hidio",
     hello:
-      "Salama ! Mamaly ny fanontanianao momba ny Bac aho : andiany, coefficient, antontan-taratasy, daty, valiny.",
-    disclaimer: "Mety diso ny IA. Ho an'ny fanapahan-kevitra ofisialy, manatona ny Office du Bac.",
+      "Salama ! Mamaly ny fanontanianao momba ny Bacc aho : andiany, coefficient, antontan-taratasy, daty, valiny.",
+    disclaimer: "Mety diso ny IA. Ho an'ny fanapahan-kevitra ofisialy, manatona ny Office du Bacc.",
     error: "Tsy misy ny mpanampy amin'izao fotoana izao. Andramo indray afaka kelikely.",
     reset: "Resaka vaovao",
   },
