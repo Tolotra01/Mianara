@@ -30,7 +30,7 @@ export default async function AidePage() {
       <Container className="py-8 sm:py-12">
         <section
           aria-label={t.chat.title}
-          className="-mx-2 flex h-[min(680px,calc(100dvh-6rem))] min-h-[460px] flex-col overflow-hidden rounded-3xl border border-line bg-raised shadow-md sm:mx-auto sm:h-[640px] sm:max-w-3xl sm:rounded-4xl"
+          className="-mx-2 flex h-[min(680px,calc(100dvh-6rem))] min-h-[460px] flex-col overflow-hidden rounded-3xl border border-line bg-raised shadow-md sm:mx-auto sm:h-[640px] sm:max-w-3xl sm:rounded-4xl xl:max-w-4xl 2xl:h-[720px]"
         >
           <header className="flex items-center gap-3 bg-vert px-4 py-3 text-on-vert sm:px-5 sm:py-4">
             <AssistantAvatar className="size-10 shrink-0 ring-2 ring-on-vert/40 sm:size-12" />
@@ -43,7 +43,7 @@ export default async function AidePage() {
         </section>
 
         <h2 className="t-h1 mt-20 text-center">Questions fréquentes</h2>
-        <div className="mx-auto mt-8 max-w-3xl space-y-10">
+        <div className="mx-auto mt-8 max-w-3xl space-y-10 xl:max-w-4xl">
           {categories.map((cat) => (
             <div key={cat}>
               <h3 className="t-overline text-mena">{cat}</h3>

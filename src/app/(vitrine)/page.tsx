@@ -76,15 +76,15 @@ export default async function HomePage() {
             lui réserve sa hauteur, plus un peu d'air sous les boutons) ;
             sur tablette le texte est centré pour occuper la largeur. Dès lg, le
             décor couvre tout le cadre et le texte se pose sur le voile. */}
-        <Container className="relative pt-10 pb-[clamp(252px,70vw,396px)] md:pt-16 md:text-center lg:flex lg:min-h-[640px] lg:items-center lg:py-16 lg:text-left">
+        <Container className="relative pt-10 pb-[clamp(252px,70vw,396px)] md:pt-16 md:text-center lg:flex lg:min-h-[640px] lg:items-center 2xl:min-h-[720px] lg:py-16 lg:text-left">
           {/* Hiérarchie à trois paliers : « Obtenir » en retrait, « Ton Bacc, »
               en grand — c'est le mot promis, il porte l'accent — puis
               « Pas à pas. » en retrait. */}
           <div className="a-pop max-w-xl md:mx-auto md:max-w-2xl lg:mx-0">
-            <p className="text-[clamp(26px,4.2vw,44px)] leading-tight font-extrabold tracking-[-0.02em] text-ink/70">
+            <p className="text-[clamp(26px,4.2vw,44px)] 3xl:text-[clamp(44px,2.8vw,56px)] leading-tight font-extrabold tracking-[-0.02em] text-ink/70">
               {t.hero.mini}
             </p>
-            <h1 className="mt-2 text-[clamp(50px,9vw,84px)] leading-[1.02] font-extrabold tracking-[-0.03em] text-warning">
+            <h1 className="mt-2 text-[clamp(50px,9vw,84px)] 3xl:text-[clamp(84px,5.4vw,112px)] leading-[1.02] font-extrabold tracking-[-0.03em] text-warning">
               {t.hero.overline}
             </h1>
             <p className="t-display mt-1 text-balance text-ink/75">{t.hero.title}</p>

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Reveal } from "@/components/Reveal";
 
 export function Container({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={`mx-auto w-full max-w-[1200px] px-4 sm:px-8 ${className ?? ""}`}>{children}</div>;
+  return <div className={`mx-auto w-full max-w-site px-4 sm:px-8 2xl:px-12 ${className ?? ""}`}>{children}</div>;
 }
 
 export function SectionTitle({

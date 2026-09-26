@@ -50,8 +50,8 @@ export default async function ArticlePage({ params }: PageProps<"/actualites/[sl
         </Container>
       </header>
 
-      <Container className="grid gap-10 py-12 lg:grid-cols-[2fr_1fr]">
-        <div className="t-body-lg max-w-2xl space-y-5">
+      <Container className="grid gap-10 py-12 lg:grid-cols-[minmax(0,44rem)_20rem] lg:justify-center lg:gap-16 xl:grid-cols-[minmax(0,46rem)_22rem] xl:gap-24">
+        <div className="t-body-lg space-y-5">
           {news.body.split("\n\n").map((p, i) => (
             <p key={i}>{p}</p>
           ))}

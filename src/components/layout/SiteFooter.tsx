@@ -32,7 +32,7 @@ export function SiteFooter({ t }: { t: Dict }) {
       {/* Toujours sombre (cf. `.footer-band`) : le pied de page ferme le site
           sur le même aplat que l'accueil, quel que soit le thème. */}
       <div className="lamba" aria-hidden />
-      <div className="mx-auto max-w-[1240px] px-4 sm:px-6">
+      <div className="mx-auto max-w-site-frame px-4 sm:px-6 2xl:px-10">
         <div className="grid gap-12 py-16 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-8">
           <div>
             <Link href="/" aria-label="Mianara — accueil">

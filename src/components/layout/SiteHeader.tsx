@@ -20,7 +20,7 @@ export function SiteHeader({ t, lang }: { t: Dict; lang: Lang }) {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 -bottom-px h-px bg-linear-to-r from-transparent via-vert/70 to-transparent"
       />
-      <div className="relative mx-auto flex h-20 max-w-[1240px] items-center gap-4 px-4 sm:px-6">
+      <div className="relative mx-auto flex h-20 max-w-site-frame items-center gap-4 px-4 sm:px-6 2xl:px-10">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="Mianara — accueil">
           {/* L'emblème passe sur une pastille dégradée : le logo cesse d'être un
               élément flottant pour devenir une marque posée. */}

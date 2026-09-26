@@ -45,7 +45,7 @@ export default async function ActualitesPage({ searchParams }: PageProps<"/actua
           {chip("Tout", "/actualites", !active)}
           {categories.map((c) => chip(c, `/actualites?categorie=${encodeURIComponent(c)}`, active === c))}
         </nav>
-        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4">
           {shown.map((n) => (
             <NewsCard key={n.slug} news={n} />
           ))}

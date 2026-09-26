@@ -124,7 +124,7 @@ export default async function EspaceLayout({ children }: { children: React.React
             />
           </header>
           {visitOffice && <VisitBanner officeName={visitOffice.name} />}
-          <main id="contenu" className="mx-auto w-full max-w-[1320px] px-4 py-8 sm:px-8">
+          <main id="contenu" className="mx-auto w-full max-w-[1760px] px-4 py-8 sm:px-8 2xl:px-12">
             <ReadOnlyProvider visiting={Boolean(visitOffice)}>{children}</ReadOnlyProvider>
           </main>
         </div>

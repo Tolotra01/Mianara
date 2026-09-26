@@ -311,6 +311,8 @@
 }
 
 @theme inline {
+  /* Très grands écrans (1600 px) : colonnes et titres en plus. */
+  --breakpoint-3xl: 100rem;
   --color-surface: var(--surface);
   --color-raised: var(--surface-raised);
   --color-sunken: var(--surface-sunken);
@@ -890,4 +892,41 @@ dialog.modal::backdrop {
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* Largeur du site : 1200 px sur un écran courant, puis elle suit l'écran
+   (88 % de la largeur) jusqu'à 1760 px sur les très grands moniteurs.
+   `max-w-site-frame` sert au header et au footer, un peu plus larges que le
+   contenu. */
+@utility max-w-site {
+  max-width: clamp(1200px, 88vw, 1760px);
+}
+@utility max-w-site-frame {
+  max-width: clamp(1240px, 90vw, 1800px);
+}
+
+/* Très grands écrans (2K, 4K, ou navigateur dézoomé) : au-delà de la largeur
+   maximale du site, on agrandit toute la page d'un bloc — texte, espacements,
+   illustrations — pour qu'elle occupe l'écran au lieu de flotter au milieu.
+   Les paliers gardent une largeur « utile » d'environ 2 050 px. */
+@media (min-width: 2304px) {
+  html { zoom: 1.125; }
+}
+@media (min-width: 2560px) {
+  html { zoom: 1.25; }
+}
+@media (min-width: 2880px) {
+  html { zoom: 1.4; }
+}
+@media (min-width: 3200px) {
+  html { zoom: 1.55; }
+}
+@media (min-width: 3840px) {
+  html { zoom: 1.85; }
+}
+@media (min-width: 4608px) {
+  html { zoom: 2.2; }
+}
+@media (min-width: 5760px) {
+  html { zoom: 2.75; }
 }

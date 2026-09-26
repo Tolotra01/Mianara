@@ -79,7 +79,7 @@ export default async function ResultatsPublicPage({ searchParams }: PageProps<"/
             </p>
           </div>
         ) : (
-          <div className="mx-auto grid max-w-4xl gap-8 lg:grid-cols-2">
+          <div className="mx-auto grid max-w-4xl gap-8 lg:grid-cols-2 xl:max-w-5xl">
             <form className="rounded-3xl border border-line bg-raised p-6 shadow-sm">
               <h2 className="t-h3">Par matricule</h2>
               <label htmlFor="matricule" className="sr-only">
