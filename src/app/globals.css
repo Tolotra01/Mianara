@@ -884,3 +884,10 @@ dialog.modal::backdrop {
     color: var(--ink-muted);
   }
 }
+/* Défilement horizontal sans barre visible (carrousels tactiles). */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -58,7 +58,7 @@ export default async function HomePage() {
         {/* Panorama : colline lointaine, rizières en terrasses, route de latérite
             et ravinala couvrent toute la largeur. Bande basse sur mobile pour
             laisser la place au titre, plein cadre à partir de lg. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[240px] sm:h-[300px] lg:inset-0 lg:h-auto">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[clamp(220px,62vw,360px)] lg:inset-0 lg:h-auto">
           <HeroScene framing="mobile" className="lg:hidden" />
           <HeroScene framing="wide" className="hidden lg:block" />
         </div>
@@ -72,18 +72,24 @@ export default async function HomePage() {
               "linear-gradient(96deg, rgba(9,26,21,0.95) 0%, rgba(9,26,21,0.88) 30%, rgba(9,26,21,0.55) 52%, rgba(9,26,21,0.18) 70%, rgba(9,26,21,0) 86%)",
           }}
         />
-        <Container className="relative pt-10 pb-[280px] sm:pb-[340px] lg:flex lg:min-h-[620px] lg:items-center lg:py-16 lg:pb-16">
-          {/* Hiérarchie à trois paliers : « Obtenir » en pastille discrète,
-              « Ton Bacc, » en grand — c'est le mot promis, il porte l'accent —
-              puis « Pas à pas. » en retrait. */}
-          <div className="a-pop max-w-2xl">
-            <p className="t-display mt-1 text-balance text-ink/75">
+        {/* Mobile et tablette : le texte, puis le décor en bande basse (le `pb`
+            lui réserve sa hauteur, plus un peu d'air sous les boutons) ;
+            sur tablette le texte est centré pour occuper la largeur. Dès lg, le
+            décor couvre tout le cadre et le texte se pose sur le voile. */}
+        <Container className="relative pt-10 pb-[clamp(252px,70vw,396px)] md:pt-16 md:text-center lg:flex lg:min-h-[640px] lg:items-center lg:py-16 lg:text-left">
+          {/* Hiérarchie à trois paliers : « Obtenir » en retrait, « Ton Bacc, »
+              en grand — c'est le mot promis, il porte l'accent — puis
+              « Pas à pas. » en retrait. */}
+          <div className="a-pop max-w-xl md:mx-auto md:max-w-2xl lg:mx-0">
+            <p className="text-[clamp(26px,4.2vw,44px)] leading-tight font-extrabold tracking-[-0.02em] text-ink/70">
               {t.hero.mini}
             </p>
-            <h1 className="t-display-xl mt-4 text-warning">{t.hero.overline}</h1>
+            <h1 className="mt-2 text-[clamp(50px,9vw,84px)] leading-[1.02] font-extrabold tracking-[-0.03em] text-warning">
+              {t.hero.overline}
+            </h1>
             <p className="t-display mt-1 text-balance text-ink/75">{t.hero.title}</p>
-            <p className="t-body-lg mt-5 max-w-md text-muted">{t.hero.lead}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <p className="t-body-lg mt-5 max-w-md text-muted md:mx-auto lg:mx-0">{t.hero.lead}</p>
+            <div className="mt-8 grid gap-3 min-[420px]:flex min-[420px]:flex-wrap md:justify-center lg:justify-start">
               <ButtonLink href="/guide">
                 {t.hero.ctaGuide} <ArrowRight className="size-5" />
               </ButtonLink>
@@ -104,12 +110,7 @@ export default async function HomePage() {
               individuellement (`animate={false}`) pour éviter un double
               mouvement. */}
           <Reveal>
-            <SectionTitle
-              overline={t.journey.overline}
-              title={t.journey.title}
-              center
-              animate={false}
-            />
+            <SectionTitle overline={t.journey.overline} title={t.journey.title} center animate={false} />
 
             <div className="relative mt-16">
               {/* Filet du parcours : relie les cinq cartes d'un même trait. */}
@@ -119,7 +120,13 @@ export default async function HomePage() {
               />
               <ol className="relative grid grid-cols-2 justify-items-center gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-6 lg:flex lg:flex-wrap lg:justify-center lg:gap-0 lg:-space-x-6">
                 {JOURNEY.map((step, i) => {
-                  const rotations = ["lg:-rotate-6", "lg:-rotate-3", "lg:rotate-0", "lg:rotate-3", "lg:rotate-6"];
+                  const rotations = [
+                    "lg:-rotate-6",
+                    "lg:-rotate-3",
+                    "lg:rotate-0",
+                    "lg:rotate-3",
+                    "lg:rotate-6",
+                  ];
                   const offsets = [
                     "lg:translate-y-6",
                     "lg:translate-y-2",
@@ -143,7 +150,9 @@ export default async function HomePage() {
                         </span>
 
                         {/* Icône centrale */}
-                        <span className={`grid size-16 place-items-center rounded-2xl shadow-sm ${step.color}`}>
+                        <span
+                          className={`grid size-16 place-items-center rounded-2xl shadow-sm ${step.color}`}
+                        >
                           <step.icon className="size-8" strokeWidth={1.8} />
                         </span>
 
@@ -167,13 +176,23 @@ export default async function HomePage() {
           <SectionTitle overline={t.series.overline} title={t.series.title} animate={false} />
           {/* 110 ms de décalage par carte : les trois voies arrivent l'une après
               l'autre, comme un choix que l'on parcourt. */}
-          <div className="grid gap-6 md:grid-cols-3">
+          {/* Sous lg, les trois cartes défilent à l'horizontale : la carte
+              suivante dépasse du bord pour inviter à glisser, et les trois
+              gardent la même hauteur. À partir de lg, grille de trois. */}
+          <div
+            aria-label={t.series.title}
+            className="no-scrollbar -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pt-2 pb-6 sm:-mx-8 sm:scroll-px-8 sm:px-8 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0"
+          >
             {data.series.map((s, i) => {
               const Art = SERIE_ART[s.code];
               const accent = SERIE_ACCENT[s.code];
               const core = data.coefficients.filter((c) => c.serieCode === s.code && c.isCore);
               return (
-                <Reveal key={s.code} delay={i * 110} className="h-full">
+                <Reveal
+                  key={s.code}
+                  delay={i * 110}
+                  className="w-[84%] max-w-[380px] shrink-0 snap-start sm:w-[58%] md:w-[44%] lg:w-auto lg:max-w-none"
+                >
                   <Link
                     href={`/guide/series#${s.code}`}
                     className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line/70 bg-raised/45 shadow-md transition-all duration-300 hover:-translate-y-2 hover:border-vert/50 hover:bg-raised/70 hover:shadow-xl"
@@ -187,8 +206,12 @@ export default async function HomePage() {
                     {/* Plaque pleine largeur : l'illustration jaillit de la carte au
                         lieu d'être posée dans un cadre intérieur. Le rapport 4:3
                         est celui du viewBox des Spots — le SVG garde son
-                        `h-auto` et remplit donc la plaque sans recadrage. */}
-                    <div className={`plate ${accent.plate} relative aspect-[4/3] w-full overflow-hidden`}>
+                        `h-auto` et remplit donc la plaque sans recadrage. Sur
+                        téléphone, plaque plus basse et dessin réduit à 86 % pour
+                        raccourcir la carte sans rogner l'illustration. */}
+                    <div
+                      className={`plate ${accent.plate} relative flex aspect-[16/11] w-full items-center justify-center overflow-hidden sm:aspect-[4/3]`}
+                    >
                       {/* Code géant en filigrane, centré derrière le dessin. */}
                       <span
                         aria-hidden
@@ -196,16 +219,18 @@ export default async function HomePage() {
                       >
                         {s.code}
                       </span>
-                      <Art className="relative w-full transition-transform duration-700 group-hover:scale-105" />
+                      <Art className="relative w-[86%] transition-transform duration-700 group-hover:scale-105 sm:w-full" />
                     </div>
 
-                    <div className="flex flex-1 flex-col p-6">
+                    <div className="flex flex-1 flex-col p-5 sm:p-6">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className={`font-mono text-xs font-bold tracking-[0.2em] uppercase ${accent.text}`}>
+                          <p
+                            className={`font-mono text-xs font-bold tracking-[0.2em] uppercase ${accent.text}`}
+                          >
                             {s.code}
                           </p>
-                          <h3 className="t-h2 mt-1.5">{s.name}</h3>
+                          <h3 className="mt-1.5 text-xl leading-7 font-bold text-balance sm:t-h2">{s.name}</h3>
                         </div>
                         <span className="grid size-10 shrink-0 place-items-center rounded-full border border-line/70 text-muted transition-all duration-300 group-hover:border-vert group-hover:bg-vert group-hover:text-on-vert">
                           <ArrowRight className="size-4 -rotate-45 transition-transform duration-300 group-hover:rotate-0" />
@@ -218,7 +243,7 @@ export default async function HomePage() {
                         {core.map((c) => (
                           <li
                             key={c.subjectCode}
-                            className="rounded-full border border-line/70 bg-sunken/70 px-3 py-1 text-sm font-semibold"
+                            className="rounded-full border border-line/70 bg-sunken/70 px-2.5 py-1 text-[13px] font-semibold sm:px-3 sm:text-sm"
                           >
                             {c.subjectName}
                           </li>
@@ -291,7 +316,11 @@ export default async function HomePage() {
               />
               <div className="relative overflow-hidden rounded-[2rem] border border-line/70 bg-raised/45 p-2.5 shadow-xl backdrop-blur-sm transition-transform duration-500 hover:-translate-y-1.5">
                 {CORNERS.map((corner) => (
-                  <span key={corner} aria-hidden className={`absolute z-10 size-8 border-vert/45 ${corner}`} />
+                  <span
+                    key={corner}
+                    aria-hidden
+                    className={`absolute z-10 size-8 border-vert/45 ${corner}`}
+                  />
                 ))}
                 <div className="plate plate-plain overflow-hidden rounded-[1.5rem] px-5 pt-8 pb-4">
                   <AssistantArt />
