@@ -17,9 +17,9 @@ import {
  */
 export function HeroScene({ greeting = "Salama !" }: { greeting?: string }) {
   return (
-    <svg viewBox="0 0 720 520" className="ill h-auto w-full" role="img" aria-labelledby="hero-title">
+    <svg viewBox="0 25 700 520" className="ill h-auto w-full" role="img" aria-labelledby="hero-title">
       <title id="hero-title">
-        Deux élèves en uniforme sur les Hautes Terres, sous un soleil levant, avec des ravinala et un
+        Deux élèves en uniforme sur les Hautes Terres, sous un soleil levant attendent un
         taxi-brousse.
       </title>
 
@@ -75,6 +75,7 @@ export function HeroScene({ greeting = "Salama !" }: { greeting?: string }) {
       <HighlandHouse x={590} y={304} scale={0.72} />
       <Ravinala x={672} y={320} scale={0.75} />
       <Ravinala x={395} y={330} scale={0.55} />
+      <Ravinala x={700} y={400} scale={0.55} />
 
       {/* Route de latérite */}
       <path

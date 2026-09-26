@@ -36,7 +36,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------- Héros ---------- */}
-      <section className="overflow-hidden">
+      <section className="overflow-hidden bg-[#1E3A33]">
         <Container className="grid items-center gap-8 pt-10 pb-16 lg:grid-cols-[5fr_7fr] lg:pt-16">
           <div className="a-pop">
             <p className="t-overline inline-flex rounded-full bg-soleil-soft px-3 py-1 text-warning">
@@ -54,7 +54,7 @@ export default async function HomePage() {
             </div>
           </div>
           <div
-            className="a-pop overflow-hidden rounded-4xl border border-line shadow-md"
+            className="a-pop overflow-hidden border border-line"
             style={{ animationDelay: "0.1s" }}
           >
             <HeroScene />
