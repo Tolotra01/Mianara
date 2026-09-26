@@ -52,6 +52,31 @@ export async function createSession(userId: string, role: Role) {
   });
 }
 
+/** Session d'un appareil mobile : jeton renvoyé à l'application (30 jours), pas de cookie. */
+export async function createDeviceSession(
+  userId: string,
+  device: { name: string | null; ip: string | null },
+) {
+  const token = sessionToken();
+  const expiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000);
+  await requireDb()
+    .insert(authSessions)
+    .values({
+      id: sha256(token),
+      userId,
+      expiresAt,
+      ip: device.ip,
+      userAgent: device.name ? `mobile: ${device.name}`.slice(0, 300) : "mobile",
+    });
+  return { token, expiresAt };
+}
+
+export async function destroyToken(token: string) {
+  await requireDb()
+    .delete(authSessions)
+    .where(eq(authSessions.id, sha256(token)));
+}
+
 export async function destroySession() {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
@@ -79,7 +104,11 @@ export type CurrentUser = {
 /** Utilisateur connecté (une seule lecture par requête). */
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
-  if (!token) return null;
+  return token ? userForToken(token) : null;
+});
+
+/** Utilisateur d'un jeton de session (cookie du web ou « Bearer » de l'application mobile). */
+export async function userForToken(token: string): Promise<CurrentUser | null> {
   const db = requireDb();
   const [row] = await db
     .select({
@@ -108,7 +137,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     )
     .limit(1);
   return row ?? null;
-});
+}
 
 /**
  * Exige un utilisateur connecté ayant l'un des rôles donnés.

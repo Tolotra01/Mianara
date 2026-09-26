@@ -190,7 +190,7 @@ export default async function EpreuvesPage() {
         actions={<AutoRefresh seconds={10} />}
       />
       <div className="mb-6">
-        <Alert tone="info" title="Les scans arrivent de l'application mobile Mianara Scan">
+        <Alert tone="info" title="Les scans arrivent de l'application mobile Mianara Contrôle">
           Les surveillants scannent les convocations, même hors connexion ; les données se synchronisent dès
           que le réseau revient.
         </Alert>

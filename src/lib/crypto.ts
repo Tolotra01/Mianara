@@ -69,6 +69,10 @@ function qrKeys() {
   return keys;
 }
 
+/** Clé publique brute (32 octets, base64) pour vérifier les QR hors ligne dans l'application mobile. */
+export const qrPublicKeyRaw = () =>
+  Buffer.from(qrKeys().publicKey.export({ format: "jwk" }).x!, "base64url").toString("base64");
+
 /** Clé publique (PEM) à embarquer dans un scanner hors ligne. */
 export const qrPublicKeyPem = () => qrKeys().publicKey.export({ format: "pem", type: "spki" }).toString();
 

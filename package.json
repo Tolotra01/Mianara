@@ -13,7 +13,9 @@
     "db:studio": "drizzle-kit studio",
     "test": "tsx --test src/**/*.test.ts",
     "db:seed:demo": "tsx --conditions=react-server src/db/seed-demo.ts",
-    "db:reset-demo": "tsx --conditions=react-server src/db/reset-demo.ts"
+    "db:reset-demo": "tsx --conditions=react-server src/db/reset-demo.ts",
+    "demo:jour": "tsx --conditions=react-server src/db/demo-jour.ts",
+    "demo:notes": "tsx --conditions=react-server src/db/demo-notes.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",

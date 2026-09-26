@@ -4,13 +4,13 @@ import { and, eq } from "drizzle-orm";
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { requireDb } from "@/db";
-import { candidates, documentRequests, payments, scans } from "@/db/schema-gestion";
+import { candidates, documentRequests, payments } from "@/db/schema-gestion";
 import { type ActionState, fail, ok } from "@/lib/action";
 import { audit, notify } from "@/lib/audit";
 import { requireOfficeAgent } from "@/lib/auth";
 import { formatDateTime, parseLocalDateTime } from "@/lib/bac-rules";
 import { DOC_LABEL } from "@/lib/labels";
-import { activeBlacklist } from "@/lib/services/requests";
+import { activeBlacklist, deliverRequest } from "@/lib/services/requests";
 
 async function load(id: string) {
   const user = await requireOfficeAgent();
@@ -158,39 +158,9 @@ export async function schedulePickup(_: ActionState, form: FormData): Promise<Ac
  */
 export async function markDelivered(_: ActionState, form: FormData): Promise<ActionState> {
   if (form.get("identity") !== "on") return fail("Confirmez le contrôle de l'identité du candidat.");
-  const { user, db, row } = await load(String(form.get("id")));
-  if (!row) return fail("Demande introuvable.");
-  if (row.r.status !== "pickup_scheduled") return fail("Aucun retrait n'est prévu pour cette demande.");
-  const now = new Date();
-  await db.transaction(async (tx) => {
-    await tx
-      .update(documentRequests)
-      .set({ status: "delivered", deliveredAt: now, deliveredBy: user.id, updatedAt: now })
-      .where(eq(documentRequests.id, row.r.id));
-    await tx.insert(scans).values({
-      candidateId: row.c.id,
-      requestId: row.r.id,
-      scannedBy: user.id,
-      type: "doc_delivery",
-      scannedAt: now,
-    });
-    await audit(
-      { actorId: user.id, action: "demande.remettre", table: "document_requests", recordId: row.r.id },
-      tx,
-    );
-    await notify(
-      row.c.userId,
-      {
-        title: `${DOC_LABEL[row.r.type]} retiré`,
-        body:
-          row.r.type === "transcript"
-            ? "Relevé remis. Vous pouvez maintenant demander votre diplôme."
-            : "Diplôme remis. Félicitations et bonne continuation !",
-        link: "/candidat/demandes",
-      },
-      tx,
-    );
-  });
+  const user = await requireOfficeAgent();
+  const res = await requireDb().transaction((tx) => deliverRequest(String(form.get("id")), user.officeId, user.id, tx));
+  if ("error" in res) return fail(res.error!);
   refresh();
-  return ok(`${DOC_LABEL[row.r.type]} remis : retrait enregistré.`);
+  return ok(`${res.label} remis : retrait enregistré.`);
 }

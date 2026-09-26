@@ -107,7 +107,7 @@ prend le relais quand l'Office enregistre un candidat validé.
 | École | `/ecole` | Dossiers des élèves (identité, adresse, photo, pièces), envoi par lots à l'Office, suivi (envoyé, incomplet à corriger, non validé, validé), convocations de ses candidats (téléchargement groupé), propositions d'actualités |
 | Office du Bac | `/office` | Traitement des dossiers des écoles (validation groupée, renvoi incomplet, refus), candidats libres, écoles de l'Office, enregistrement des candidats (matricule, identifiants, QR signé et convocation PDF générés d'un coup), centres et salles, surveillants, emploi du temps, épreuves en direct, notes, délibération, publication, demandes de relevé et de diplôme, liste noire |
 | Candidat | `/candidat` | Parcours, convocation, épreuves et présence, résultats, demandes (paiement Mobile Money ou virement, ticket), notifications |
-| Surveillant | `/surveillant` | Ses salles et la liste des candidats. Le scan se fera avec l'application mobile |
+| Surveillant | `/surveillant` | Ses salles et la liste des candidats. Le scan se fait avec l'application mobile Mianara Contrôle |
 | Administration | `/admin` | Vue nationale agrégée, Offices et agents, visite de l'espace d'un Office (consultation), écoles et leurs comptes, candidats libres, paramètres de session, actualités (et validation des propositions), journal d'audit |
 | Public | `/resultats` | Recherche d'un résultat par matricule, ou nom + prénom + date de naissance |
 
@@ -131,13 +131,13 @@ par le script et figurent sur leur convocation (espace Office → fiche du candi
   verrouillage 15 min après 5 échecs.
 - QR de convocation : lisible par n'importe quel lecteur (nom, prénom, adresse, école, session,
   série, matricule), suivi d'un jeton signé Ed25519 dérivé de `APP_SECRET` que vérifie l'application
-  de scan. Changer ce secret invalide les QR imprimés. Convocation au format A5.
+  mobile, hors ligne. Changer ce secret invalide les QR imprimés. Convocation au format A5.
 - Séries : Bac général (L, S, OSE) et Bac technique (TI industriel, TGC génie civil, TT tertiaire,
   TA agricole, secteurs du METFP ; coefficients provisoires à confirmer). L'EPS (coefficient 2) a son
   épreuve théorique dans l'emploi du temps.
 - Scans (RG-05 à RG-07) : entrée de −30 min jusqu'à l'heure exacte du début, fin d'épreuve jusqu'à
   +30 min, pas de fin d'épreuve sans entrée, anti-double scan. La logique est dans
-  `src/lib/bac-rules.ts` et `src/lib/services/scan.ts`, prête pour l'API de l'application mobile.
+  `src/lib/bac-rules.ts` et `src/lib/services/scan.ts`, reprises à l'identique dans l'application mobile.
 - Délibération : moyenne pondérée, note manquante = 0, 0 éliminatoire, seuil du jury (10 par défaut,
   jamais sous 9,50), mentions, fraude constatée → « Fraude ». Notes invisibles avant publication et
   verrouillées après ; seule l'Admin peut annuler une publication.
@@ -157,7 +157,36 @@ Tests des règles : `pnpm test`.
   par Row Level Security PostgreSQL.
 - Les tarifs du relevé et du diplôme (10 000 / 20 000 Ar) sont des valeurs de départ à confirmer.
 
+## Application mobile Mianara Contrôle
+
+Application Flutter (Android) dans `../mobile`, pour les surveillants et les agents de l'Office. Elle
+utilise la même base, par l'API `src/app/api/mobile/v1` (jeton Bearer, sessions de 30 jours) :
+
+| Route | Rôle |
+| --- | --- |
+| `POST auth/login`, `auth/logout`, `auth/password` | Connexion (surveillant, Office), changement du mot de passe temporaire |
+| `GET me` | Profil, session, clé publique des QR, heure du serveur, règles |
+| `GET sync` | Paquet hors ligne : salles, épreuves, candidats, scans déjà faits |
+| `POST sync` | File de scans du téléphone ; chaque scan est revérifié (accepté, doublon, refusé avec motif) |
+| `GET photos/:id` | Photo du candidat, gardée sur le téléphone |
+| `GET pickups`, `POST pickups/deliver` | Guichet : remise d'un relevé ou d'un diplôme après scan de la convocation |
+
+Le téléphone vérifie la signature du QR sans réseau, applique RG-05 à RG-07 et met les scans en file ;
+l'envoi est automatique toutes les 20 s et au retour du réseau, le paquet est retéléchargé toutes les
+5 min. Un écart d'horloge de plus de 5 min est corrigé à la réception et tracé (`scans.clock_drift_seconds`).
+
+```bash
+pnpm dev --hostname 0.0.0.0                 # serveur joignable depuis l'émulateur ou le téléphone
+cd ../mobile
+flutter run                                 # émulateur : serveur http://10.0.2.2:3000 par défaut
+flutter build apk --release --dart-define=MIANARA_SERVER=https://votre-domaine
+flutter test                                # QR signé et règles de contrôle
+```
+
+L'adresse du serveur se change aussi depuis l'écran de connexion. En production, servir l'API en HTTPS
+et retirer `usesCleartextTraffic` du manifeste Android.
+
 ## Suite
 
-Phase 3 : application mobile de scan (entrée, sorties, fin d'épreuve, fraude, remise au guichet),
-hors ligne avec synchronisation, branchée sur `src/lib/services/scan.ts`.
+- Version iOS de l'application (le code Flutter est prêt, il faut un Mac pour la compiler).
+- Notifications push aux surveillants (changement d'horaire).
