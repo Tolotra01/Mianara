@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, GraduationCap } from "lucide-react";
 import Link from "next/link";
-import { Container, PageHero } from "@/components/ui";
+import { Reveal } from "@/components/Reveal";
+import { Container, PageHero, SectionTitle } from "@/components/ui";
 import { GUIDE_SECTIONS } from "@/lib/guide";
 
 export const metadata: Metadata = {
@@ -9,6 +10,14 @@ export const metadata: Metadata = {
   description:
     "Séries, coefficients, dossier, calendrier, jour J et résultats : le Bac malgache expliqué en images.",
 };
+
+/** Teinte de chaque étape : plaque claire de l'illustration et couleur du jalon. */
+const TINTS = {
+  "bg-mena-soft": { plate: "plate-l", marker: "bg-mena", ring: "ring-mena/30" },
+  "bg-vert-soft": { plate: "plate-s", marker: "bg-vert", ring: "ring-vert/30" },
+  "bg-soleil-soft": { plate: "plate-ose", marker: "bg-soleil", ring: "ring-soleil/30" },
+  "bg-info-soft": { plate: "plate-info", marker: "bg-info", ring: "ring-info/30" },
+} as const;
 
 export default function GuidePage() {
   return (
@@ -20,32 +29,95 @@ export default function GuidePage() {
         lead="Choisis une rubrique. Chaque page va à l'essentiel."
         scene="guide"
       />
-      <Container className="py-16">
-        <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {GUIDE_SECTIONS.map((s, i) => (
-            <li key={s.slug} className={i === 0 ? "sm:col-span-2 lg:col-span-1" : undefined}>
-              <Link
-                href={`/guide/${s.slug}`}
-                className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-raised shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
-              >
-                <div className={`relative px-10 pt-6 ${s.tint}`}>
-                  <span className="absolute top-4 left-4 grid size-10 place-items-center rounded-full bg-raised font-extrabold text-vert shadow-sm">
+
+      {/* Le guide est un parcours : les sept étapes sont des jalons le long
+          d'une même route, de la série au diplôme. La route court à gauche sur
+          mobile, au centre à partir de lg, où les étapes alternent de part et
+          d'autre. */}
+      <section className="py-16 lg:py-24">
+        <Container>
+          <SectionTitle
+            overline="Le parcours"
+            title="De la série au diplôme"
+            lead="Suis les étapes dans l'ordre, ou va directement à celle qui te concerne."
+            center
+          />
+
+          <ol className="relative mx-auto mt-4 max-w-5xl lg:mt-8">
+            {/* La route : un trait en pointillés, du premier jalon à l'arrivée. */}
+            <span
+              aria-hidden
+              className="absolute top-6 bottom-16 left-5 w-1 -translate-x-1/2 rounded-full bg-[repeating-linear-gradient(to_bottom,var(--color-line-strong)_0_10px,transparent_10px_20px)] opacity-60 sm:left-6 lg:bottom-28 lg:left-1/2"
+            />
+
+            {GUIDE_SECTIONS.map((s, i) => {
+              const tint = TINTS[s.tint];
+              const right = i % 2 === 1;
+              return (
+                <li
+                  key={s.slug}
+                  className="relative pb-6 pl-12 sm:pb-8 sm:pl-16 lg:grid lg:grid-cols-2 lg:gap-24 lg:pb-4 lg:pl-0"
+                >
+                  {/* Jalon numéroté, posé sur la route */}
+                  <span
+                    aria-hidden
+                    className={`absolute top-6 left-5 z-10 grid size-10 -translate-x-1/2 place-items-center rounded-full font-mono text-base font-black sm:left-6 sm:size-12 sm:text-lg text-white shadow-md ring-8 ${tint.marker} ${tint.ring} lg:left-1/2`}
+                  >
                     {i + 1}
                   </span>
-                  <s.Art className="transition-transform duration-300 group-hover:scale-105" />
-                </div>
-                <div className="flex flex-1 items-end justify-between gap-4 p-6">
-                  <div>
-                    <h2 className="t-h2 group-hover:text-vert">{s.title}</h2>
-                    <p className="mt-1 text-muted">{s.short}</p>
-                  </div>
-                  <ArrowRight className="size-6 shrink-0 text-vert transition-transform group-hover:translate-x-1" />
-                </div>
-              </Link>
+                  {/* Trait qui relie le jalon à sa carte (lg) */}
+                  <span
+                    aria-hidden
+                    className={`absolute top-12 hidden h-px w-12 bg-line-strong/60 lg:block ${right ? "left-1/2" : "right-1/2"}`}
+                  />
+
+                  <Reveal delay={i * 60} className={right ? "lg:col-start-2" : "lg:col-start-1"}>
+                    <Link
+                      href={`/guide/${s.slug}`}
+                      className={`group flex items-center gap-4 rounded-3xl border border-line bg-raised p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-vert/50 hover:shadow-md sm:gap-6 sm:p-4 ${right ? "" : "lg:flex-row-reverse lg:text-right"}`}
+                    >
+                      <div
+                        className={`plate ${tint.plate} grid w-20 shrink-0 place-items-center overflow-hidden rounded-2xl sm:w-40 xl:w-44`}
+                      >
+                        <s.Art className="w-full transition-transform duration-500 group-hover:scale-110" />
+                      </div>
+                      <div className="min-w-0 flex-1 py-1">
+                        <p className="t-overline text-muted">Étape {i + 1}</p>
+                        <h2 className="mt-1 text-lg leading-snug font-bold transition-colors group-hover:text-vert sm:t-h2">
+                          {s.title}
+                        </h2>
+                        <p className="mt-1 text-sm text-muted sm:text-base">{s.short}</p>
+                        <span
+                          className={`mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-vert ${right ? "" : "lg:flex-row-reverse"}`}
+                        >
+                          Lire l&apos;étape
+                          <ArrowRight
+                            className={`size-4 transition-transform duration-300 group-hover:translate-x-1 ${right ? "" : "lg:rotate-180 lg:group-hover:-translate-x-1"}`}
+                          />
+                        </span>
+                      </div>
+                    </Link>
+                  </Reveal>
+                </li>
+              );
+            })}
+
+            {/* Arrivée */}
+            <li className="relative pt-4 pl-12 sm:pl-16 lg:pl-0 lg:text-center">
+              <span
+                aria-hidden
+                className="absolute top-4 left-5 z-10 grid size-12 sm:left-6 sm:size-14 -translate-x-1/2 place-items-center rounded-full bg-soleil text-on-vert shadow-md ring-8 ring-soleil/25 lg:left-1/2"
+              >
+                <GraduationCap className="size-7" />
+              </span>
+              <div className="pt-1 lg:pt-20">
+                <p className="t-h3">Ton Bacc en poche</p>
+                <p className="mt-1 text-muted">Et une nouvelle route qui commence.</p>
+              </div>
             </li>
-          ))}
-        </ol>
-      </Container>
+          </ol>
+        </Container>
+      </section>
     </>
   );
 }

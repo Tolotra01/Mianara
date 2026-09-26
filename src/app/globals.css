@@ -306,6 +306,9 @@
 }
 /* Plaque neutre : actualités et portrait de l'assistant, dont la teinte est
    portée par l'illustration elle-même. */
+.plate-info {
+  background-image: linear-gradient(152deg, #f3f7fd 0%, #e8f0fa 100%);
+}
 .plate-plain {
   background-image: linear-gradient(152deg, #fbfaf4 0%, #f1efe6 100%);
 }
