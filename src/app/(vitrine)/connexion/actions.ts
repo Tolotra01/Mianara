@@ -8,6 +8,7 @@ import { examSessions } from "@/db/schema";
 import { candidates, users } from "@/db/schema-gestion";
 import { audit } from "@/lib/audit";
 import { checkPassword, createSession, HOME_BY_ROLE, LOCK_MINUTES, MAX_FAILED_ATTEMPTS } from "@/lib/auth";
+import { isCandidateAccessClosed } from "@/lib/candidate-access";
 
 export type LoginState = { message: string } | null;
 
@@ -77,14 +78,7 @@ export async function login(_prev: LoginState, form: FormData): Promise<LoginSta
       .where(eq(candidates.userId, user.id))
       .limit(1);
     // RG-15 : compte fermé quelques semaines après un ajournement ou une exclusion.
-    const closed =
-      c?.status === "disabled" ||
-      (c &&
-        !c.reactivatedAt &&
-        ["failed", "fraud"].includes(c.status) &&
-        c.publishAt &&
-        Date.now() > c.publishAt.getTime() + c.days * 86400000);
-    if (closed)
+    if (c && isCandidateAccessClosed(c))
       return { message: "Votre compte est désactivé. L'Office du Bac peut le réactiver sur demande." };
   }
 

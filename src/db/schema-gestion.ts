@@ -6,8 +6,10 @@
  * Les droits sont appliqués côté serveur (src/lib/auth.ts) : chaque requête est
  * filtrée par rôle et par Office.
  */
+import { sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   customType,
   date,
   index,
@@ -137,6 +139,31 @@ export const authSessions = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index().on(t.userId)],
+);
+
+/** Sessions de révision synchronisées par l'application mobile (écritures immuables et idempotentes). */
+export const mobileRevisionSessions = pgTable(
+  "mobile_revision_sessions",
+  {
+    clientId: uuid("client_id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    candidateId: uuid("candidate_id")
+      .notNull()
+      .references(() => candidates.id, { onDelete: "cascade" }),
+    subjectId: integer("subject_id")
+      .notNull()
+      .references(() => subjects.id),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
+    endedAt: timestamp("ended_at", { withTimezone: true }).notNull(),
+    progress: smallint("progress").notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    check("mobile_revision_sessions_progress_check", sql`${t.progress} between 0 and 100`),
+    index().on(t.candidateId, t.receivedAt),
+  ],
 );
 
 /* ---------- Centres et salles ---------- */
