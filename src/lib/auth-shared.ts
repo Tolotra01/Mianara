@@ -1,0 +1,9 @@
+/** Types et libellés partagés entre serveur et navigateur (sans dépendance serveur). */
+export type Role = "admin" | "office" | "supervisor" | "candidate";
+
+export const ROLE_LABEL: Record<Role, string> = {
+  admin: "Administration",
+  office: "Office du Bac",
+  supervisor: "Surveillant",
+  candidate: "Candidat",
+};

@@ -1,12 +1,28 @@
 import "./network";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "./schema";
+import * as vitrine from "./schema";
+import * as gestion from "./schema-gestion";
+
+const schema = { ...vitrine, ...gestion };
 
 const url = process.env.DATABASE_URL;
 
-// `prepare: false` : compatible avec le pooler de Supabase (mode transaction) et avec Neon.
-const client = url ? postgres(url, { prepare: false, max: 5, connect_timeout: 30 }) : null;
+// Une seule connexion par processus, même quand le code est rechargé en développement.
+const globalForDb = globalThis as unknown as { mianaraSql?: postgres.Sql };
 
-/** `null` quand DATABASE_URL n'est pas défini : les données viennent alors de src/content/bac.ts. */
+// `prepare: false` : compatible avec le pooler de Supabase (mode transaction) et avec Neon.
+const client = url
+  ? (globalForDb.mianaraSql ??= postgres(url, { prepare: false, max: 10, connect_timeout: 30 }))
+  : null;
+
+/** `null` quand DATABASE_URL n'est pas défini : la vitrine lit alors src/content/bac.ts. */
 export const db = client ? drizzle(client, { schema }) : null;
+
+export type Db = NonNullable<typeof db>;
+
+/** La gestion (comptes, candidats, épreuves…) n'a pas de repli : la base est obligatoire. */
+export function requireDb(): Db {
+  if (!db) throw new Error("DATABASE_URL manquant : la gestion du Bac nécessite une base PostgreSQL.");
+  return db;
+}

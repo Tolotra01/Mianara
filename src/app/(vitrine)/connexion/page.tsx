@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Building, GraduationCap, School, ShieldCheck } from "lucide-react";
+import { redirect } from "next/navigation";
 import { LoginArt } from "@/components/illustrations/Spots";
+import { getCurrentUser, HOME_BY_ROLE } from "@/lib/auth";
 import { Container } from "@/components/ui";
 import { LoginForm } from "./LoginForm";
 
@@ -13,7 +15,11 @@ const SPACES = [
   { icon: ShieldCheck, label: "Administration" },
 ];
 
-export default function ConnexionPage() {
+export default async function ConnexionPage({ searchParams }: PageProps<"/connexion">) {
+  const user = await getCurrentUser();
+  if (user) redirect(user.mustChangePassword ? "/compte/mot-de-passe" : HOME_BY_ROLE[user.role]);
+  const { suite } = await searchParams;
+
   return (
     <Container className="py-12">
       <div className="grid overflow-hidden rounded-4xl border border-line bg-raised shadow-md md:grid-cols-2">
@@ -42,7 +48,7 @@ export default function ConnexionPage() {
           <h2 className="t-h2">Connexion</h2>
           <p className="mt-1 text-muted">Avec les identifiants de votre convocation.</p>
           <div className="mt-8">
-            <LoginForm />
+            <LoginForm suite={typeof suite === "string" ? suite : undefined} />
           </div>
           <div className="mt-8 rounded-2xl bg-sunken p-5">
             <p className="font-bold">Pas encore de compte ?</p>

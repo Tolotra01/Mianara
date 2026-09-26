@@ -1,15 +1,24 @@
 "use client";
 
-import { Eye, EyeOff, Info, LogIn } from "lucide-react";
-import { useActionState, useState } from "react";
+import { CircleAlert, Eye, EyeOff, LogIn } from "lucide-react";
+import { startTransition, useActionState, useState } from "react";
 import { login, type LoginState } from "./actions";
 
-export function LoginForm() {
+export function LoginForm({ suite }: { suite?: string }) {
   const [state, action, pending] = useActionState<LoginState, FormData>(login, null);
   const [show, setShow] = useState(false);
 
   return (
-    <form action={action} className="space-y-5">
+    <form
+      className="space-y-5"
+      onSubmit={(e) => {
+        // Envoi manuel : l'identifiant reste saisi après une erreur.
+        e.preventDefault();
+        const data = new FormData(e.currentTarget);
+        startTransition(() => action(data));
+      }}
+    >
+      {suite && <input type="hidden" name="suite" value={suite} />}
       <div>
         <label htmlFor="identifiant" className="text-sm font-semibold">
           Matricule ou identifiant
@@ -18,8 +27,9 @@ export function LoginForm() {
           id="identifiant"
           name="identifiant"
           autoComplete="username"
-          placeholder="BAC2027-S-04587"
-          className="mt-1.5 h-12 w-full rounded-md border border-line-strong bg-raised px-3 font-mono font-semibold tracking-wide text-ink placeholder:font-normal placeholder:text-muted"
+          required
+          placeholder="BAC2027-S-00001"
+          className="field-input mt-1.5 h-12 font-mono font-semibold tracking-wide placeholder:font-normal"
         />
       </div>
       <div>
@@ -32,7 +42,8 @@ export function LoginForm() {
             name="password"
             type={show ? "text" : "password"}
             autoComplete="current-password"
-            className="h-12 w-full rounded-md border border-line-strong bg-raised px-3 pr-12 text-ink"
+            required
+            className="field-input h-12 pr-12"
           />
           <button
             type="button"
@@ -44,19 +55,30 @@ export function LoginForm() {
           </button>
         </div>
       </div>
+      {state && (
+        <p
+          role="alert"
+          className="anim-scale flex items-start gap-2 rounded-xl bg-danger-soft p-3 text-sm font-semibold text-danger"
+        >
+          <CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+          {state.message}
+        </p>
+      )}
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-vert font-semibold text-on-vert transition-colors hover:bg-vert-hover disabled:opacity-60"
+        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-vert font-semibold text-on-vert transition-all hover:bg-vert-hover active:scale-[0.99] disabled:opacity-60"
       >
-        <LogIn className="size-5" /> Se connecter
+        {pending ? (
+          <span
+            className="size-5 animate-spin rounded-full border-2 border-current border-t-transparent"
+            aria-hidden
+          />
+        ) : (
+          <LogIn className="size-5" />
+        )}
+        Se connecter
       </button>
-      {state && (
-        <p role="status" className="flex items-start gap-2 rounded-2xl bg-info-soft p-4 text-info">
-          <Info className="mt-0.5 size-5 shrink-0" aria-hidden />
-          <span className="text-ink">{state.message}</span>
-        </p>
-      )}
     </form>
   );
 }

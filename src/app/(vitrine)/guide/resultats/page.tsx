@@ -107,6 +107,11 @@ export default async function ResultatsPage() {
             </a>
           ))}
         </div>
+        <p className="mt-4">
+          <Link href="/resultats" className="font-semibold text-vert underline">
+            Rechercher un résultat sur Mianara
+          </Link>
+        </p>
         <p className="mt-3 text-muted">
           Les universités de chaque province publient aussi les listes d&apos;admis, au fil des corrections.
         </p>
