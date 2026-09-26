@@ -1,26 +1,315 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------
+   Tokens de la charte graphique Mianara v2 (tokens-couleurs-typo.json)
+   Clair = référence ; sombre via prefers-color-scheme ou data-theme.
+   ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --surface: #f8f6f1;
+  --surface-raised: #ffffff;
+  --surface-sunken: #efebe3;
+  --line: #dce3de;
+  --line-strong: #7a8b83;
+  --ink: #12241d;
+  --ink-muted: #4f5e57;
+  --vert: #0e6b4f;
+  --vert-hover: #0a4a37;
+  --vert-soft: #e6f2ec;
+  --on-vert: #ffffff;
+  --tany-mena: #c2492b;
+  --tany-mena-soft: #fbeae4;
+  --soleil: #f2b33d;
+  --soleil-soft: #fef4dc;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --warning: #8a5a00;
+  --warning-soft: #fef4dc;
+  --info: #1d5fa8;
+  --info-soft: #e8f0fa;
+  --focus-ring: #1d5fa8;
+  --shadow-sm: 0 1px 2px rgba(18, 36, 29, 0.08);
+  --shadow-md: 0 6px 20px rgba(18, 36, 29, 0.12);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Décors des illustrations (studio « papier », lumière douce) */
+  --ill-sky: #fef4dc;
+  --ill-sky-2: #f8f6f1;
+  --ill-hill-far: #cfe5d8;
+  --ill-hill-mid: #8fc4a6;
+  --ill-hill-near: #3e9b72;
+  --ill-paddy: #a8d5a2;
+  --ill-laterite: #d4623b;
+  --ill-laterite-light: #eba27f;
+  --ill-cloud: #ffffff;
+
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --surface: #0f1a16;
+    --surface-raised: #16241f;
+    --surface-sunken: #0b1411;
+    --line: #2a3a33;
+    --line-strong: #6b7f76;
+    --ink: #eef3ef;
+    --ink-muted: #a7b5ae;
+    --vert: #4cc08f;
+    --vert-hover: #7ad3ac;
+    --vert-soft: #123a2c;
+    --on-vert: #0f1a16;
+    --tany-mena: #f08a6c;
+    --tany-mena-soft: #3a1d14;
+    --soleil: #f5c35f;
+    --soleil-soft: #3a2c0e;
+    --danger: #f97066;
+    --danger-soft: #3a1614;
+    --warning: #f5c35f;
+    --warning-soft: #3a2c0e;
+    --info: #7db4f0;
+    --info-soft: #12263d;
+    --focus-ring: #7db4f0;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
+    --ill-sky: #1e3a33;
+    --ill-sky-2: #16241f;
+    --ill-hill-far: #24493c;
+    --ill-hill-mid: #2d6a50;
+    --ill-hill-near: #2f8a63;
+    --ill-paddy: #4f9a6a;
+    --ill-laterite: #b9532f;
+    --ill-laterite-light: #c77a58;
+    --ill-cloud: #d9e6df;
+    color-scheme: dark;
   }
 }
 
+:root[data-theme="dark"] {
+  --surface: #0f1a16;
+  --surface-raised: #16241f;
+  --surface-sunken: #0b1411;
+  --line: #2a3a33;
+  --line-strong: #6b7f76;
+  --ink: #eef3ef;
+  --ink-muted: #a7b5ae;
+  --vert: #4cc08f;
+  --vert-hover: #7ad3ac;
+  --vert-soft: #123a2c;
+  --on-vert: #0f1a16;
+  --tany-mena: #f08a6c;
+  --tany-mena-soft: #3a1d14;
+  --soleil: #f5c35f;
+  --soleil-soft: #3a2c0e;
+  --danger: #f97066;
+  --danger-soft: #3a1614;
+  --warning: #f5c35f;
+  --warning-soft: #3a2c0e;
+  --info: #7db4f0;
+  --info-soft: #12263d;
+  --focus-ring: #7db4f0;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
+  --ill-sky: #1e3a33;
+  --ill-sky-2: #16241f;
+  --ill-hill-far: #24493c;
+  --ill-hill-mid: #2d6a50;
+  --ill-hill-near: #2f8a63;
+  --ill-paddy: #4f9a6a;
+  --ill-laterite: #b9532f;
+  --ill-laterite-light: #c77a58;
+  --ill-cloud: #d9e6df;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-raised: var(--surface-raised);
+  --color-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-muted: var(--ink-muted);
+  --color-vert: var(--vert);
+  --color-vert-hover: var(--vert-hover);
+  --color-vert-soft: var(--vert-soft);
+  --color-on-vert: var(--on-vert);
+  --color-mena: var(--tany-mena);
+  --color-mena-soft: var(--tany-mena-soft);
+  --color-soleil: var(--soleil);
+  --color-soleil-soft: var(--soleil-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --font-sans: var(--font-jakarta), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, Menlo, Consolas, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+}
+
+/* ---------- Base ---------- */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Échelle typographique de la charte */
+.t-display {
+  font-size: clamp(36px, 5vw, 48px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.t-h1 {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.t-h2 {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+}
+.t-h3 {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 700;
+}
+.t-body-lg {
+  font-size: 18px;
+  line-height: 28px;
+}
+.t-overline {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Bandeau lamba (8 à 24 px, jamais derrière du texte) */
+.lamba {
+  height: 12px;
+  background: url("/brand/motif-lamba.svg") repeat-x left center / auto 100%;
+}
+
+/* ------------------------------------------------------------------
+   Animations des illustrations — discrètes (charte : 150–200 ms pour
+   l'interface, mouvements lents pour les décors). Coupées si
+   l'utilisateur préfère réduire les animations.
+   ------------------------------------------------------------------ */
+/* Seuls les éléments animés tournent autour de leur propre boîte ; les
+   attributs transform des tracés gardent l'origine du repère SVG. */
+svg [class*="a-"] {
+  transform-box: fill-box;
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.5px); }
+}
+/* Déplacements en unités SVG : --from / --to définis sur l'élément. */
+@keyframes travel {
+  from { transform: translateX(var(--from, -200px)); }
+  to { transform: translateX(var(--to, 900px)); }
+}
+@keyframes sun-glow {
+  0%, 100% { transform: scale(1); opacity: 0.35; }
+  50% { transform: scale(1.08); opacity: 0.55; }
+}
+@keyframes wave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  15%, 45% { transform: rotate(-16deg); }
+  30% { transform: rotate(8deg); }
+}
+@keyframes blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+@keyframes wheel {
+  to { transform: rotate(360deg); }
+}
+@keyframes dash {
+  to { stroke-dashoffset: -40; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes typing {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-3px); }
+}
+
+.a-sway { animation: sway 6s ease-in-out infinite; transform-origin: 50% 100%; }
+.a-sway-slow { animation: sway 9s ease-in-out infinite; transform-origin: 50% 100%; }
+.a-float { animation: float 5s ease-in-out infinite; }
+.a-bob { animation: bob 3s ease-in-out infinite; }
+.a-travel { animation: travel var(--dur, 60s) linear infinite; animation-delay: var(--delay, 0s); }
+.a-glow { animation: sun-glow 6s ease-in-out infinite; transform-origin: center; }
+.a-wave { animation: wave 3.2s ease-in-out infinite; transform-origin: 50% 8%; }
+.a-blink { animation: blink 5s infinite; transform-origin: center; }
+.a-wheel { animation: wheel 1s linear infinite; transform-origin: center; }
+.a-dash { animation: dash 2.4s linear infinite; }
+.a-pop { animation: pop-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.a-typing { animation: typing 1.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Couleurs du symbole (négatif automatique en thème sombre) */
+:root {
+  --logo-feuille: #0e6b4f;
+  --logo-soleil: #f2b33d;
+  --logo-livre: #c2492b;
+  --logo-tranche: #8f331d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --logo-feuille: #ffffff;
+    --logo-livre: #f08a6c;
+    --logo-tranche: #c2492b;
+  }
+}
+:root[data-theme="dark"] {
+  --logo-feuille: #ffffff;
+  --logo-livre: #f08a6c;
+  --logo-tranche: #c2492b;
 }
