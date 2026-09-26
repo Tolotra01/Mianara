@@ -36,9 +36,25 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------- Héros ---------- */}
-      <section className="overflow-hidden bg-[#1E3A33]">
-        <Container className="grid items-center gap-8 pt-10 pb-16 lg:grid-cols-[5fr_7fr] lg:pt-16">
-          <div className="a-pop">
+      <section className="hero-band relative isolate overflow-hidden bg-[#1E3A33]">
+        {/* Panorama : colline lointaine, rizières en terrasses, route de latérite
+            et ravinala couvrent toute la largeur. Bande basse sur mobile pour
+            laisser la place au titre, plein cadre à partir de lg. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[240px] sm:h-[300px] lg:inset-0 lg:h-auto">
+          <HeroScene />
+        </div>
+        {/* Voile de lisibilité : le titre, le chapô et les boutons se posent sur
+            le calme de la partie gauche. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 hidden lg:block"
+          style={{
+            background:
+              "linear-gradient(96deg, rgba(9,26,21,0.95) 0%, rgba(9,26,21,0.88) 30%, rgba(9,26,21,0.55) 52%, rgba(9,26,21,0.18) 70%, rgba(9,26,21,0) 86%)",
+          }}
+        />
+        <Container className="relative pt-10 pb-[280px] sm:pb-[340px] lg:flex lg:min-h-[620px] lg:items-center lg:py-16 lg:pb-16">
+          <div className="a-pop max-w-xl">
             <p className="t-overline inline-flex rounded-full bg-soleil-soft px-3 py-1 text-warning">
               {t.hero.overline}
             </p>
@@ -52,12 +68,6 @@ export default async function HomePage() {
                 <MessageCircleQuestion className="size-5" /> {t.hero.ctaAssistant}
               </AskButton>
             </div>
-          </div>
-          <div
-            className="a-pop overflow-hidden border border-line"
-            style={{ animationDelay: "0.1s" }}
-          >
-            <HeroScene />
           </div>
         </Container>
       </section>

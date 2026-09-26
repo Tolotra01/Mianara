@@ -12,78 +12,106 @@ import {
 } from "./parts";
 
 /**
- * Scène d'accueil : matin sur les Hautes Terres. Deux élèves en uniforme
- * partent vers le Bac ; un taxi-brousse passe sur la route de latérite.
+ * Scène d'accueil, en panorama : matin sur les Hautes Terres. Le relief —
+ * collines lointaines, rizières en terrasses, route de latérite — et les
+ * ravinala couvrent toute la largeur ; le village, les deux élèves et le
+ * taxi-brousse occupent la moitié droite, le titre la moitié gauche.
+ *
+ * Le viewBox est large (1440 × 540) et le svg est monté en `slice` : le décor
+ * est recadré par son conteneur plutôt que déformé. `YMax` ancre le premier
+ * plan (route, élèves) pour que le ciel soit la seule partie rognée quand la
+ * fenêtre est plus large que 2,67:1.
  */
-export function HeroScene({ greeting = "Salama !" }: { greeting?: string }) {
+export function HeroScene({ greeting = "Salama !", className }: { greeting?: string; className?: string }) {
   return (
-    <svg viewBox="0 25 700 520" className="ill h-auto w-full" role="img" aria-labelledby="hero-title">
+    <svg
+      viewBox="0 83 1440 540"
+      preserveAspectRatio="xMidYMax slice"
+      className={`ill h-full w-full ${className ?? ""}`}
+      role="img"
+      aria-labelledby="hero-title"
+    >
       <title id="hero-title">
-        Deux élèves en uniforme sur les Hautes Terres, sous un soleil levant attendent un
-        taxi-brousse.
+        Matin sur les Hautes Terres : collines lointaines, rizières en terrasses et route de
+        latérite bordée de ravinala ; deux élèves en uniforme attendent un taxi-brousse.
       </title>
 
-      <rect width="720" height="520" fill="var(--ill-sky)" />
+      <rect width="1440" height="540" fill="var(--ill-sky)" />
 
-      {/* Soleil levant */}
-      <circle cx="470" cy="230" r="135" fill={P.soleil} className="a-glow" />
-      <circle cx="470" cy="230" r="92" fill={P.soleil} />
+      {/* Soleil levant, dégagé vers la droite pour laisser le titre au calme */}
+      <circle cx="1218" cy="196" r="152" fill={P.soleil} className="a-glow" />
+      <circle cx="1218" cy="196" r="104" fill={P.soleil} />
 
       {/* Nuages et oiseaux */}
       <Cloud
         x={0}
-        y={90}
-        scale={1.1}
+        y={74}
+        scale={1.15}
         className="a-travel"
-        style={{ "--from": "-120px", "--to": "840px", "--dur": "70s" } as React.CSSProperties}
+        style={{ "--from": "-260px", "--to": "1720px", "--dur": "80s" } as React.CSSProperties}
       />
       <Cloud
         x={0}
-        y={150}
-        scale={0.7}
+        y={142}
+        scale={0.8}
         className="a-travel"
         style={
-          { "--from": "-120px", "--to": "840px", "--dur": "95s", "--delay": "-50s" } as React.CSSProperties
+          { "--from": "-260px", "--to": "1720px", "--dur": "105s", "--delay": "-55s" } as React.CSSProperties
+        }
+      />
+      <Cloud
+        x={0}
+        y={192}
+        scale={0.62}
+        className="a-travel"
+        style={
+          { "--from": "-260px", "--to": "1720px", "--dur": "125s", "--delay": "-92s" } as React.CSSProperties
         }
       />
       <g className="a-float">
-        <Bird x={560} y={110} />
-        <Bird x={585} y={128} scale={0.7} />
-        <Bird x={538} y={132} scale={0.6} />
+        <Bird x={1128} y={96} />
+        <Bird x={1166} y={118} scale={0.7} />
+        <Bird x={1096} y={124} scale={0.6} />
       </g>
 
-      {/* Collines lointaines */}
+      {/* Collines lointaines, de bout en bout */}
       <path
-        d="M0 300 C100 250 180 272 260 248 C360 218 430 262 520 242 C600 224 660 250 720 236 L720 520 L0 520 Z"
+        d="M0 268 C160 226 300 250 440 224 C580 198 700 244 840 222 C980 200 1120 232 1260 212 C1340 200 1400 216 1440 208 L1440 540 L0 540 Z"
         fill="var(--ill-hill-far)"
       />
 
-      {/* Rizières en terrasses */}
+      {/* Rizières en terrasses, de bout en bout */}
       <path
-        d="M0 340 C120 298 220 326 330 300 C450 272 560 318 720 290 L720 520 L0 520 Z"
+        d="M0 312 C180 274 340 302 520 278 C700 254 860 298 1040 272 C1200 248 1340 286 1440 266 L1440 540 L0 540 Z"
         fill="var(--ill-hill-mid)"
       />
       <g stroke="var(--ill-paddy)" strokeWidth="5" fill="none" strokeLinecap="round" opacity="0.9">
-        <path d="M20 352 C110 322 200 344 300 322" />
-        <path d="M30 372 C120 344 210 364 320 342" />
-        <path d="M40 390 C130 366 220 384 330 362" />
+        <path d="M0 330 C180 300 340 322 520 300 C700 278 860 314 1040 292 C1200 272 1340 302 1440 288" />
+        <path d="M0 352 C180 324 340 344 520 322 C700 302 860 336 1040 314 C1200 296 1340 324 1440 310" />
+        <path d="M0 372 C180 348 340 364 520 344 C700 326 860 356 1040 336 C1200 320 1340 344 1440 332" />
+        <path d="M0 390 C180 370 340 382 520 364 C700 348 860 374 1040 356 C1200 342 1340 362 1440 352" />
       </g>
 
-      {/* Village */}
-      <Jacaranda x={440} y={312} scale={0.9} />
-      <HighlandHouse x={480} y={318} />
-      <HighlandHouse x={590} y={304} scale={0.72} />
-      <Ravinala x={672} y={320} scale={0.75} />
-      <Ravinala x={395} y={330} scale={0.55} />
-      <Ravinala x={700} y={400} scale={0.55} />
+      {/* Village sur la crête des rizières */}
+      <Jacaranda x={690} y={302} scale={0.95} />
+      <HighlandHouse x={726} y={308} />
+      <HighlandHouse x={826} y={296} scale={0.72} />
 
-      {/* Route de latérite */}
+      {/* Ravinala dispersés sur toute la largeur */}
+      <Ravinala x={620} y={452} scale={0.5} />
+      <Ravinala x={866} y={446} scale={0.46} />
+      <Ravinala x={1156} y={462} scale={0.7} />
+      <Ravinala x={436} y={466} scale={0.56} />
+      <Ravinala x={175} y={502} scale={1.25} />
+      <Ravinala x={1285} y={498} scale={1.2} />
+
+      {/* Route de latérite, de bout en bout */}
       <path
-        d="M0 404 C240 396 480 396 720 402 L720 454 C480 448 240 448 0 454 Z"
+        d="M0 398 C300 388 640 392 940 386 C1160 382 1320 388 1440 384 L1440 446 C1320 450 1160 446 940 450 C640 454 300 450 0 456 Z"
         fill="var(--ill-laterite-light)"
       />
       <path
-        d="M0 430 C240 424 480 424 720 428"
+        d="M0 424 C300 416 640 420 940 414 C1160 410 1320 416 1440 412"
         stroke={P.paper}
         strokeWidth="2.5"
         strokeDasharray="18 16"
@@ -95,16 +123,18 @@ export function HeroScene({ greeting = "Salama !" }: { greeting?: string }) {
         y={442}
         scale={1.05}
         className="a-travel"
-        style={{ "--from": "-120px", "--to": "860px", "--dur": "22s" } as React.CSSProperties}
+        style={{ "--from": "-200px", "--to": "1680px", "--dur": "26s" } as React.CSSProperties}
       />
 
       {/* Premier plan */}
-      <path d="M0 452 C240 446 480 446 720 452 L720 520 L0 520 Z" fill="var(--ill-hill-near)" />
-      <Ravinala x={92} y={500} scale={1.45} />
+      <path
+        d="M0 452 C300 446 640 450 940 444 C1160 440 1320 446 1440 442 L1440 540 L0 540 Z"
+        fill="var(--ill-hill-near)"
+      />
 
       <Student
-        x={322}
-        y={512}
+        x={980}
+        y={538}
         scale={1.5}
         hair="braids"
         bottom="skirt"
@@ -113,8 +143,8 @@ export function HeroScene({ greeting = "Salama !" }: { greeting?: string }) {
         className="a-bob"
       />
       <Student
-        x={432}
-        y={514}
+        x={1092}
+        y={540}
         scale={1.56}
         hair="short"
         bottom="pants"
@@ -125,11 +155,11 @@ export function HeroScene({ greeting = "Salama !" }: { greeting?: string }) {
         style={{ animationDelay: "-1.4s" }}
       />
 
-      <Bubble x={270} y={262} width={96} className="a-float">
+      <Bubble x={890} y={318} width={96} className="a-float">
         {greeting}
       </Bubble>
-      <Sparkle x={520} y={352} r={10} className="a-float" />
-      <Sparkle x={222} y={330} r={7} fill={P.mena} className="a-float" />
+      <Sparkle x={944} y={356} r={9} className="a-float" />
+      <Sparkle x={1268} y={332} r={7} fill={P.mena} className="a-float" />
     </svg>
   );
 }

@@ -120,6 +120,32 @@
   color-scheme: dark;
 }
 
+/* Hero d'accueil : bandeau de marque volontairement sombre dans les deux
+   thèmes. La scène, le dégradé de lisibilité et les boutons partagent la même
+   palette — sans cela, un voile sombre obscurcirait un ciel crème en thème
+   clair et le titre y perdrait son contraste. */
+.hero-band {
+  --ill-sky: #1e3a33;
+  --ill-sky-2: #16241f;
+  --ill-hill-far: #24493c;
+  --ill-hill-mid: #2d6a50;
+  --ill-hill-near: #2f8a63;
+  --ill-paddy: #4f9a6a;
+  --ill-laterite: #b9532f;
+  --ill-laterite-light: #c77a58;
+  --ill-cloud: #d9e6df;
+  --ink: #eef3ef;
+  --ink-muted: #a7b5ae;
+  --vert: #4cc08f;
+  --vert-hover: #7ad3ac;
+  --on-vert: #0f1a16;
+  --surface-raised: #16241f;
+  --line-strong: #6b7f76;
+  --soleil-soft: rgb(242 179 61 / 0.18);
+  --warning: #f5c35f;
+  color-scheme: dark;
+}
+
 @theme inline {
   --color-surface: var(--surface);
   --color-raised: var(--surface-raised);
