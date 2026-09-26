@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { and, eq, sql } from "drizzle-orm";
 import { Clock, PartyPopper, Search, SearchX } from "lucide-react";
-import { ResultatsArt } from "@/components/illustrations/Spots";
 import { Container, PageHero } from "@/components/ui";
 import { db } from "@/db";
 import { examSessions } from "@/db/schema";
@@ -64,8 +63,9 @@ export default async function ResultatsPublicPage({ searchParams }: PageProps<"/
       <PageHero
         overline={`Bac ${session?.year ?? ""}`}
         title="Résultats du Bac"
+        accent="du Bac"
         lead="Recherchez par matricule, ou par nom, prénom et date de naissance."
-        art={<ResultatsArt />}
+        scene="resultats"
       />
       <Container className="py-12">
         {!published ? (

@@ -3,7 +3,7 @@ import { ArrowRight, Briefcase, Check, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { CoefBars } from "@/components/CoefBars";
 import { GuideNav } from "@/components/GuideNav";
-import { SERIE_ART, SerieLArt } from "@/components/illustrations/Spots";
+import { SERIE_ART } from "@/components/illustrations/Spots";
 import { Breadcrumb, Container, PageHero, SourceLink } from "@/components/ui";
 import { SOURCES, TECH_SERIES } from "@/content/bac";
 import { getBacData } from "@/lib/data";
@@ -24,8 +24,9 @@ export default async function SeriesPage() {
       <PageHero
         overline="Guide · 1"
         title="Trois séries, trois chemins"
+        accent="trois chemins"
         lead="Dès le Bacc 2027, tu choisis entre L, S et OSE. Une seule série par an."
-        art={<SerieLArt />}
+        scene="series"
       >
         {/* ✅ CORRECTION 1 : pastilles scrollables horizontalement sur mobile,
             wrap normal dès sm. Évite le débordement si les 3 séries + padding
@@ -50,9 +51,7 @@ export default async function SeriesPage() {
         <div className="mt-4 flex items-start gap-3 rounded-2xl bg-info-soft p-4 text-info sm:mt-5 sm:gap-4 sm:p-5">
           <TriangleAlert className="mt-0.5 size-5 shrink-0" aria-hidden />
           <div className="min-w-0">
-            <p className="text-sm font-bold sm:text-base">
-              Les séries A, C et D disparaissent au Bacc 2027.
-            </p>
+            <p className="text-sm font-bold sm:text-base">Les séries A, C et D disparaissent au Bacc 2027.</p>
             <p className="mt-1 text-sm text-ink sm:text-base">
               L remplace A1 et A2, S remplace C et D. Des mesures de transition protègent les élèves de
               l&apos;ancien système.

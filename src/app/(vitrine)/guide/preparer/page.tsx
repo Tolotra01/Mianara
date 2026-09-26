@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { CalendarHeart, MessageCircleQuestion } from "lucide-react";
 import { AskButton } from "@/components/assistant/AskButton";
 import { GuideNav } from "@/components/GuideNav";
-import { PreparerArt } from "@/components/illustrations/Spots";
 import { TipGrid } from "@/components/TipGrid";
 import { Breadcrumb, buttonClass, Container, PageHero } from "@/components/ui";
 import { getBacData } from "@/lib/data";
@@ -37,8 +36,9 @@ export default async function PreparerPage() {
       <PageHero
         overline="Guide · 5"
         title="Réviser malin, pas épuisé"
+        accent="Réviser malin,"
         lead="Pas de cours ici : une méthode, et un assistant pour t'aider à l'appliquer."
-        art={<PreparerArt />}
+        scene="preparer"
       />
       <Container className="pt-8">
         <Breadcrumb items={[{ href: "/guide", label: "Guide" }, { label: "Bien se préparer" }]} />

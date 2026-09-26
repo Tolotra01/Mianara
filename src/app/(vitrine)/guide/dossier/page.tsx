@@ -3,7 +3,6 @@ import { Building2, Clock, Info } from "lucide-react";
 import { DossierChecklist } from "@/components/DossierChecklist";
 import { GuideNav } from "@/components/GuideNav";
 import { Icon } from "@/components/Icon";
-import { DossierArt } from "@/components/illustrations/Spots";
 import { Breadcrumb, Container, PageHero, SourceLink, ToConfirm } from "@/components/ui";
 import { UNIVERSITIES } from "@/content/bac";
 import { getBacData } from "@/lib/data";
@@ -26,8 +25,9 @@ export default async function DossierPage() {
       <PageHero
         overline="Guide · 3"
         title="Votre dossier, pièce par pièce"
+        accent="pièce par pièce"
         lead="Cochez au fur et à mesure. Votre liste reste enregistrée sur cet appareil."
-        art={<DossierArt />}
+        scene="dossier"
       />
       <Container className="pt-8">
         <Breadcrumb items={[{ href: "/guide", label: "Guide" }, { label: "Le dossier" }]} />
@@ -88,8 +88,8 @@ export default async function DossierPage() {
           <div className="rounded-3xl border border-line bg-raised p-6 shadow-sm">
             <p className="t-h3">Candidat libre</p>
             <p className="mt-2 text-muted">
-              À l&apos;Office du Bacc de l&apos;université de votre province. Vous passez l&apos;examen dans le
-              secteur où vous habitez.
+              À l&apos;Office du Bacc de l&apos;université de votre province. Vous passez l&apos;examen dans
+              le secteur où vous habitez.
             </p>
             <ul className="mt-4 flex flex-wrap gap-2">
               {UNIVERSITIES.map((u) => (

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { NewsHeroArt } from "@/components/illustrations/Spots";
 import { NewsCard } from "@/components/NewsCard";
 import { Container, PageHero } from "@/components/ui";
 import { getNews } from "@/lib/data";
@@ -37,8 +36,9 @@ export default async function ActualitesPage({ searchParams }: PageProps<"/actua
       <PageHero
         overline="Actualités"
         title="Les nouvelles du Bac"
+        accent="du Bac"
         lead="Chaque information est datée et renvoie à sa source."
-        art={<NewsHeroArt />}
+        scene="actualites"
       />
       <Container className="py-12">
         <nav aria-label="Catégories" className="flex flex-wrap gap-2">

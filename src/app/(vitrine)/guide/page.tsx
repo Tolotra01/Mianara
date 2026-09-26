@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { GuideArt } from "@/components/illustrations/Spots";
 import { Container, PageHero } from "@/components/ui";
 import { GUIDE_SECTIONS } from "@/lib/guide";
 
@@ -17,8 +16,9 @@ export default function GuidePage() {
       <PageHero
         overline="Guide du Bac"
         title="Tout le Bac, en sept étapes"
+        accent="en sept étapes"
         lead="Choisis une rubrique. Chaque page va à l'essentiel."
-        art={<GuideArt />}
+        scene="guide"
       />
       <Container className="py-16">
         <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Fragment } from "react";
 import { ClipboardPen, GraduationCap, type LucideIcon, MapPin, PencilLine, Sparkles } from "lucide-react";
 import { GuideNav } from "@/components/GuideNav";
-import { CalendrierArt } from "@/components/illustrations/Spots";
 import { Breadcrumb, Container, PageHero, ToConfirm } from "@/components/ui";
 import { getBacData } from "@/lib/data";
 
@@ -30,8 +29,9 @@ export default async function CalendrierPage() {
       <PageHero
         overline="Guide · 4"
         title="Les dates à ne pas manquer"
+        accent="à ne pas manquer"
         lead="La session 2026 sert de repère : les dates du Bacc 2027 seront ajoutées dès leur publication."
-        art={<CalendrierArt />}
+        scene="calendrier"
       />
       <Container className="pt-8">
         <Breadcrumb items={[{ href: "/guide", label: "Guide" }, { label: "Le calendrier" }]} />

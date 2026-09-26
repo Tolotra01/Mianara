@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Building2, ChevronDown, School, UserRound } from "lucide-react";
 import { AssistantChat } from "@/components/assistant/AssistantChat";
 import { AssistantAvatar } from "@/components/illustrations/AssistantAvatar";
-import { HelpArt } from "@/components/illustrations/Spots";
 import { Container, PageHero } from "@/components/ui";
 import { UNIVERSITIES } from "@/content/bac";
 import { getBacData } from "@/lib/data";
@@ -23,8 +22,9 @@ export default async function AidePage() {
       <PageHero
         overline="Aide"
         title="On est là pour vous aider"
+        accent="vous aider"
         lead="Posez votre question à l'assistant, en français ou en malagasy. Pour votre dossier personnel, adressez-vous à un humain."
-        art={<HelpArt />}
+        scene="aide"
       />
 
       <Container className="py-8 sm:py-12">

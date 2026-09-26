@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { GuideNav } from "@/components/GuideNav";
-import { CoefficientsArt } from "@/components/illustrations/Spots";
 import { MoyenneSimulator } from "@/components/MoyenneSimulator";
 import { Breadcrumb, Container, PageHero, SourceLink } from "@/components/ui";
 import { RULES, type SerieCode } from "@/content/bac";
@@ -29,8 +28,9 @@ export default async function CoefficientsPage({ searchParams }: PageProps<"/gui
       <PageHero
         overline="Guide · 2"
         title="Le poids de chaque matière"
+        accent="chaque matière"
         lead="Ta moyenne = somme des (note × coefficient), divisée par la somme des coefficients."
-        art={<CoefficientsArt />}
+        scene="coefficients"
       />
       <Container className="pt-8">
         <Breadcrumb items={[{ href: "/guide", label: "Guide" }, { label: "Coefficients" }]} />

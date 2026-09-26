@@ -31,25 +31,31 @@ export function HeroScene({
   greeting = "Salama !",
   className,
   framing = "wide",
+  people = true,
 }: {
   greeting?: string;
   className?: string;
   framing?: "mobile" | "wide";
+  /** Sans les élèves ni la bulle : décor seul, pour les en-têtes des autres pages. */
+  people?: boolean;
 }) {
-  const titleId = `hero-title-${framing}`;
+  const titleId = `hero-title-${framing}-${people ? "p" : "d"}`;
 
   return (
     <svg
       viewBox="10 83 1400 457"
       preserveAspectRatio={`${framing === "mobile" ? "xMax" : "xMid"}YMax slice`}
       className={`ill h-full w-full ${className ?? ""}`}
-      role="img"
-      aria-labelledby={titleId}
+      role={people ? "img" : undefined}
+      aria-labelledby={people ? titleId : undefined}
+      aria-hidden={people ? undefined : true}
     >
-      <title id={titleId}>
-        Matin sur les Hautes Terres : collines lointaines, rizières en terrasses et route de
-        latérite bordée de ravinala ; deux élèves en uniforme attendent un taxi-brousse.
-      </title>
+      {people && (
+        <title id={titleId}>
+          Matin sur les Hautes Terres : collines lointaines, rizières en terrasses et route de latérite bordée
+          de ravinala ; deux élèves en uniforme attendent un taxi-brousse.
+        </title>
+      )}
 
       <rect width="1440" height="540" fill="var(--ill-sky)" />
 
@@ -147,34 +153,38 @@ export function HeroScene({
         fill="var(--ill-hill-near)"
       />
 
-      <Student
-        x={980}
-        y={538}
-        scale={1.5}
-        hair="braids"
-        bottom="skirt"
-        wave
-        skin={P.skin[0]}
-        className="a-bob"
-      />
-      <Student
-        x={1092}
-        y={540}
-        scale={1.56}
-        hair="short"
-        bottom="pants"
-        hold="book"
-        bag
-        skin={P.skin[2]}
-        className="a-bob"
-        style={{ animationDelay: "-1.4s" }}
-      />
+      {people && (
+        <>
+          <Student
+            x={980}
+            y={538}
+            scale={1.5}
+            hair="braids"
+            bottom="skirt"
+            wave
+            skin={P.skin[0]}
+            className="a-bob"
+          />
+          <Student
+            x={1092}
+            y={540}
+            scale={1.56}
+            hair="short"
+            bottom="pants"
+            hold="book"
+            bag
+            skin={P.skin[2]}
+            className="a-bob"
+            style={{ animationDelay: "-1.4s" }}
+          />
 
-      <Bubble x={890} y={318} width={96} className="a-float">
-        {greeting}
-      </Bubble>
-      <Sparkle x={944} y={356} r={9} className="a-float" />
-      <Sparkle x={1268} y={332} r={7} fill={P.mena} className="a-float" />
+          <Bubble x={890} y={318} width={96} className="a-float">
+            {greeting}
+          </Bubble>
+          <Sparkle x={944} y={356} r={9} className="a-float" />
+          <Sparkle x={1268} y={332} r={7} fill={P.mena} className="a-float" />
+        </>
+      )}
     </svg>
   );
 }

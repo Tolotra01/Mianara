@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Ban, Calculator, Clock, Droplet, FileText, IdCard, PenLine, Ruler } from "lucide-react";
 import { GuideNav } from "@/components/GuideNav";
-import { JourJArt } from "@/components/illustrations/Spots";
 import { TipGrid } from "@/components/TipGrid";
 import { Breadcrumb, Container, PageHero, SourceLink } from "@/components/ui";
 import { getBacData } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Le jour J du Bacc",
-  description: "Ce qu'il faut emporter le jour du Bacc et les règles à connaître : horaires, absence, fraude.",
+  description:
+    "Ce qu'il faut emporter le jour du Bacc et les règles à connaître : horaires, absence, fraude.",
 };
 
 const BAG = [
@@ -28,8 +28,9 @@ export default async function JourJPage() {
       <PageHero
         overline="Guide · 6"
         title="Le jour J, sans stress"
+        accent="sans stress"
         lead="Les épreuves commencent dès 7 h. Prépare ton sac la veille."
-        art={<JourJArt />}
+        scene="jourj"
       />
       <Container className="pt-8">
         <Breadcrumb items={[{ href: "/guide", label: "Guide" }, { label: "Le jour J" }]} />

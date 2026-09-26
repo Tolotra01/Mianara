@@ -3,7 +3,7 @@ import { ArrowRight, ExternalLink, MessageCircleQuestion } from "lucide-react";
 import Link from "next/link";
 import { AskButton } from "@/components/assistant/AskButton";
 import { GuideNav } from "@/components/GuideNav";
-import { ResultatsArt, SERIE_ART } from "@/components/illustrations/Spots";
+import { SERIE_ART } from "@/components/illustrations/Spots";
 import { TipGrid } from "@/components/TipGrid";
 import { Breadcrumb, buttonClass, Container, PageHero, SourceLink } from "@/components/ui";
 import { RULES } from "@/content/bac";
@@ -38,8 +38,9 @@ export default async function ResultatsPage() {
       <PageHero
         overline="Guide · 7"
         title="Résultats, mentions, et la suite"
+        accent="et la suite"
         lead="10/20 de moyenne pour être admis. Ensuite, place à ton orientation."
-        art={<ResultatsArt />}
+        scene="suite"
       />
       <Container className="pt-8">
         <Breadcrumb items={[{ href: "/guide", label: "Guide" }, { label: "Résultats et après" }]} />
