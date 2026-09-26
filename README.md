@@ -201,6 +201,41 @@ Réponses d'erreur : `400` lot invalide, `401` jeton invalide/expiré, `403` com
 de passe à changer, `413` corps trop volumineux, `422` matière hors série, `429` débit dépassé,
 `503` indisponibilité.
 
+### Enseignants et apprentissage
+
+Les enseignants s'inscrivent gratuitement à `/enseignant/inscription`, choisissent leur matière et
+peuvent se connecter immédiatement. Depuis `/enseignant`, ils déposent séparément un justificatif
+d'identité et de qualification (PDF/JPEG/PNG, 3 Mo maximum), puis soumettent des cours, formations ou
+offres de coaching. Les pièces sont conservées dans `teacher_documents` (bytea), ne sont jamais
+publiques et leur téléchargement exige un compte admin. Le statut vérifié nécessite l'approbation des
+deux pièces. Chaque offre passe aussi par une décision admin indépendante. Seul le coaching peut être
+payant ; le prix final en MGA est confirmé à l'approbation de l'offre par l'admin. L'administration
+peut consulter ces files dans `/admin/apprentissage`.
+
+Routes candidat (Bearer token, réponses `no-store`) :
+
+- `GET /api/mobile/learning` : offres approuvées des enseignants vérifiés, limitées à la série du
+  candidat. Pour une offre payante non achetée, `content` ne contient que la description. Le champ
+  `currency` vaut toujours `MGA`; `payment.merchantNumber` indique le numéro marchand Orange Money
+  configuré par l'Administration ou `null` s'il n'est pas encore renseigné. Le candidat ne peut pas
+  soumettre une référence depuis l'application si ce numéro n'est pas configuré.
+- `POST /api/mobile/coaching/payments` : JSON strict `{ "listingId": "<uuid>", "transactionReference": "..." }`.
+  Le prix, l'enseignant et la série sont lus depuis l'offre vérifiée/approuvée côté serveur. Une
+  référence Orange Money unique est soumise à l'admin ; aucun montant ou identifiant de partie envoyé
+  par le client n'est accepté.
+- `GET /api/mobile/coaching/sessions` : les demandes en attente et conversations ouvertes du candidat,
+  sans nom ni identifiant d'enseignant/candidat.
+- `GET|POST /api/mobile/coaching/sessions/<uuid>/messages` : lecture et envoi de `{ "text": "..." }`.
+  Ces routes exigent une session active et un paiement approuvé ; seules les étiquettes anonymes
+  `teacher` et `candidate` sont rendues. L'espace enseignant affiche la série du candidat mais jamais
+  son nom ou matricule.
+
+Les nouvelles tables et le rôle `teacher` sont définis dans la migration additive
+`drizzle/0005_learning_marketplace.sql`. Appliquer cette migration manuellement pendant une fenêtre
+de déploiement avant de publier le code ; ne pas utiliser `db:push`. Elle n'a pas été appliquée par
+ce changement. Le numéro marchand administrable est ajouté par
+`drizzle/0006_coaching_payment_settings.sql`, à appliquer après `0005` avant le déploiement.
+
 ## Gestion du Bac (phase 2)
 
 Le dépôt et le contrôle des dossiers restent manuels (élève → lycée → Office du Bac). La plateforme

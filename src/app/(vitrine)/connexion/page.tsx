@@ -57,6 +57,7 @@ export default async function ConnexionPage({ searchParams }: PageProps<"/connex
               liste envoyée par votre lycée. Vos identifiants figurent sur votre convocation.
             </p>
           </div>
+          <p className="mt-5 text-sm text-muted">Vous enseignez ? <a href="/enseignant/inscription" className="font-bold text-vert underline">Créer un compte enseignant gratuit</a>.</p>
         </div>
       </div>
     </Container>

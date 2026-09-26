@@ -12,6 +12,7 @@ import {
   FileStack,
   FileText,
   FolderOpen,
+  GraduationCap,
   Inbox,
   School,
   UserRound,
@@ -89,6 +90,15 @@ export const NAV: Record<Role, NavGroup[]> = {
         { href: "/candidat/notifications", label: "Notifications", icon: Bell, badgeKey: "notifications" },
         { href: "/compte", label: "Mon compte", icon: UserCog },
       ],
+      teacher: [
+        {
+          items: [
+            { href: "/enseignant", label: "Mon espace", icon: LayoutDashboard },
+            { href: "/enseignant/sessions", label: "Coaching", icon: Users },
+            { href: "/compte", label: "Mon compte", icon: UserCog },
+          ],
+        },
+      ],
     },
   ],
   supervisor: [
@@ -109,6 +119,7 @@ export const NAV: Record<Role, NavGroup[]> = {
         { href: "/admin/candidats-libres", label: "Candidats libres", icon: UserRound },
         { href: "/admin/session", label: "Paramètres de session", icon: Settings2 },
         { href: "/admin/actualites", label: "Actualités", icon: Newspaper, badgeKey: "news" },
+        { href: "/admin/apprentissage", label: "Enseignants et offres", icon: GraduationCap },
         { href: "/admin/journal", label: "Journal d'audit", icon: ScrollText },
       ],
     },

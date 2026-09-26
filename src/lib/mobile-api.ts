@@ -2,7 +2,8 @@ import "server-only";
 import { and, eq, gt } from "drizzle-orm";
 import { requireDb } from "@/db";
 import { examSessions } from "@/db/schema";
-import { authSessions, candidates, users } from "@/db/schema-gestion";
+import { subjects } from "@/db/schema";
+import { authSessions, candidates, teacherProfiles, users } from "@/db/schema-gestion";
 import { isCandidateAccessClosed } from "@/lib/candidate-access";
 import { sha256 } from "@/lib/crypto";
 
@@ -148,4 +149,29 @@ export async function getMobilePrincipal(request: Request): Promise<MobilePrinci
     status: row.candidateStatus,
     sessionYear: row.sessionYear,
   };
+}
+
+export type TeacherMobilePrincipal = { userId: string; subjectCode: string; subjectName: string };
+
+export async function getTeacherMobilePrincipal(request: Request): Promise<TeacherMobilePrincipal | null> {
+  const token = getMobileBearerToken(request);
+  if (!token) return null;
+  const [row] = await requireDb()
+    .select({
+      userId: users.id,
+      subjectCode: teacherProfiles.subjectCode,
+      subjectName: subjects.name,
+    })
+    .from(authSessions)
+    .innerJoin(users, eq(users.id, authSessions.userId))
+    .innerJoin(teacherProfiles, eq(teacherProfiles.userId, users.id))
+    .innerJoin(subjects, eq(subjects.code, teacherProfiles.subjectCode))
+    .where(and(
+      eq(authSessions.id, sha256(token)),
+      gt(authSessions.expiresAt, new Date()),
+      eq(users.role, "teacher"),
+      eq(users.isActive, true),
+    ))
+    .limit(1);
+  return row ?? null;
 }

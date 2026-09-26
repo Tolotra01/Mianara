@@ -23,6 +23,7 @@ export const HOME_BY_ROLE: Record<Role, string> = {
   supervisor: "/surveillant",
   candidate: "/candidat",
   school: "/ecole",
+  teacher: "/enseignant",
 };
 
 export { checkPassword, hashPassword } from "./password";
