@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx src/db/seed.ts",
     "db:studio": "drizzle-kit studio",
@@ -49,5 +50,8 @@
     "tsx": "^4.23.15",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@11.10.0"
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=20.9.0"
+  }
 }

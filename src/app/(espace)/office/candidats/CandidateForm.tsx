@@ -24,6 +24,7 @@ type Values = {
   phone?: string | null;
   email?: string | null;
   photoUrl?: string | null;
+  officeId?: number | null;
 };
 
 export type SerieOption = { code: string; name: string; track: string };
@@ -35,6 +36,7 @@ export function CandidateForm({
   series,
   schools,
   mode = "office",
+  offices,
   lockSerie,
   hint,
 }: {
@@ -44,14 +46,19 @@ export function CandidateForm({
   series: SerieOption[];
   /** Écoles de l'Office (mode office). */
   schools?: { id: number; name: string }[];
-  /** office : l'agent choisit école ou libre ; school : dossier préparé par l'école. */
-  mode?: "office" | "school";
+  /**
+   * office : l'agent choisit école ou libre ; school : dossier préparé par l'école ;
+   * admin : candidat libre, rattaché à l'Office choisi dans `offices`.
+   */
+  mode?: "office" | "school" | "admin";
+  /** Offices proposés (mode admin). */
+  offices?: { id: number; name: string }[];
   lockSerie?: boolean;
   hint?: string;
 }) {
   const [kind, setKind] = useState(values.kind ?? "ecole");
   const editing = Boolean(values.id);
-  const serieLocked = lockSerie ?? (mode === "office" && editing);
+  const serieLocked = lockSerie ?? (mode !== "school" && editing);
 
   return (
     <ActionForm action={action} className="grid gap-6 lg:grid-cols-[240px_1fr]">
@@ -150,8 +157,37 @@ export function CandidateForm({
 
         <fieldset className="grid gap-4 sm:grid-cols-2">
           <legend className="t-overline mb-3 text-muted">
-            {mode === "office" ? "Candidature" : "Contact"}
+            {mode === "school" ? "Contact" : "Candidature"}
           </legend>
+          {mode === "admin" && (
+            <div className="sm:col-span-2">
+              <input type="hidden" name="kind" value="libre" />
+              <label htmlFor="officeId" className="text-sm font-semibold">
+                Office du Bacc de rattachement
+              </label>
+              <select
+                id="officeId"
+                name="officeId"
+                required
+                defaultValue={values.officeId ?? ""}
+                className="field-input mt-1.5"
+              >
+                <option value="" disabled>
+                  Choisir l&apos;Office…
+                </option>
+                {(offices ?? []).map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-muted">
+                Le candidat libre passe l&apos;examen dans le secteur où il habite. Changer d&apos;Office le
+                retire de sa salle.
+              </p>
+              <FieldError name="officeId" />
+            </div>
+          )}
           {mode === "office" && (
             <>
               <div className="sm:col-span-2">

@@ -1,0 +1,44 @@
+# Blueprint Render : le serveur commun du site web et des applications mobiles
+# (API Candidat /api/mobile/* et API Surveillant /api/mobile/v1/*).
+#
+# Mise en place : Render → New → Blueprint → dépôt Tolotra01/Mianara, branche
+# `dev`. Render lit ce fichier et demande la valeur des variables marquées
+# `sync: false` (secrets), qui ne sont jamais écrites ici.
+services:
+  - type: web
+    name: mianara
+    runtime: node
+    # Ohio : même région AWS (us-east-2) que la base Neon, pour des requêtes rapides.
+    region: ohio
+    plan: free
+    branch: dev
+    autoDeployTrigger: commit
+    # L'offre gratuite n'a pas d'étape « pre-deploy » : les migrations passent
+    # pendant le build. Si elles échouent, le build échoue et l'ancienne
+    # version reste en ligne.
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm db:migrate && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Corepack télécharge la version de pnpm déclarée dans package.json sans poser de question.
+      - key: COREPACK_ENABLE_DOWNLOAD_PROMPT
+        value: "0"
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      # Chaîne de connexion Neon (celle de l'équipe, même base que le site).
+      - key: DATABASE_URL
+        sync: false
+      # Doit être IDENTIQUE à celui de l'équipe : il signe les QR des
+      # convocations et chiffre des données stockées dans la base partagée.
+      - key: APP_SECRET
+        sync: false
+      # Adresse publique du service, ex. https://mianara.onrender.com
+      - key: SITE_URL
+        sync: false
+      # Assistant IA (facultatif) : Gemini gratuit, sinon réponses tirées de la FAQ.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ASSISTANT_PROVIDER
+        value: gemini

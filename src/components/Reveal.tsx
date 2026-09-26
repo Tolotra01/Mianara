@@ -33,8 +33,11 @@ export function Reveal({ children, delay = 0, className = "" }: RevealProps) {
     const el = ref.current;
     if (!el) return;
 
+    // Navigateur sans IntersectionObserver : on affiche tout de suite, en posant
+    // l'attribut directement (un setState synchrone dans l'effet forcerait un
+    // second rendu pour rien).
     if (typeof IntersectionObserver === "undefined") {
-      setShown(true);
+      el.dataset.shown = "true";
       return;
     }
 

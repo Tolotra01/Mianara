@@ -36,6 +36,8 @@ const T = {
     noAccountText:
       "Rien à créer : votre compte est ouvert par l'Office du Bacc à partir de la liste envoyée par votre lycée. Vos identifiants figurent sur votre convocation.",
     help: "Besoin d'aide ?",
+    teacher: "Vous enseignez ?",
+    teacherCta: "Créer un compte enseignant gratuit",
   },
   mg: {
     online: "Mandeha",
@@ -56,6 +58,8 @@ const T = {
     noAccountText:
       "Tsy mila mamorona ianao : ny Office du Bacc no manokatra ny kaontinao avy amin'ny lisitra nalefan'ny lycée-nao. Hita ao amin'ny taratasy fiantsoana anao ny laharana fidiranao.",
     help: "Mila fanampiana ?",
+    teacher: "Mpampianatra ianao ?",
+    teacherCta: "Hamorona kaonty mpampianatra maimaim-poana",
   },
 };
 
@@ -209,7 +213,13 @@ export default async function ConnexionPage({ searchParams }: PageProps<"/connex
               </div>
             </div>
           </div>
-          <p className="mt-5 text-sm text-muted">Vous enseignez ? <a href="/enseignant/inscription" className="font-bold text-vert underline">Créer un compte enseignant gratuit</a>.</p>
+          <p className="mt-5 text-sm text-muted">
+            {t.teacher}{" "}
+            <a href="/enseignant/inscription" className="font-bold text-vert underline">
+              {t.teacherCta}
+            </a>
+            .
+          </p>
         </div>
       </div>
     </Container>

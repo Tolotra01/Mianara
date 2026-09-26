@@ -1,5 +1,6 @@
 import "server-only";
 import { and, eq, gte, isNull, lte, or, sql } from "drizzle-orm";
+import { rowsOf } from "@/db";
 import { examSessions } from "@/db/schema";
 import {
   blacklist,
@@ -109,9 +110,7 @@ export async function submitRequest(
     .innerJoin(examSessions, eq(examSessions.id, candidates.sessionId))
     .where(eq(candidates.id, candidateId));
   const amount = await feeFor(candidateId, type, exec);
-  // Voir `candidates.ts` : `execute()` renvoie un NeonHttpQueryResult, la ligne
-  // se lit dans `.rows`.
-  const [{ n }] = (await exec.execute<{ n: string }>(sql`select nextval('request_number_seq') as n`)).rows;
+  const [{ n }] = rowsOf(await exec.execute<{ n: string }>(sql`select nextval('request_number_seq') as n`));
   const [previous] = await exec
     .select()
     .from(documentRequests)

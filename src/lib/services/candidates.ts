@@ -2,6 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { candidatePhotos, candidates, examCenters, rooms, users } from "@/db/schema-gestion";
+import { rowsOf } from "@/db";
 import { examSessions } from "@/db/schema";
 import { audit, type Executor } from "@/lib/audit";
 import { hashPassword } from "@/lib/password";
@@ -42,10 +43,7 @@ export async function currentSession(exec: Executor) {
  */
 export async function registerCandidate(input: NewCandidate, actorId: string | null, exec: Executor) {
   const session = await currentSession(exec);
-  // `execute()` renvoie un NeonHttpQueryResult, pas un tableau : la ligne se lit
-  // dans `.rows`. La destructuration directe renvoyait `n` à `undefined`, et le
-  // matricule partait en NaN.
-  const [{ n }] = (await exec.execute<{ n: string }>(sql`select nextval('candidate_number_seq') as n`)).rows;
+  const [{ n }] = rowsOf(await exec.execute<{ n: string }>(sql`select nextval('candidate_number_seq') as n`));
   const matricule = formatMatricule(session.year, input.serieCode, Number(n));
   const password = temporaryPassword();
 

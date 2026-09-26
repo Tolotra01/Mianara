@@ -90,14 +90,14 @@ export const NAV: Record<Role, NavGroup[]> = {
         { href: "/candidat/notifications", label: "Notifications", icon: Bell, badgeKey: "notifications" },
         { href: "/compte", label: "Mon compte", icon: UserCog },
       ],
-      teacher: [
-        {
-          items: [
-            { href: "/enseignant", label: "Mon espace", icon: LayoutDashboard },
-            { href: "/enseignant/sessions", label: "Coaching", icon: Users },
-            { href: "/compte", label: "Mon compte", icon: UserCog },
-          ],
-        },
+    },
+  ],
+  // Les séances de coaching sont listées sur « Mon espace » (pas de page /enseignant/sessions).
+  teacher: [
+    {
+      items: [
+        { href: "/enseignant", label: "Mon espace", icon: LayoutDashboard },
+        { href: "/compte", label: "Mon compte", icon: UserCog },
       ],
     },
   ],

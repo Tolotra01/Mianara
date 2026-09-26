@@ -254,6 +254,41 @@ de déploiement avant de publier le code ; ne pas utiliser `db:push`. Elle n'a p
 ce changement. Le numéro marchand administrable est ajouté par
 `drizzle/0006_coaching_payment_settings.sql`, à appliquer après `0005` avant le déploiement.
 
+## Déploiement sur Render
+
+Un seul service Render sert le site web **et** les deux API mobiles
+(`/api/mobile/*` pour l'application Candidat, `/api/mobile/v1/*` pour
+l'application Surveillant). Il est décrit dans [`render.yaml`](render.yaml) et
+suit la branche `dev` (phase de test).
+
+1. Render → **New → Blueprint** → dépôt `Tolotra01/Mianara`, branche `dev`.
+2. Renseigner les secrets demandés :
+   - `DATABASE_URL` : la base Neon de l'équipe ;
+   - `APP_SECRET` : **le même** que celui de l'équipe (il signe les QR et
+     chiffre des données de la base partagée) ;
+   - `SITE_URL` : l'adresse du service, ex. `https://mianara.onrender.com` ;
+   - `GEMINI_API_KEY` (facultatif) : assistant IA.
+3. Chaque commit poussé sur `dev` redéploie le service.
+
+Le build lance `pnpm db:migrate` avant `pnpm build` (l'offre gratuite n'a pas
+d'étape « pre-deploy ») : si une migration échoue, le build échoue et la
+version précédente reste en ligne. La base de l'équipe a été créée avec
+`drizzle-kit push` ; au premier passage, [`scripts/migrate.ts`](scripts/migrate.ts)
+enregistre les migrations 0000 → 0003 comme déjà appliquées, puis applique les
+suivantes. **Ne plus utiliser `db:push` sur la base partagée** : créer une
+migration (`pnpm db:generate`) et la laisser s'appliquer au déploiement.
+
+Sonde de santé : `GET /api/health` (état du serveur et de la base).
+
+Les applications mobiles pointent vers l'adresse Render :
+
+```sh
+flutter run --dart-define=MIANARA_API_BASE_URL=https://mianara.onrender.com
+```
+
+Offre gratuite : le service s'endort après 15 min sans requête ; le premier
+appel suivant prend environ une minute (les applications mobiles réessaient).
+
 ## Gestion du Bac (phase 2)
 
 Le dépôt et le contrôle des dossiers restent manuels (élève → lycée → Office du Bac). La plateforme
