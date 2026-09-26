@@ -22,6 +22,7 @@ import { CANDIDATE_STATUS } from "@/lib/labels";
 export const metadata: Metadata = { title: "Candidats" };
 
 const PER_PAGE = 20;
+const SERIE_ORDER = ["L", "S", "OSE", "TI", "TGC", "TT", "TA"];
 
 export default async function CandidatsPage({ searchParams }: PageProps<"/office/candidats">) {
   const user = await requireOffice();
@@ -29,6 +30,8 @@ export default async function CandidatsPage({ searchParams }: PageProps<"/office
   const q = typeof params.q === "string" ? params.q.trim() : "";
   const serie = typeof params.serie === "string" ? params.serie : "";
   const salle = typeof params.salle === "string" ? params.salle : "";
+  const type = params.type === "libre" || params.type === "ecole" ? params.type : "";
+  const ecole = Number(params.ecole) || 0;
   const page = Math.max(1, Number(params.page) || 1);
 
   const filters: SQL[] = [eq(candidates.officeId, user.officeId)];
@@ -45,6 +48,8 @@ export default async function CandidatsPage({ searchParams }: PageProps<"/office
   }
   if (serie) filters.push(eq(candidates.serieCode, serie));
   if (salle === "sans") filters.push(isNull(candidates.roomId));
+  if (type) filters.push(eq(candidates.kind, type));
+  if (ecole) filters.push(eq(candidates.schoolId, ecole));
   const where = and(...filters);
 
   const db = requireDb();
@@ -92,9 +97,11 @@ export default async function CandidatsPage({ searchParams }: PageProps<"/office
             <LinkButton href="/api/export/candidats" variant="secondary" prefetch={false}>
               <FileDown className="size-5" /> Exporter (CSV)
             </LinkButton>
-            <LinkButton href="/office/candidats/nouveau">
-              <UserPlus className="size-5" /> Enregistrer un candidat
-            </LinkButton>
+            {!user.visiting && (
+              <LinkButton href="/office/candidats/nouveau">
+                <UserPlus className="size-5" /> Enregistrer un candidat
+              </LinkButton>
+            )}
           </>
         }
       />
@@ -107,12 +114,25 @@ export default async function CandidatsPage({ searchParams }: PageProps<"/office
             basePath="/office/candidats"
             options={[
               { value: "", label: "Toutes", count: all },
-              { value: "L", label: "Série L", count: n("L") },
-              { value: "S", label: "Série S", count: n("S") },
-              { value: "OSE", label: "Série OSE", count: n("OSE") },
+              // Séries ayant des candidats (Bac général puis technique).
+              ...bySerie
+                .map((b) => b.serie)
+                .sort((a, b) => SERIE_ORDER.indexOf(a) - SERIE_ORDER.indexOf(b))
+                .map((code) => ({ value: code, label: code, count: n(code) })),
             ]}
           />
           <div className="flex flex-wrap items-center gap-2">
+            <FilterTabs
+              param="type"
+              active={type}
+              params={params}
+              basePath="/office/candidats"
+              options={[
+                { value: "", label: "Tous" },
+                { value: "ecole", label: "D'école" },
+                { value: "libre", label: "Libres" },
+              ]}
+            />
             <Link
               href={salle ? "/office/candidats" : "/office/candidats?salle=sans"}
               className={`rounded-lg px-3 py-2 text-sm font-semibold ${salle ? "bg-soleil text-ink" : "text-muted hover:bg-sunken"}`}
@@ -125,7 +145,11 @@ export default async function CandidatsPage({ searchParams }: PageProps<"/office
         {rows.length === 0 ? (
           <EmptyState
             icon={Users}
-            title={q || serie || salle ? "Aucun candidat ne correspond" : "Aucun candidat enregistré"}
+            title={
+              q || serie || salle || type || ecole
+                ? "Aucun candidat ne correspond"
+                : "Aucun candidat enregistré"
+            }
             description={
               q || serie || salle
                 ? "Modifiez la recherche ou les filtres."

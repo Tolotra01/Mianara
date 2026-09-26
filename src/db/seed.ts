@@ -20,6 +20,8 @@ import {
   SERIES,
   SOURCES,
   SUBJECTS,
+  TECH_SERIE_SUBJECTS,
+  TECH_SERIES,
   TIPS,
 } from "../content/bac";
 
@@ -45,7 +47,10 @@ async function main() {
         .values({ year, isCurrent: year === 2027 })
         .onConflictDoUpdate({ target: schema.examSessions.year, set: { isCurrent: year === 2027 } });
     }
-    for (const s of SERIES) {
+    for (const s of [
+      ...SERIES.map((x) => ({ ...x, track: "general" })),
+      ...TECH_SERIES.map((x) => ({ ...x, track: "technique" })),
+    ]) {
       await tx.insert(schema.series).values(s).onConflictDoUpdate({ target: schema.series.code, set: s });
     }
     for (const s of SUBJECTS) {
@@ -53,7 +58,7 @@ async function main() {
     }
     const subjectRows = await tx.select().from(schema.subjects);
     const subjectId = new Map(subjectRows.map((s) => [s.code, s.id]));
-    for (const ss of SERIE_SUBJECTS) {
+    for (const ss of [...SERIE_SUBJECTS, ...TECH_SERIE_SUBJECTS]) {
       const row = {
         serieCode: ss.serieCode,
         subjectId: subjectId.get(ss.subjectCode)!,

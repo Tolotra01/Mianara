@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Download, IdCard, Info } from "lucide-react";
 import QRCode from "qrcode";
+import { candidateQrText } from "@/lib/pdf/convocation";
 import { Alert, Card, LinkButton, Mono, PageHeader } from "@/components/app/ui";
 import { requireCandidate } from "@/lib/auth";
 
@@ -8,7 +9,11 @@ export const metadata: Metadata = { title: "Ma convocation" };
 
 export default async function ConvocationPage() {
   const { candidate: c } = await requireCandidate();
-  const qr = await QRCode.toDataURL(c.qrToken, { margin: 4, width: 360, errorCorrectionLevel: "M" });
+  const qr = await QRCode.toDataURL((await candidateQrText(c.id)) ?? c.qrToken, {
+    margin: 4,
+    width: 360,
+    errorCorrectionLevel: "M",
+  });
   return (
     <>
       <PageHeader

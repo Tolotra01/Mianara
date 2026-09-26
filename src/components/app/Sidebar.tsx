@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Menu, X } from "lucide-react";
+import { ArrowLeft, LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -8,21 +8,33 @@ import { Logo } from "@/components/Logo";
 import { logout } from "@/app/actions/auth";
 import { ROLE_LABEL, type Role } from "@/lib/auth-shared";
 import { Avatar } from "./ui";
-import { NAV } from "./nav";
+import { type BadgeKey, NAV } from "./nav";
 
 type Props = {
   role: Role;
+  /** Office consulté par l'Admin (mode visite). */
+  visit?: { officeName: string } | null;
   user: { fullName: string; username: string; subtitle: string | null };
-  badges: Partial<Record<"requests" | "notifications", number>>;
+  badges: Partial<Record<BadgeKey, number>>;
 };
 
 function isActive(pathname: string, href: string) {
-  const roots = ["/office", "/candidat", "/admin", "/surveillant"];
+  const roots = ["/office", "/candidat", "/admin", "/surveillant", "/ecole"];
   return roots.includes(href) ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function NavContent({ role, user, badges, onNavigate }: Props & { onNavigate?: () => void }) {
+function NavContent({ role, user, badges, visit, onNavigate }: Props & { onNavigate?: () => void }) {
   const pathname = usePathname();
+  // En visite, l'Admin voit la navigation de l'Office consulté.
+  const visiting = role === "admin" && visit && pathname.startsWith("/office");
+  const groups = visiting
+    ? [
+        { items: [{ href: "/admin/offices", label: "Retour à l'administration", icon: ArrowLeft }] },
+        ...NAV.office,
+      ]
+    : NAV[role];
+  const spaceLabel = visiting ? `Visite · ${ROLE_LABEL.office}` : ROLE_LABEL[role];
+  const subtitle = visiting ? visit.officeName : user.subtitle;
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-3 border-b border-line px-5">
@@ -32,12 +44,12 @@ function NavContent({ role, user, badges, onNavigate }: Props & { onNavigate?: (
       </div>
       <div className="px-4 pt-4">
         <p className="rounded-xl bg-vert-soft px-3 py-2">
-          <span className="t-overline block text-vert">{ROLE_LABEL[role]}</span>
-          {user.subtitle && <span className="block truncate text-sm font-semibold">{user.subtitle}</span>}
+          <span className="t-overline block text-vert">{spaceLabel}</span>
+          {subtitle && <span className="block truncate text-sm font-semibold">{subtitle}</span>}
         </p>
       </div>
       <nav aria-label="Espace" className="flex-1 overflow-y-auto px-3 py-4">
-        {NAV[role].map((group, gi) => (
+        {groups.map((group, gi) => (
           <div key={gi} className={gi ? "mt-5" : undefined}>
             {group.label && <p className="t-overline mb-1.5 px-3 text-muted">{group.label}</p>}
             <ul className="space-y-0.5">

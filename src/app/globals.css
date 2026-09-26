@@ -562,73 +562,75 @@ dialog.modal::backdrop {
   animation: fade-in 200ms ease-out;
 }
 
-/* Tableaux de données */
-.data-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 14px;
-  line-height: 20px;
-}
-.data-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--surface-sunken);
-  color: var(--ink-muted);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-align: left;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--line);
-  white-space: nowrap;
-}
-.data-table tbody td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--line);
-  vertical-align: middle;
-}
-.data-table tbody tr {
-  transition: background-color 150ms ease;
-}
-.data-table tbody tr:hover {
-  background: color-mix(in srgb, var(--vert-soft) 55%, transparent);
-}
-.data-table tbody tr:last-child td {
-  border-bottom: none;
-}
+@layer components {
+  /* Tableaux de données */
+  .data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .data-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--surface-sunken);
+    color: var(--ink-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  .data-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+  .data-table tbody tr {
+    transition: background-color 150ms ease;
+  }
+  .data-table tbody tr:hover {
+    background: color-mix(in srgb, var(--vert-soft) 55%, transparent);
+  }
+  .data-table tbody tr:last-child td {
+    border-bottom: none;
+  }
 
-/* Champs de formulaire */
-.field-input {
-  height: 44px;
-  width: 100%;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--line-strong);
-  background: var(--surface-raised);
-  padding: 0 12px;
-  color: var(--ink);
-  transition:
-    border-color 150ms ease,
-    box-shadow 150ms ease;
-}
-textarea.field-input {
-  height: auto;
-  padding: 10px 12px;
-}
-.field-input:hover {
-  border-color: var(--ink-muted);
-}
-.field-input:focus {
-  outline: none;
-  border-color: var(--vert);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vert) 22%, transparent);
-}
-.field-input[aria-invalid="true"] {
-  border-color: var(--danger);
-}
-.field-input:disabled {
-  background: var(--surface-sunken);
-  color: var(--ink-muted);
+  /* Champs de formulaire */
+  .field-input {
+    height: 44px;
+    width: 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line-strong);
+    background: var(--surface-raised);
+    padding: 0 12px;
+    color: var(--ink);
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+  textarea.field-input {
+    height: auto;
+    padding: 10px 12px;
+  }
+  .field-input:hover {
+    border-color: var(--ink-muted);
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: var(--vert);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vert) 22%, transparent);
+  }
+  .field-input[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+  .field-input:disabled {
+    background: var(--surface-sunken);
+    color: var(--ink-muted);
+  }
 }

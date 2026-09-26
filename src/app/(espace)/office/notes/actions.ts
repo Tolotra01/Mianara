@@ -7,7 +7,7 @@ import { examSessions, serieSubjects } from "@/db/schema";
 import { candidates, grades, results } from "@/db/schema-gestion";
 import { type ActionState, fail, ok } from "@/lib/action";
 import { audit, notifyMany } from "@/lib/audit";
-import { requireOffice } from "@/lib/auth";
+import { requireOfficeAgent } from "@/lib/auth";
 import { formatDateTime, parseLocalDateTime } from "@/lib/bac-rules";
 import { currentSession } from "@/lib/services/candidates";
 import { deliberate } from "@/lib/services/results";
@@ -17,7 +17,7 @@ const isPublished = (s: { resultsPublishAt: Date | null }) =>
 
 /** Saisie des notes d'une matière (OFF-06). Verrouillée après publication (RG-09). */
 export async function saveGrades(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const db = requireDb();
   const session = await currentSession(db);
   if (isPublished(session)) return fail("Résultats publiés : les notes sont verrouillées.");
@@ -95,7 +95,7 @@ export async function saveGrades(_: ActionState, form: FormData): Promise<Action
 }
 
 export async function runDeliberation(): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const db = requireDb();
   const session = await currentSession(db);
   if (isPublished(session)) return fail("Résultats déjà publiés : la délibération est close.");
@@ -114,7 +114,7 @@ export async function runDeliberation(): Promise<ActionState> {
  * Irréversible sans l'Administration. Les candidats sont prévenus à la publication.
  */
 export async function publishResults(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const db = requireDb();
   const session = await currentSession(db);
   if (isPublished(session)) return fail("Les résultats sont déjà publiés.");

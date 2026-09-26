@@ -7,7 +7,7 @@ import { requireDb } from "@/db";
 import { examCenters, rooms, supervisorRooms, users } from "@/db/schema-gestion";
 import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
 import { audit } from "@/lib/audit";
-import { hashPassword, requireOffice } from "@/lib/auth";
+import { hashPassword, requireOfficeAgent } from "@/lib/auth";
 import { temporaryPassword } from "@/lib/crypto";
 
 const Supervisor = z.object({
@@ -22,7 +22,7 @@ const Supervisor = z.object({
 
 /** OFF-11 : compte surveillant. Le mot de passe temporaire n'est affiché qu'une fois. */
 export async function createSupervisor(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const parsed = Supervisor.safeParse(Object.fromEntries(form));
   if (!parsed.success) return fail("Vérifiez le formulaire.", zodErrors(parsed.error.issues));
   const db = requireDb();
@@ -58,7 +58,7 @@ export async function createSupervisor(_: ActionState, form: FormData): Promise<
 
 /** Salles surveillées : remplace l'affectation actuelle par les salles cochées. */
 export async function assignSupervisor(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const supervisorId = String(form.get("supervisorId") ?? "");
   const roomIds = form.getAll("roomIds").map(Number).filter(Boolean);
   const db = requireDb();
@@ -95,7 +95,7 @@ export async function assignSupervisor(_: ActionState, form: FormData): Promise<
 }
 
 export async function toggleSupervisor(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const id = String(form.get("id") ?? "");
   const db = requireDb();
   const [sup] = await db

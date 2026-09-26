@@ -32,7 +32,7 @@ const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () =>
 
 /* ---------- Types énumérés ---------- */
 
-export const userRoleEnum = pgEnum("user_role", ["admin", "office", "supervisor", "candidate"]);
+export const userRoleEnum = pgEnum("user_role", ["admin", "office", "supervisor", "candidate", "school"]);
 export const candidateStatusEnum = pgEnum("candidate_status", [
   "active",
   "admitted",
@@ -59,6 +59,14 @@ export const paymentMethodEnum = pgEnum("payment_method", [
   "airtel_money",
   "bank_transfer",
 ]);
+/** Dossier envoyé par une école : brouillon → envoyé → validé, incomplet (renvoyé) ou refusé. */
+export const applicationStatusEnum = pgEnum("application_status", [
+  "draft",
+  "submitted",
+  "incomplete",
+  "rejected",
+  "validated",
+]);
 export const paymentStatusEnum = pgEnum("payment_status", ["pending", "verified", "rejected"]);
 
 /** Numéro séquentiel des matricules (BAC2027-S-00042). */
@@ -79,6 +87,24 @@ export const offices = pgTable("offices", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Établissements qui présentent des candidats, rattachés à un Office du Bac. */
+export const schools = pgTable("schools", {
+  id: serial("id").primaryKey(),
+  officeId: integer("office_id")
+    .notNull()
+    .references(() => offices.id),
+  code: text("code").notNull().unique(),
+  name: text("name").notNull(),
+  kind: text("kind").notNull().default("public"), // public | prive
+  commune: text("commune").notNull(),
+  address: text("address"),
+  contactName: text("contact_name"),
+  phone: text("phone"),
+  email: text("email"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   role: userRoleEnum("role").notNull(),
@@ -88,6 +114,7 @@ export const users = pgTable("users", {
   email: text("email"),
   phone: text("phone"),
   officeId: integer("office_id").references(() => offices.id),
+  schoolId: integer("school_id").references(() => schools.id),
   mustChangePassword: boolean("must_change_password").notNull().default(true),
   isActive: boolean("is_active").notNull().default(true),
   failedAttempts: smallint("failed_attempts").notNull().default(0),
@@ -176,6 +203,8 @@ export const candidates = pgTable(
     phone: text("phone"),
     email: text("email"),
     schoolName: text("school_name"),
+    schoolId: integer("school_id").references(() => schools.id),
+    address: text("address"),
     kind: candidateKindEnum("kind").notNull().default("ecole"),
     serieCode: text("serie_code")
       .notNull()
@@ -374,4 +403,60 @@ export const auditLogs = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index().on(t.createdAt), index().on(t.tableName, t.recordId)],
+);
+
+/* ---------- Dossiers envoyés par les écoles ---------- */
+
+/** Un envoi (lot) de dossiers d'une école à son Office. */
+export const applicationBatches = pgTable("application_batches", {
+  id: serial("id").primaryKey(),
+  schoolId: integer("school_id")
+    .notNull()
+    .references(() => schools.id),
+  sessionId: integer("session_id")
+    .notNull()
+    .references(() => examSessions.id),
+  count: integer("count").notNull(),
+  sentBy: uuid("sent_by").references(() => users.id),
+  sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Dossier d'un élève préparé par son école ; validé, il devient un candidat avec sa convocation. */
+export const applications = pgTable(
+  "applications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    schoolId: integer("school_id")
+      .notNull()
+      .references(() => schools.id),
+    sessionId: integer("session_id")
+      .notNull()
+      .references(() => examSessions.id),
+    batchId: integer("batch_id").references(() => applicationBatches.id),
+    status: applicationStatusEnum("status").notNull().default("draft"),
+    lastName: text("last_name").notNull(),
+    firstName: text("first_name").notNull(),
+    birthDate: date("birth_date").notNull(),
+    birthPlace: text("birth_place").notNull(),
+    gender: text("gender").notNull(),
+    address: text("address").notNull(),
+    serieCode: text("serie_code")
+      .notNull()
+      .references(() => series.code),
+    cin: text("cin"),
+    phone: text("phone"),
+    email: text("email"),
+    photoMime: text("photo_mime"),
+    photo: bytea("photo"),
+    /** Pièces du dossier cochées par l'école (acte de naissance, photos, reçu…). */
+    pieces: jsonb("pieces").$type<string[]>().notNull().default([]),
+    reviewNote: text("review_note"),
+    reviewedBy: uuid("reviewed_by").references(() => users.id),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    candidateId: uuid("candidate_id").references(() => candidates.id),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index().on(t.schoolId, t.status)],
 );

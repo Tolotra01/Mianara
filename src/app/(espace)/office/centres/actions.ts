@@ -7,7 +7,7 @@ import { requireDb } from "@/db";
 import { candidates, examCenters, rooms } from "@/db/schema-gestion";
 import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
 import { audit } from "@/lib/audit";
-import { requireOffice } from "@/lib/auth";
+import { requireOfficeAgent } from "@/lib/auth";
 
 const Center = z.object({
   name: z.string().trim().min(2, "Nom du centre obligatoire.").max(120),
@@ -16,7 +16,7 @@ const Center = z.object({
 });
 
 export async function createCenter(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const parsed = Center.safeParse(Object.fromEntries(form));
   if (!parsed.success) return fail("Vérifiez le formulaire.", zodErrors(parsed.error.issues));
   const [center] = await requireDb()
@@ -41,7 +41,7 @@ const Room = z.object({
 });
 
 export async function createRoom(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const parsed = Room.safeParse(Object.fromEntries(form));
   if (!parsed.success) return fail("Vérifiez le formulaire.", zodErrors(parsed.error.issues));
   const db = requireDb();
@@ -62,7 +62,7 @@ export async function createRoom(_: ActionState, form: FormData): Promise<Action
 }
 
 export async function deleteRoom(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const id = Number(form.get("id"));
   const db = requireDb();
   const [room] = await db

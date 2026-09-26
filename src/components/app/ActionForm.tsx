@@ -11,6 +11,7 @@ import {
   useRef,
 } from "react";
 import type { ActionState } from "@/lib/action";
+import { useReadOnly } from "./ReadOnly";
 import { useToast } from "./Toaster";
 
 type Action = (state: ActionState, form: FormData) => Promise<ActionState>;
@@ -75,8 +76,15 @@ export function ActionForm({
 /** Bouton d'envoi qui affiche un indicateur pendant l'envoi. */
 export function SubmitButton({ children, className, ...props }: ComponentProps<"button">) {
   const { pending } = useFormResult();
+  const readOnly = useReadOnly();
   return (
-    <button type="submit" disabled={pending || props.disabled} className={className} {...props}>
+    <button
+      type="submit"
+      {...props}
+      disabled={pending || props.disabled || readOnly}
+      title={readOnly ? "Consultation seule" : props.title}
+      className={className}
+    >
       {pending && (
         <span
           className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"

@@ -47,6 +47,20 @@ const ACTIONS: Record<string, string> = {
   "actualite.creer": "Publication d'une actualité",
   "actualite.modifier": "Modification d'une actualité",
   "actualite.archiver": "Archivage d'une actualité",
+  "actualite.proposer": "Proposition d'actualité",
+  "actualite.valider": "Publication d'une actualité proposée",
+  "actualite.refuser": "Refus d'une actualité proposée",
+  "office.visiter": "Visite d'un Office (consultation)",
+  "ecole.creer": "Création d'une école",
+  "ecole.modifier": "Modification d'une école",
+  "ecole.compte": "Création d'un compte école",
+  "dossier.creer": "Dossier créé par l'école",
+  "dossier.modifier": "Dossier modifié par l'école",
+  "dossier.supprimer": "Brouillon supprimé",
+  "dossiers.envoyer": "Envoi de dossiers à l'Office",
+  "dossier.valider": "Dossier validé",
+  "dossier.renvoyer": "Dossier renvoyé (incomplet)",
+  "dossier.refuser": "Dossier refusé",
 };
 
 export const actionLabel = (action: string) => ACTIONS[action] ?? action;

@@ -20,8 +20,8 @@ export const metadata: Metadata = { title: "Notes et résultats" };
 export default async function NotesPage({ searchParams }: PageProps<"/office/notes">) {
   const user = await requireOffice();
   const params = await searchParams;
-  const serie =
-    typeof params.serie === "string" && ["L", "S", "OSE"].includes(params.serie) ? params.serie : "S";
+  const allSerieCodes = (await requireDb().select({ code: series.code }).from(series)).map((x) => x.code);
+  const serie = typeof params.serie === "string" && allSerieCodes.includes(params.serie) ? params.serie : "S";
   const db = requireDb();
   const [session] = await db.select().from(examSessions).where(eq(examSessions.isCurrent, true)).limit(1);
   const published = Boolean(session?.resultsPublishAt && session.resultsPublishAt <= new Date());

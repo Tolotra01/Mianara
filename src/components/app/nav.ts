@@ -11,6 +11,10 @@ import {
   DoorOpen,
   FileStack,
   FileText,
+  FolderOpen,
+  Inbox,
+  School,
+  UserRound,
   Home,
   LayoutDashboard,
   type LucideIcon,
@@ -24,11 +28,12 @@ import {
 } from "lucide-react";
 import type { Role } from "@/lib/auth-shared";
 
+export type BadgeKey = "requests" | "notifications" | "applications" | "news";
 export type NavItem = {
   href: string;
   label: string;
   icon: LucideIcon;
-  badgeKey?: "requests" | "notifications";
+  badgeKey?: BadgeKey;
 };
 export type NavGroup = { label?: string; items: NavItem[] };
 
@@ -38,7 +43,9 @@ export const NAV: Record<Role, NavGroup[]> = {
     {
       label: "Candidats",
       items: [
+        { href: "/office/dossiers", label: "Dossiers des écoles", icon: Inbox, badgeKey: "applications" },
         { href: "/office/candidats", label: "Candidats", icon: Users },
+        { href: "/office/ecoles", label: "Écoles", icon: School },
         { href: "/office/liste-noire", label: "Liste noire", icon: Ban },
       ],
     },
@@ -56,6 +63,18 @@ export const NAV: Record<Role, NavGroup[]> = {
       items: [
         { href: "/office/notes", label: "Notes et résultats", icon: ClipboardList },
         { href: "/office/demandes", label: "Demandes", icon: FileStack, badgeKey: "requests" },
+        { href: "/office/actualites", label: "Proposer une actualité", icon: Newspaper },
+      ],
+    },
+  ],
+  school: [
+    {
+      items: [
+        { href: "/ecole", label: "Tableau de bord", icon: LayoutDashboard },
+        { href: "/ecole/dossiers", label: "Dossiers", icon: FolderOpen },
+        { href: "/ecole/candidats", label: "Candidats convoqués", icon: Ticket },
+        { href: "/ecole/actualites", label: "Proposer une actualité", icon: Newspaper },
+        { href: "/compte", label: "Mon compte", icon: UserCog },
       ],
     },
   ],
@@ -86,8 +105,10 @@ export const NAV: Record<Role, NavGroup[]> = {
       label: "Pilotage",
       items: [
         { href: "/admin/offices", label: "Offices du Bac", icon: Building },
+        { href: "/admin/ecoles", label: "Écoles", icon: School },
+        { href: "/admin/candidats-libres", label: "Candidats libres", icon: UserRound },
         { href: "/admin/session", label: "Paramètres de session", icon: Settings2 },
-        { href: "/admin/actualites", label: "Actualités", icon: Newspaper },
+        { href: "/admin/actualites", label: "Actualités", icon: Newspaper, badgeKey: "news" },
         { href: "/admin/journal", label: "Journal d'audit", icon: ScrollText },
       ],
     },

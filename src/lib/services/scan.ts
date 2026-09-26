@@ -26,6 +26,7 @@ import {
   type ScanType,
 } from "@/lib/bac-rules";
 import { verifyQr } from "@/lib/crypto";
+import { extractToken } from "@/lib/qr-content";
 
 export type ScanCard = {
   candidate: {
@@ -49,9 +50,10 @@ export type ScanCard = {
 export async function findCandidate(code: string, user: CurrentUser) {
   const value = code.trim();
   const db = requireDb();
-  const byQr = verifyQr(value);
-  if (value.startsWith("MIA1.") && !byQr)
-    return { error: "QR code invalide ou falsifié : signature incorrecte." } as const;
+  // Le QR contient l'identité en clair puis le jeton signé : seul le jeton fait foi.
+  const token = extractToken(value);
+  const byQr = token ? verifyQr(token) : null;
+  if (token && !byQr) return { error: "QR code invalide ou falsifié : signature incorrecte." } as const;
   const where = byQr ? eq(candidates.id, byQr) : eq(candidates.matricule, value.toUpperCase());
   const [c] = await db.select().from(candidates).where(where).limit(1);
   if (!c) return { error: "Aucun candidat ne correspond à ce code." } as const;

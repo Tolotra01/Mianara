@@ -4,7 +4,7 @@ import { Pencil, Plus } from "lucide-react";
 import { ActionForm, FieldError, SubmitButton } from "@/components/app/ActionForm";
 import { ModalButton } from "@/components/app/ConfirmAction";
 import { buttonClass } from "@/components/app/ui";
-import { saveNews } from "../actions";
+import type { ActionState } from "@/lib/action";
 
 type News = {
   id: number;
@@ -26,17 +26,34 @@ const ILLUSTRATIONS = [
   ["resultats", "Résultats"],
 ];
 
-export function NewsDialog({ item }: { item?: News }) {
+export function NewsDialog({
+  item,
+  action,
+  proposal = false,
+}: {
+  item?: News;
+  action: (state: ActionState, form: FormData) => Promise<ActionState>;
+  /** Proposition d'un Office ou d'une école : l'Admin décide de la publier. */
+  proposal?: boolean;
+}) {
   return (
     <ModalButton
-      label={item ? <span className="sr-only">Modifier</span> : "Nouvelle actualité"}
-      title={item ? "Modifier l'actualité" : "Nouvelle actualité"}
+      label={
+        item ? (
+          <span className="sr-only">Modifier</span>
+        ) : proposal ? (
+          "Proposer une actualité"
+        ) : (
+          "Nouvelle actualité"
+        )
+      }
+      title={item ? "Modifier l'actualité" : proposal ? "Proposer une actualité" : "Nouvelle actualité"}
       variant={item ? "ghost" : "primary"}
       size={item ? "sm" : "md"}
       icon={item ? <Pencil className="size-4" aria-hidden /> : <Plus className="size-5" />}
     >
       {(close) => (
-        <ActionForm action={saveNews} onSuccess={close} className="space-y-4">
+        <ActionForm action={action} onSuccess={close} className="space-y-4">
           {item && <input type="hidden" name="id" value={item.id} />}
           <label className="block">
             <span className="text-sm font-semibold">Titre</span>
@@ -97,20 +114,28 @@ export function NewsDialog({ item }: { item?: News }) {
               </select>
             </label>
           </div>
-          <label className="flex items-center gap-2 text-sm font-semibold">
-            <input
-              type="checkbox"
-              name="publish"
-              defaultChecked={item ? Boolean(item.publishedAt) : true}
-              className="size-4 accent-[var(--vert)]"
-            />
-            Publier sur le site public
-          </label>
+          {proposal ? (
+            <p className="rounded-xl bg-info-soft p-3 text-sm text-info">
+              L&apos;Administration relit la proposition et décide de sa publication.
+            </p>
+          ) : (
+            <label className="flex items-center gap-2 text-sm font-semibold">
+              <input
+                type="checkbox"
+                name="publish"
+                defaultChecked={item ? Boolean(item.publishedAt) : true}
+                className="size-4 accent-[var(--vert)]"
+              />
+              Publier sur le site public
+            </label>
+          )}
           <div className="flex justify-end gap-2">
             <button type="button" onClick={close} className={buttonClass("ghost")}>
               Annuler
             </button>
-            <SubmitButton className={buttonClass("primary")}>Enregistrer</SubmitButton>
+            <SubmitButton className={buttonClass("primary")}>
+              {proposal ? "Envoyer la proposition" : "Enregistrer"}
+            </SubmitButton>
           </div>
         </ActionForm>
       )}

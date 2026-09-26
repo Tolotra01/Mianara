@@ -13,12 +13,13 @@ async function main() {
   const db = requireDb();
   await db.execute(sql`
     truncate table audit_logs, notifications, payments, document_requests, blacklist, results, grades,
-      scans, supervisor_rooms, exams, candidate_photos, candidates, auth_sessions, rooms, exam_centers,
-      users, offices restart identity cascade
+      scans, supervisor_rooms, exams, applications, application_batches, candidate_photos, candidates,
+      auth_sessions, rooms, exam_centers, users, schools, offices restart identity cascade
   `);
   await db.execute(sql`alter sequence candidate_number_seq restart with 1`);
   await db.execute(sql`alter sequence request_number_seq restart with 1`);
   await db.execute(sql`update exam_sessions set results_publish_at = null, transcript_delay_days = 7`);
+  await db.execute(sql`delete from news where proposed_by is not null`);
   await db.execute(sql`update news set author_id = null where author_id is not null`);
   console.log("✓ Gestion remise à zéro.");
   await import("./seed-demo");

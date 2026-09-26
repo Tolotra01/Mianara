@@ -5,10 +5,20 @@ import { redirect } from "next/navigation";
 import { NotificationBell } from "@/components/app/NotificationBell";
 import { Sidebar } from "@/components/app/Sidebar";
 import { Toaster } from "@/components/app/Toaster";
+import { VisitBanner } from "@/components/app/VisitBanner";
+import { ReadOnlyProvider } from "@/components/app/ReadOnly";
+import { cookies } from "next/headers";
 import { requireDb } from "@/db";
-import { examSessions } from "@/db/schema";
-import { candidates, documentRequests, notifications } from "@/db/schema-gestion";
-import { getCurrentUser } from "@/lib/auth";
+import { examSessions, news } from "@/db/schema";
+import {
+  applications,
+  candidates,
+  documentRequests,
+  notifications,
+  offices,
+  schools,
+} from "@/db/schema-gestion";
+import { getCurrentUser, OFFICE_VISIT_COOKIE } from "@/lib/auth";
 import { formatDateTime } from "@/lib/bac-rules";
 
 export default async function EspaceLayout({ children }: { children: React.ReactNode }) {
@@ -16,38 +26,61 @@ export default async function EspaceLayout({ children }: { children: React.React
   if (!user) redirect("/connexion");
   const db = requireDb();
 
-  const [recent, [{ unread }], [session], pending] = await Promise.all([
-    db
-      .select()
-      .from(notifications)
-      .where(eq(notifications.userId, user.id))
-      .orderBy(desc(notifications.createdAt))
-      .limit(8),
-    db
-      .select({ unread: count() })
-      .from(notifications)
-      .where(and(eq(notifications.userId, user.id), isNull(notifications.readAt))),
-    db
-      .select({ year: examSessions.year })
-      .from(examSessions)
-      .where(eq(examSessions.isCurrent, true))
-      .limit(1),
-    user.role === "office" && user.officeId
-      ? db
-          .select({ n: count() })
-          .from(documentRequests)
-          .innerJoin(candidates, eq(candidates.id, documentRequests.candidateId))
-          .where(
-            and(
-              eq(candidates.officeId, user.officeId),
-              inArray(documentRequests.status, ["pending", "validated"]),
-            ),
-          )
-      : Promise.resolve([{ n: 0 }]),
-  ]);
+  const visitId =
+    user.role === "admin" ? Number((await cookies()).get(OFFICE_VISIT_COOKIE)?.value) || null : null;
+  const badgeOfficeId = user.role === "office" ? user.officeId : visitId;
+
+  const [recent, [{ unread }], [session], pending, [visitOffice], [appCount], [newsCount]] =
+    await Promise.all([
+      db
+        .select()
+        .from(notifications)
+        .where(eq(notifications.userId, user.id))
+        .orderBy(desc(notifications.createdAt))
+        .limit(8),
+      db
+        .select({ unread: count() })
+        .from(notifications)
+        .where(and(eq(notifications.userId, user.id), isNull(notifications.readAt))),
+      db
+        .select({ year: examSessions.year })
+        .from(examSessions)
+        .where(eq(examSessions.isCurrent, true))
+        .limit(1),
+      badgeOfficeId
+        ? db
+            .select({ n: count() })
+            .from(documentRequests)
+            .innerJoin(candidates, eq(candidates.id, documentRequests.candidateId))
+            .where(
+              and(
+                eq(candidates.officeId, badgeOfficeId),
+                inArray(documentRequests.status, ["pending", "validated"]),
+              ),
+            )
+        : Promise.resolve([{ n: 0 }]),
+      visitId
+        ? db.select({ name: offices.name }).from(offices).where(eq(offices.id, visitId))
+        : Promise.resolve([]),
+      badgeOfficeId
+        ? db
+            .select({ n: count() })
+            .from(applications)
+            .innerJoin(schools, eq(schools.id, applications.schoolId))
+            .where(and(eq(schools.officeId, badgeOfficeId), eq(applications.status, "submitted")))
+        : Promise.resolve([{ n: 0 }]),
+      user.role === "admin"
+        ? db.select({ n: count() }).from(news).where(eq(news.reviewStatus, "pending"))
+        : Promise.resolve([{ n: 0 }]),
+    ]);
 
   const notifHref = user.role === "candidate" ? "/candidat/notifications" : "/compte";
-  const subtitle = user.role === "candidate" ? `Session ${session?.year ?? ""}` : user.officeName;
+  const subtitle =
+    user.role === "candidate"
+      ? `Session ${session?.year ?? ""}`
+      : user.role === "school"
+        ? user.schoolName
+        : user.officeName;
 
   return (
     <Toaster>
@@ -55,7 +88,13 @@ export default async function EspaceLayout({ children }: { children: React.React
         <Sidebar
           role={user.role}
           user={{ fullName: user.fullName, username: user.username, subtitle }}
-          badges={{ requests: pending[0]?.n ?? 0, notifications: unread }}
+          badges={{
+            requests: pending[0]?.n ?? 0,
+            notifications: unread,
+            applications: appCount?.n ?? 0,
+            news: newsCount?.n ?? 0,
+          }}
+          visit={visitOffice ? { officeName: visitOffice.name } : null}
         />
         <div className="lg:pl-64">
           <header className="sticky top-0 z-30 flex h-16 items-center justify-end gap-2 border-b border-line bg-surface/85 px-4 backdrop-blur sm:px-8">
@@ -84,8 +123,9 @@ export default async function EspaceLayout({ children }: { children: React.React
               }))}
             />
           </header>
+          {visitOffice && <VisitBanner officeName={visitOffice.name} />}
           <main id="contenu" className="mx-auto w-full max-w-[1320px] px-4 py-8 sm:px-8">
-            {children}
+            <ReadOnlyProvider visiting={Boolean(visitOffice)}>{children}</ReadOnlyProvider>
           </main>
         </div>
       </div>

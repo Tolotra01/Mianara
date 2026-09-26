@@ -86,10 +86,11 @@ prend le relais quand l'Office enregistre un candidat validé.
 
 | Espace | Accès | Rôle |
 | --- | --- | --- |
-| Office du Bac | `/office` | Enregistrement des candidats (matricule, identifiants, QR signé et convocation PDF générés d'un coup), centres et salles, surveillants, emploi du temps, épreuves en direct, notes, délibération, publication, demandes de relevé et de diplôme, liste noire |
+| École | `/ecole` | Dossiers des élèves (identité, adresse, photo, pièces), envoi par lots à l'Office, suivi (envoyé, incomplet à corriger, non validé, validé), convocations de ses candidats (téléchargement groupé), propositions d'actualités |
+| Office du Bac | `/office` | Traitement des dossiers des écoles (validation groupée, renvoi incomplet, refus), candidats libres, écoles de l'Office, enregistrement des candidats (matricule, identifiants, QR signé et convocation PDF générés d'un coup), centres et salles, surveillants, emploi du temps, épreuves en direct, notes, délibération, publication, demandes de relevé et de diplôme, liste noire |
 | Candidat | `/candidat` | Parcours, convocation, épreuves et présence, résultats, demandes (paiement Mobile Money ou virement, ticket), notifications |
 | Surveillant | `/surveillant` | Ses salles et la liste des candidats. Le scan se fera avec l'application mobile |
-| Administration | `/admin` | Vue nationale agrégée, Offices et agents, paramètres de session, actualités de la vitrine, journal d'audit |
+| Administration | `/admin` | Vue nationale agrégée, Offices et agents, visite de l'espace d'un Office (consultation), écoles et leurs comptes, candidats libres, paramètres de session, actualités (et validation des propositions), journal d'audit |
 | Public | `/resultats` | Recherche d'un résultat par matricule, ou nom + prénom + date de naissance |
 
 ### Démarrer la démonstration
@@ -101,16 +102,21 @@ pnpm db:seed:demo     # Offices, comptes, centres, emploi du temps 2027, 12 cand
 pnpm db:reset-demo    # remet la gestion à zéro et recharge la démonstration
 ```
 
-Comptes du personnel (mot de passe `DEMO_PASSWORD`, par défaut `Mianara2027!`) : `admin`,
-`office.tana`, `surveillant.tana1`, `surveillant.tana2`. Les identifiants des candidats sont imprimés
+Comptes (mot de passe `DEMO_PASSWORD`, par défaut `Mianara2027!`) : `admin`, `office.tana`,
+`surveillant.tana1`, `surveillant.tana2`, et les écoles `ecole.andohalo`, `ecole.rabearivelo`,
+`ecole.alarobia` (lycée technique). Les identifiants des candidats sont imprimés
 par le script et figurent sur leur convocation (espace Office → fiche du candidat).
 
 ### Règles appliquées
 
 - Matricule `BAC{année}-{série}-{00001}` ; mot de passe temporaire à changer à la 1re connexion ;
   verrouillage 15 min après 5 échecs.
-- QR de convocation : jeton signé Ed25519 (identifiant + signature, aucune donnée personnelle),
-  dérivé de `APP_SECRET`. Changer ce secret invalide les QR imprimés.
+- QR de convocation : lisible par n'importe quel lecteur (nom, prénom, adresse, école, session,
+  série, matricule), suivi d'un jeton signé Ed25519 dérivé de `APP_SECRET` que vérifie l'application
+  de scan. Changer ce secret invalide les QR imprimés. Convocation au format A5.
+- Séries : Bac général (L, S, OSE) et Bac technique (TI industriel, TGC génie civil, TT tertiaire,
+  TA agricole, secteurs du METFP ; coefficients provisoires à confirmer). L'EPS (coefficient 2) a son
+  épreuve théorique dans l'emploi du temps.
 - Scans (RG-05 à RG-07) : entrée de −30 min jusqu'à l'heure exacte du début, fin d'épreuve jusqu'à
   +30 min, pas de fin d'épreuve sans entrée, anti-double scan. La logique est dans
   `src/lib/bac-rules.ts` et `src/lib/services/scan.ts`, prête pour l'API de l'application mobile.

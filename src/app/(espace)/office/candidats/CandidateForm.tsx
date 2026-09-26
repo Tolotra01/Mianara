@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import { ActionForm, FieldError, SubmitButton } from "@/components/app/ActionForm";
 import { buttonClass } from "@/components/app/ui";
 import type { ActionState } from "@/lib/action";
+import { PIECES } from "@/lib/pieces";
 
 type Values = {
   id?: string;
@@ -16,29 +17,41 @@ type Values = {
   serieCode?: string;
   kind?: string;
   schoolName?: string | null;
+  schoolId?: number | null;
+  address?: string | null;
+  pieces?: string[];
   cin?: string | null;
   phone?: string | null;
   email?: string | null;
   photoUrl?: string | null;
 };
 
-const SERIES = [
-  { code: "L", name: "Littéraire" },
-  { code: "S", name: "Scientifique" },
-  { code: "OSE", name: "Organisation, Société, Économie" },
-];
+export type SerieOption = { code: string; name: string; track: string };
 
 export function CandidateForm({
   action,
   values = {},
   submitLabel,
+  series,
+  schools,
+  mode = "office",
+  lockSerie,
+  hint,
 }: {
   action: (state: ActionState, form: FormData) => Promise<ActionState>;
   values?: Values;
   submitLabel: string;
+  series: SerieOption[];
+  /** Écoles de l'Office (mode office). */
+  schools?: { id: number; name: string }[];
+  /** office : l'agent choisit école ou libre ; school : dossier préparé par l'école. */
+  mode?: "office" | "school";
+  lockSerie?: boolean;
+  hint?: string;
 }) {
   const [kind, setKind] = useState(values.kind ?? "ecole");
   const editing = Boolean(values.id);
+  const serieLocked = lockSerie ?? (mode === "office" && editing);
 
   return (
     <ActionForm action={action} className="grid gap-6 lg:grid-cols-[240px_1fr]">
@@ -58,6 +71,13 @@ export function CandidateForm({
           <Input name="firstName" label="Prénoms" defaultValue={values.firstName} autoComplete="given-name" />
           <Input name="birthDate" label="Date de naissance" type="date" defaultValue={values.birthDate} />
           <Input name="birthPlace" label="Lieu de naissance" defaultValue={values.birthPlace} />
+          <Input
+            name="address"
+            label="Adresse"
+            defaultValue={values.address ?? ""}
+            className="sm:col-span-2"
+            hint="Imprimée sur la convocation et lisible dans son QR code."
+          />
           <div>
             <span className="text-sm font-semibold">Sexe</span>
             <div className="mt-1.5 flex gap-2">
@@ -90,61 +110,96 @@ export function CandidateForm({
         </fieldset>
 
         <fieldset>
-          <legend className="t-overline mb-3 text-muted">Série {editing && "(non modifiable)"}</legend>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {SERIES.map((s) => (
-              <label key={s.code} className={editing ? "cursor-not-allowed" : "cursor-pointer"}>
-                <input
-                  type="radio"
-                  name="serieCode"
-                  value={s.code}
-                  defaultChecked={values.serieCode === s.code}
-                  disabled={editing}
-                  className="peer sr-only"
-                />
-                <span className="flex items-center gap-3 rounded-xl border-2 border-line p-3 transition-all peer-checked:border-vert peer-checked:bg-vert-soft peer-focus-visible:outline-2 peer-focus-visible:outline-[var(--focus-ring)] peer-disabled:opacity-60">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-raised text-lg font-extrabold text-vert shadow-sm">
-                    {s.code}
-                  </span>
-                  <span className="text-sm leading-tight font-semibold">{s.name}</span>
-                </span>
-              </label>
-            ))}
-          </div>
+          <legend className="t-overline mb-3 text-muted">Série {serieLocked && "(non modifiable)"}</legend>
+          {(["general", "technique"] as const).map((track) => {
+            const list = series.filter((x) => x.track === track);
+            if (!list.length) return null;
+            return (
+              <div key={track} className="mb-3">
+                <p className="mb-2 text-sm font-semibold text-muted">
+                  {track === "general" ? "Bac général" : "Bac technique"}
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  {list.map((s) => (
+                    <label key={s.code} className={serieLocked ? "cursor-not-allowed" : "cursor-pointer"}>
+                      <input
+                        type="radio"
+                        name="serieCode"
+                        value={s.code}
+                        defaultChecked={values.serieCode === s.code}
+                        disabled={serieLocked}
+                        className="peer sr-only"
+                      />
+                      <span className="flex items-center gap-3 rounded-xl border-2 border-line p-3 transition-all peer-checked:border-vert peer-checked:bg-vert-soft peer-focus-visible:outline-2 peer-focus-visible:outline-[var(--focus-ring)] peer-disabled:opacity-60">
+                        <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-raised text-base font-extrabold text-vert shadow-sm">
+                          {s.code}
+                        </span>
+                        <span className="text-sm leading-tight font-semibold">{s.name}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          {serieLocked && values.serieCode && (
+            <input type="hidden" name="serieCode" value={values.serieCode} />
+          )}
           <FieldError name="serieCode" />
         </fieldset>
 
         <fieldset className="grid gap-4 sm:grid-cols-2">
-          <legend className="t-overline mb-3 text-muted">Candidature</legend>
-          <div className="sm:col-span-2">
-            <div className="flex gap-2">
-              {[
-                { v: "ecole", l: "Candidat d'école", icon: School },
-                { v: "libre", l: "Candidat libre", icon: UserRound },
-              ].map((o) => (
-                <label key={o.v} className="cursor-pointer">
-                  <input
-                    type="radio"
-                    name="kind"
-                    value={o.v}
-                    checked={kind === o.v}
-                    onChange={() => setKind(o.v)}
-                    className="peer sr-only"
-                  />
-                  <span className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2 font-semibold transition-colors peer-checked:border-vert peer-checked:bg-vert peer-checked:text-on-vert">
-                    <o.icon className="size-4" /> {o.l}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-          {kind === "ecole" && (
-            <Input
-              name="schoolName"
-              label="Établissement"
-              defaultValue={values.schoolName ?? ""}
-              className="sm:col-span-2"
-            />
+          <legend className="t-overline mb-3 text-muted">
+            {mode === "office" ? "Candidature" : "Contact"}
+          </legend>
+          {mode === "office" && (
+            <>
+              <div className="sm:col-span-2">
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { v: "ecole", l: "Candidat d'école", icon: School },
+                    { v: "libre", l: "Candidat libre", icon: UserRound },
+                  ].map((o) => (
+                    <label key={o.v} className="cursor-pointer">
+                      <input
+                        type="radio"
+                        name="kind"
+                        value={o.v}
+                        checked={kind === o.v}
+                        onChange={() => setKind(o.v)}
+                        className="peer sr-only"
+                      />
+                      <span className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2 font-semibold transition-colors peer-checked:border-vert peer-checked:bg-vert peer-checked:text-on-vert">
+                        <o.icon className="size-4" /> {o.l}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              {kind === "ecole" && (
+                <div className="sm:col-span-2">
+                  <label htmlFor="schoolId" className="text-sm font-semibold">
+                    Établissement
+                  </label>
+                  <select
+                    id="schoolId"
+                    name="schoolId"
+                    defaultValue={values.schoolId ?? ""}
+                    className="field-input mt-1.5"
+                  >
+                    <option value="" disabled>
+                      Choisir l&apos;établissement…
+                    </option>
+                    {(schools ?? []).map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                  <FieldError name="schoolId" />
+                </div>
+              )}
+            </>
           )}
           <Input
             name="phone"
@@ -156,11 +211,36 @@ export function CandidateForm({
           <Input name="email" label="Email (facultatif)" type="email" defaultValue={values.email ?? ""} />
         </fieldset>
 
+        {mode === "school" && (
+          <fieldset>
+            <legend className="t-overline mb-3 text-muted">
+              Pièces du dossier vérifiées par l&apos;établissement
+            </legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {PIECES.map((p) => (
+                <label
+                  key={p}
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-line p-3 hover:border-vert"
+                >
+                  <input
+                    type="checkbox"
+                    name="pieces"
+                    value={p}
+                    defaultChecked={values.pieces?.includes(p)}
+                    className="size-4 accent-[var(--vert)]"
+                  />
+                  <span className="text-sm font-semibold">{p}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
         <div className="flex flex-wrap items-center gap-3 border-t border-line pt-5">
           <SubmitButton className={buttonClass("primary")}>{submitLabel}</SubmitButton>
-          {!editing && (
+          {(hint || !editing) && (
             <p className="text-sm text-muted">
-              Le matricule, les identifiants et la convocation sont générés automatiquement.
+              {hint ?? "Le matricule, les identifiants et la convocation sont générés automatiquement."}
             </p>
           )}
         </div>

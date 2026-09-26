@@ -4,6 +4,7 @@ import { Ban, CircleCheck, Download, KeyRound, Pencil, Printer, RotateCcw } from
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
+import { candidateQrText } from "@/lib/pdf/convocation";
 import { ActionForm, SubmitButton } from "@/components/app/ActionForm";
 import { ConfirmAction } from "@/components/app/ConfirmAction";
 import {
@@ -32,8 +33,10 @@ import {
   results,
   rooms,
   scans,
+  schools,
   users,
 } from "@/db/schema-gestion";
+import { serieOptions } from "@/lib/candidate-input";
 import { requireOffice } from "@/lib/auth";
 import {
   DECISION_LABEL,
@@ -125,10 +128,22 @@ export default async function CandidatPage({ params, searchParams }: PageProps<"
         .limit(1),
     ]);
 
+  const [serieList, schoolList] = await Promise.all([
+    serieOptions(db),
+    db
+      .select({ id: schools.id, name: schools.name })
+      .from(schools)
+      .where(eq(schools.officeId, user.officeId))
+      .orderBy(asc(schools.name)),
+  ]);
   const isNew = sp.nouveau === "1";
   const editing = sp.modifier === "1";
   const tempPassword = c.tempPasswordEnc ? decrypt(c.tempPasswordEnc) : null;
-  const qr = await QRCode.toDataURL(c.qrToken, { margin: 2, width: 220, errorCorrectionLevel: "M" });
+  const qr = await QRCode.toDataURL((await candidateQrText(id)) ?? c.qrToken, {
+    margin: 2,
+    width: 220,
+    errorCorrectionLevel: "M",
+  });
   const status = CANDIDATE_STATUS[c.status];
   const published = Boolean(session.resultsPublishAt && session.resultsPublishAt <= new Date());
 
@@ -222,6 +237,8 @@ export default async function CandidatPage({ params, searchParams }: PageProps<"
             {editing ? (
               <CandidateForm
                 action={updateCandidate}
+                series={serieList}
+                schools={schoolList}
                 submitLabel="Enregistrer les modifications"
                 values={{ ...c, photoUrl: photo.length ? `/api/photos/${id}` : null }}
               />
@@ -233,6 +250,7 @@ export default async function CandidatPage({ params, searchParams }: PageProps<"
                   { label: "Né(e) le", value: `${formatDate(c.birthDate)} à ${c.birthPlace}` },
                   { label: "Sexe", value: c.gender === "F" ? "Féminin" : "Masculin" },
                   { label: "Candidature", value: c.kind === "ecole" ? `D'école · ${c.schoolName}` : "Libre" },
+                  { label: "Adresse", value: c.address },
                   { label: "CIN", value: c.cin, mono: true },
                   { label: "Téléphone", value: c.phone },
                   { label: "Email", value: c.email },
@@ -355,9 +373,10 @@ export default async function CandidatPage({ params, searchParams }: PageProps<"
                 className="size-32 rounded-lg border border-line bg-white p-1"
               />
               <div className="min-w-0 text-sm">
-                <p className="font-bold">QR signé (Ed25519)</p>
+                <p className="font-bold">QR lisible et signé</p>
                 <p className="text-muted">
-                  Il ne contient que l&apos;identifiant du candidat et une signature.
+                  Un lecteur QR ordinaire affiche l&apos;identité du candidat ; la signature Ed25519 est
+                  vérifiée par l&apos;application de scan.
                 </p>
                 <p className="mt-3 text-xs font-bold text-muted uppercase">Mot de passe</p>
                 <p className="font-semibold">

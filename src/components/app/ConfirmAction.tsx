@@ -4,6 +4,7 @@ import { TriangleAlert } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import type { ActionState } from "@/lib/action";
 import { ActionForm, SubmitButton } from "./ActionForm";
+import { useReadOnly } from "./ReadOnly";
 import { buttonClass, type ButtonVariant } from "./ui";
 
 /**
@@ -34,11 +35,14 @@ export function ConfirmAction({
   icon?: ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const readOnly = useReadOnly();
   return (
     <>
       <button
         type="button"
         className={buttonClass(variant, size)}
+        disabled={readOnly}
+        title={readOnly ? "Consultation seule" : undefined}
         onClick={() => dialog.current?.showModal()}
       >
         {icon}
@@ -101,6 +105,7 @@ export function ModalButton({
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
+  const readOnly = useReadOnly();
   const close = useCallback(() => setOpen(false), []);
 
   // Le <dialog> natif suit l'état React (fond, touche Échap, focus piégé).
@@ -113,7 +118,13 @@ export function ModalButton({
 
   return (
     <>
-      <button type="button" className={buttonClass(variant, size)} onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className={buttonClass(variant, size)}
+        disabled={readOnly}
+        title={readOnly ? "Consultation seule" : undefined}
+        onClick={() => setOpen(true)}
+      >
         {icon}
         {label}
       </button>

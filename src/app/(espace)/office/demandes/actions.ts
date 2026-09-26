@@ -7,13 +7,13 @@ import { requireDb } from "@/db";
 import { candidates, documentRequests, payments, scans } from "@/db/schema-gestion";
 import { type ActionState, fail, ok } from "@/lib/action";
 import { audit, notify } from "@/lib/audit";
-import { requireOffice } from "@/lib/auth";
+import { requireOfficeAgent } from "@/lib/auth";
 import { formatDateTime, parseLocalDateTime } from "@/lib/bac-rules";
 import { DOC_LABEL } from "@/lib/labels";
 import { activeBlacklist } from "@/lib/services/requests";
 
 async function load(id: string) {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const db = requireDb();
   const [row] = await db
     .select({ r: documentRequests, c: candidates, p: payments })

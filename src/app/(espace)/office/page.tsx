@@ -136,12 +136,16 @@ export default async function OfficeDashboard() {
     <>
       <PageHeader
         eyebrow={user.officeName ?? "Office du Bac"}
-        title={`Bonjour, ${user.fullName.split(" ")[0]}`}
+        title={
+          user.visiting ? (user.officeName ?? "Office du Bac") : `Bonjour, ${user.fullName.split(" ")[0]}`
+        }
         description={`Session ${session?.year ?? ""} : voici où en est votre Office.`}
         actions={
-          <LinkButton href="/office/candidats/nouveau">
-            <UserPlus className="size-5" /> Enregistrer un candidat
-          </LinkButton>
+          !user.visiting && (
+            <LinkButton href="/office/candidats/nouveau">
+              <UserPlus className="size-5" /> Enregistrer un candidat
+            </LinkButton>
+          )
         }
       />
 

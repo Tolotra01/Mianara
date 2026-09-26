@@ -5,6 +5,7 @@ import { CoefBars } from "@/components/CoefBars";
 import { GuideNav } from "@/components/GuideNav";
 import { SERIE_ART, SerieLArt } from "@/components/illustrations/Spots";
 import { Breadcrumb, Container, PageHero, SourceLink } from "@/components/ui";
+import { SOURCES, TECH_SERIES } from "@/content/bac";
 import { getBacData } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -127,6 +128,29 @@ export default async function SeriesPage() {
           );
         })}
         <SourceLink source={data.sources.coefficients2027} />
+
+        <section className="rounded-4xl border border-line bg-raised p-8 shadow-sm">
+          <p className="t-overline text-mena">Et le Bac technique ?</p>
+          <h2 className="t-h1 mt-2">Quatre secteurs, un métier au bout</h2>
+          <p className="mt-2 max-w-2xl text-muted">
+            Le Bac technologique se prépare en trois ans après le BEPC, dans les lycées techniques du
+            Ministère de l&apos;Enseignement technique et de la Formation professionnelle.
+          </p>
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {TECH_SERIES.map((t) => (
+              <li key={t.code} className="rounded-2xl bg-sunken p-5">
+                <span className="grid size-12 place-items-center rounded-xl bg-raised font-extrabold text-vert shadow-sm">
+                  {t.code}
+                </span>
+                <p className="t-h3 mt-3">{t.name}</p>
+                <p className="mt-1 text-sm text-muted">{t.careers.join(", ")}</p>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4">
+            <SourceLink source={SOURCES.metfp} />
+          </div>
+        </section>
       </Container>
 
       <GuideNav current="series" />

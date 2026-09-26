@@ -4,7 +4,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { requireDb } from "@/db";
-import { authSessions, candidates, offices, users } from "@/db/schema-gestion";
+import { authSessions, candidates, offices, schools, users } from "@/db/schema-gestion";
 import { sessionToken, sha256 } from "./crypto";
 
 import type { Role } from "./auth-shared";
@@ -22,6 +22,7 @@ export const HOME_BY_ROLE: Record<Role, string> = {
   office: "/office",
   supervisor: "/surveillant",
   candidate: "/candidat",
+  school: "/ecole",
 };
 
 export { checkPassword, hashPassword } from "./password";
@@ -70,6 +71,8 @@ export type CurrentUser = {
   phone: string | null;
   officeId: number | null;
   officeName: string | null;
+  schoolId: number | null;
+  schoolName: string | null;
   mustChangePassword: boolean;
 };
 
@@ -88,11 +91,14 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
       phone: users.phone,
       officeId: users.officeId,
       officeName: offices.name,
+      schoolId: users.schoolId,
+      schoolName: schools.name,
       mustChangePassword: users.mustChangePassword,
     })
     .from(authSessions)
     .innerJoin(users, eq(users.id, authSessions.userId))
     .leftJoin(offices, eq(offices.id, users.officeId))
+    .leftJoin(schools, eq(schools.id, users.schoolId))
     .where(
       and(
         eq(authSessions.id, sha256(token)),
@@ -117,11 +123,43 @@ export async function requireUser(roles: Role[], opts: { allowPasswordChange?: b
   return user;
 }
 
-/** Office de rattachement d'un agent (obligatoire pour le rôle office). */
-export async function requireOffice() {
+/** Cookie posé quand l'Admin visite l'espace d'un Office (consultation seule). */
+export const OFFICE_VISIT_COOKIE = "mianara_office_visit";
+
+export type OfficeContext = CurrentUser & { officeId: number; officeName: string | null; visiting: boolean };
+
+/**
+ * Espace Office : un agent de l'Office, ou l'Admin en visite (lecture seule).
+ * À utiliser dans les pages ; les actions d'écriture utilisent requireOfficeAgent().
+ */
+export async function requireOffice(): Promise<OfficeContext> {
+  const user = await requireUser(["office", "admin"]);
+  if (user.role === "admin") {
+    const visit = Number((await cookies()).get(OFFICE_VISIT_COOKIE)?.value);
+    if (!visit) redirect("/admin/offices");
+    const [office] = await requireDb()
+      .select({ id: offices.id, name: offices.name })
+      .from(offices)
+      .where(eq(offices.id, visit));
+    if (!office) redirect("/admin/offices");
+    return { ...user, officeId: office.id, officeName: office.name, visiting: true };
+  }
+  if (!user.officeId) throw new Error("Compte Office sans Office de rattachement.");
+  return { ...user, officeId: user.officeId, visiting: false };
+}
+
+/** Actions d'écriture de l'Office : réservées à ses agents (l'Admin en visite ne modifie rien). */
+export async function requireOfficeAgent(): Promise<OfficeContext> {
   const user = await requireUser(["office"]);
   if (!user.officeId) throw new Error("Compte Office sans Office de rattachement.");
-  return { ...user, officeId: user.officeId };
+  return { ...user, officeId: user.officeId, visiting: false };
+}
+
+/** Espace école : compte rattaché à un établissement. */
+export async function requireSchool() {
+  const user = await requireUser(["school"]);
+  if (!user.schoolId || !user.officeId) throw new Error("Compte école sans établissement.");
+  return { ...user, schoolId: user.schoolId, officeId: user.officeId };
 }
 
 /** Fiche candidat de l'utilisateur connecté. */

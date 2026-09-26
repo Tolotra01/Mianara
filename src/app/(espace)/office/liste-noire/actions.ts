@@ -7,7 +7,7 @@ import { requireDb } from "@/db";
 import { blacklist, candidates } from "@/db/schema-gestion";
 import { type ActionState, fail, ok } from "@/lib/action";
 import { audit, notify } from "@/lib/audit";
-import { requireOffice } from "@/lib/auth";
+import { requireOfficeAgent } from "@/lib/auth";
 
 const Entry = z.object({
   candidateId: z.uuid(),
@@ -17,7 +17,7 @@ const Entry = z.object({
 
 /** OFF-08 : inscription en liste noire, qui bloque les demandes de relevé et de diplôme (RG-13). */
 export async function addToBlacklist(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const parsed = Entry.safeParse(Object.fromEntries(form));
   if (!parsed.success) return fail(parsed.error.issues[0].message);
   const db = requireDb();
@@ -57,7 +57,7 @@ export async function addToBlacklist(_: ActionState, form: FormData): Promise<Ac
 }
 
 export async function liftBlacklist(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const id = Number(form.get("id"));
   const db = requireDb();
   const [entry] = await db

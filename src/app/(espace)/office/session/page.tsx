@@ -7,7 +7,7 @@ import { Alert, Card, DataTable, EmptyState, KeyValues, PageHeader, StatusBadge 
 import { requireDb } from "@/db";
 import { examSessions, serieSubjects, series, subjects } from "@/db/schema";
 import { exams } from "@/db/schema-gestion";
-import { requireUser } from "@/lib/auth";
+import { requireOffice } from "@/lib/auth";
 import {
   formatAriary,
   formatDate,
@@ -22,10 +22,10 @@ import { ExamModal } from "./ExamModal";
 export const metadata: Metadata = { title: "Emploi du temps" };
 
 export default async function SessionPage({ searchParams }: PageProps<"/office/session">) {
-  await requireUser(["office"]);
+  await requireOffice();
   const params = await searchParams;
-  const serie =
-    typeof params.serie === "string" && ["L", "S", "OSE"].includes(params.serie) ? params.serie : "S";
+  const allSerieCodes = (await requireDb().select({ code: series.code }).from(series)).map((x) => x.code);
+  const serie = typeof params.serie === "string" && allSerieCodes.includes(params.serie) ? params.serie : "S";
   const db = requireDb();
   const [session] = await db.select().from(examSessions).where(eq(examSessions.isCurrent, true)).limit(1);
   if (!session)

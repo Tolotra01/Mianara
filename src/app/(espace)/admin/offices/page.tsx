@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { asc, eq, sql } from "drizzle-orm";
-import { Building, MapPin, Power } from "lucide-react";
+import { Building, Eye, MapPin, Power } from "lucide-react";
+import { startOfficeVisit } from "@/app/actions/visit";
 import { ConfirmAction } from "@/components/app/ConfirmAction";
-import { Card, Mono, PageHeader, StatusBadge } from "@/components/app/ui";
+import { buttonClass, Card, Mono, PageHeader, StatusBadge } from "@/components/app/ui";
 import { requireDb } from "@/db";
 import { offices, users } from "@/db/schema-gestion";
 import { requireUser } from "@/lib/auth";
@@ -30,7 +31,7 @@ export default async function OfficesPage() {
     <>
       <PageHeader
         title="Offices du Bac"
-        description="Un Office par université. Chaque agent ne voit que les candidats de son Office."
+        description="Un Office par université. Visitez l'espace d'un Office pour voir ce que voient ses agents, en consultation."
         actions={<OfficeDialog />}
       />
       <div className="stagger grid gap-4 lg:grid-cols-2">
@@ -88,6 +89,12 @@ export default async function OfficesPage() {
                   {team.length === 0 && <li className="text-sm text-muted">Aucun agent.</li>}
                 </ul>
                 <div className="mt-4 flex flex-wrap gap-2 border-t border-line pt-4">
+                  <form action={startOfficeVisit}>
+                    <input type="hidden" name="officeId" value={o.id} />
+                    <button type="submit" className={buttonClass("primary", "sm")}>
+                      <Eye className="size-4" /> Visiter l&apos;espace
+                    </button>
+                  </form>
                   <AgentDialog officeId={o.id} officeName={o.name} />
                   <ConfirmAction
                     action={toggleOffice}

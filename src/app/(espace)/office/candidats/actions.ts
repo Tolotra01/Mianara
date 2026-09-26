@@ -5,10 +5,11 @@ import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireDb } from "@/db";
-import { candidatePhotos, candidates, examCenters, rooms, users } from "@/db/schema-gestion";
+import { candidatePhotos, candidates, examCenters, rooms, schools, users } from "@/db/schema-gestion";
+import { IdentityInput, serieExists } from "@/lib/candidate-input";
 import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
 import { audit } from "@/lib/audit";
-import { requireOffice } from "@/lib/auth";
+import { requireOfficeAgent } from "@/lib/auth";
 import {
   assignRooms,
   currentSession,
@@ -16,43 +17,23 @@ import {
   resetCandidatePassword,
 } from "@/lib/services/candidates";
 
-const text = (label: string, max = 80) => z.string().trim().min(1, `${label} obligatoire.`).max(max);
-const optional = (max = 80) =>
-  z
-    .string()
-    .trim()
-    .max(max)
-    .optional()
-    .transform((v) => v || null);
-
-const CandidateInput = z
-  .object({
-    lastName: text("Nom"),
-    firstName: text("Prénoms"),
-    gender: z.enum(["F", "M"], { error: "Choisissez le sexe." }),
-    birthDate: z.iso.date("Date de naissance invalide."),
-    birthPlace: text("Lieu de naissance"),
-    serieCode: z.enum(["L", "S", "OSE"], { error: "Choisissez la série." }),
+const CandidateInput = IdentityInput.and(
+  z.object({
     kind: z.enum(["ecole", "libre"]),
-    schoolName: optional(120),
-    cin: optional(20),
-    phone: optional(20),
-    email: z
-      .union([z.literal(""), z.email("Email invalide.")])
-      .optional()
-      .transform((v) => v || null),
-  })
-  .superRefine((v, ctx) => {
-    if (v.kind === "ecole" && !v.schoolName)
-      ctx.addIssue({
-        code: "custom",
-        path: ["schoolName"],
-        message: "Établissement obligatoire pour un candidat d'école.",
-      });
-    const age = (Date.now() - new Date(v.birthDate).getTime()) / (365.25 * 86400000);
-    if (age < 12 || age > 80)
-      ctx.addIssue({ code: "custom", path: ["birthDate"], message: "Date de naissance improbable." });
-  });
+    schoolId: z.coerce.number().int().optional(),
+  }),
+);
+
+/** École de l'Office choisie pour un candidat d'école. */
+async function resolveSchool(kind: string, schoolId: number | undefined, officeId: number) {
+  if (kind !== "ecole") return { school: null };
+  if (!schoolId) return { error: "Choisissez l'établissement." };
+  const [school] = await requireDb()
+    .select()
+    .from(schools)
+    .where(and(eq(schools.id, schoolId), eq(schools.officeId, officeId)));
+  return school ? { school } : { error: "Établissement introuvable." };
+}
 
 const MAX_PHOTO = 2 * 1024 * 1024;
 
@@ -66,13 +47,21 @@ async function readPhoto(form: FormData) {
 
 /** OFF-01/02 : enregistrement d'un candidat dont le dossier est complet et validé. */
 export async function createCandidate(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const parsed = CandidateInput.safeParse(Object.fromEntries(form));
   if (!parsed.success) return fail("Vérifiez les champs signalés.", zodErrors(parsed.error.issues));
   const { photo, error } = await readPhoto(form);
   if (error) return fail(error, { photo: error });
+  const { school, error: schoolError } = await resolveSchool(
+    parsed.data.kind,
+    parsed.data.schoolId,
+    user.officeId,
+  );
+  if (schoolError) return fail(schoolError, { schoolId: schoolError });
 
   const db = requireDb();
+  if (!(await serieExists(parsed.data.serieCode, db)))
+    return fail("Série inconnue.", { serieCode: "Série inconnue." });
   const session = await currentSession(db);
   const [twin] = await db
     .select({ matricule: candidates.matricule })
@@ -89,14 +78,24 @@ export async function createCandidate(_: ActionState, form: FormData): Promise<A
   if (twin) return fail(`Ce candidat est déjà enregistré pour cette session (${twin.matricule}).`);
 
   const { candidate } = await db.transaction((tx) =>
-    registerCandidate({ ...parsed.data, officeId: user.officeId, photo }, user.id, tx),
+    registerCandidate(
+      {
+        ...parsed.data,
+        officeId: user.officeId,
+        photo,
+        schoolId: school?.id ?? null,
+        schoolName: school?.name ?? null,
+      },
+      user.id,
+      tx,
+    ),
   );
   redirect(`/office/candidats/${candidate.id}?nouveau=1`);
 }
 
 /** Correction d'un dossier par l'Office (journalisée). La série et le matricule ne changent pas. */
 export async function updateCandidate(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const id = String(form.get("id") ?? "");
   const db = requireDb();
   const [before] = await db
@@ -110,10 +109,23 @@ export async function updateCandidate(_: ActionState, form: FormData): Promise<A
   if (!parsed.success) return fail("Vérifiez les champs signalés.", zodErrors(parsed.error.issues));
   const { photo, error } = await readPhoto(form);
   if (error) return fail(error, { photo: error });
+  const { school, error: schoolError } = await resolveSchool(
+    parsed.data.kind,
+    parsed.data.schoolId,
+    user.officeId,
+  );
+  if (schoolError) return fail(schoolError, { schoolId: schoolError });
 
-  const { serieCode: _serie, ...data } = parsed.data;
+  const { serieCode: _serie, schoolId: _schoolId, ...data } = parsed.data;
   void _serie;
-  const changes = { ...data, lastName: data.lastName.toUpperCase(), updatedAt: new Date() };
+  void _schoolId;
+  const changes = {
+    ...data,
+    lastName: data.lastName.toUpperCase(),
+    schoolId: school?.id ?? null,
+    schoolName: school?.name ?? null,
+    updatedAt: new Date(),
+  };
   await db.transaction(async (tx) => {
     await tx.update(candidates).set(changes).where(eq(candidates.id, id));
     if (before.userId) {
@@ -145,7 +157,7 @@ export async function updateCandidate(_: ActionState, form: FormData): Promise<A
 }
 
 export async function resetPassword(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const id = String(form.get("id") ?? "");
   const db = requireDb();
   const [c] = await db
@@ -160,7 +172,7 @@ export async function resetPassword(_: ActionState, form: FormData): Promise<Act
 
 /** Placement d'un candidat dans une salle précise (ou retrait). */
 export async function placeCandidate(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const id = String(form.get("id") ?? "");
   const roomId = Number(form.get("roomId")) || null;
   const db = requireDb();
@@ -207,7 +219,7 @@ export async function placeCandidate(_: ActionState, form: FormData): Promise<Ac
 }
 
 export async function autoAssign(): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const { placed, remaining } = await requireDb().transaction((tx) =>
     assignRooms(user.officeId, user.id, tx),
   );
@@ -220,7 +232,7 @@ export async function autoAssign(): Promise<ActionState> {
 
 /** Réactivation manuelle d'un compte candidat (RG-15). */
 export async function reactivateAccount(_: ActionState, form: FormData): Promise<ActionState> {
-  const user = await requireOffice();
+  const user = await requireOfficeAgent();
   const id = String(form.get("id") ?? "");
   const db = requireDb();
   const [c] = await db

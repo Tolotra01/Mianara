@@ -15,9 +15,11 @@ export type NewCandidate = {
   birthDate: string;
   birthPlace: string;
   gender: "F" | "M";
-  serieCode: "L" | "S" | "OSE";
+  serieCode: string;
   kind: "ecole" | "libre";
+  schoolId?: number | null;
   schoolName?: string | null;
+  address?: string | null;
   cin?: string | null;
   phone?: string | null;
   email?: string | null;
@@ -76,6 +78,8 @@ export async function registerCandidate(input: NewCandidate, actorId: string | n
       phone: input.phone || null,
       email: input.email || null,
       schoolName: input.schoolName || null,
+      schoolId: input.schoolId ?? null,
+      address: input.address || null,
       kind: input.kind,
       serieCode: input.serieCode,
       centerId: input.centerId ?? null,

@@ -5,7 +5,7 @@ import { refresh } from "next/cache";
 import { z } from "zod";
 import { requireDb } from "@/db";
 import { examSessions, news } from "@/db/schema";
-import { offices, users } from "@/db/schema-gestion";
+import { offices, schools, users } from "@/db/schema-gestion";
 import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { hashPassword, requireUser } from "@/lib/auth";
@@ -269,4 +269,128 @@ export async function archiveNews(_: ActionState, form: FormData): Promise<Actio
   });
   refresh();
   return ok(n.archivedAt ? "Actualité restaurée." : "Actualité archivée : retirée du site.");
+}
+
+/* ---------- Écoles ---------- */
+
+const SchoolInput = z.object({
+  officeId: z.coerce.number().int().positive("Choisissez l'Office."),
+  code: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-Z0-9-]{3,20}$/, "Code : 3 à 20 lettres, chiffres ou tirets."),
+  name: z.string().trim().min(3, "Nom obligatoire.").max(120),
+  kind: z.enum(["public", "prive"]),
+  commune: z.string().trim().min(2, "Commune obligatoire.").max(80),
+  address: z.string().trim().max(160).optional(),
+  contactName: z.string().trim().max(80).optional(),
+  phone: z.string().trim().max(20).optional(),
+  email: z.union([z.literal(""), z.email("Email invalide.")]).optional(),
+});
+
+export async function saveSchool(_: ActionState, form: FormData): Promise<ActionState> {
+  const user = await admin();
+  const parsed = SchoolInput.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return fail("Vérifiez le formulaire.", zodErrors(parsed.error.issues));
+  const d = parsed.data;
+  const data = {
+    ...d,
+    address: d.address || null,
+    contactName: d.contactName || null,
+    phone: d.phone || null,
+    email: d.email || null,
+  };
+  const id = Number(form.get("id")) || null;
+  const db = requireDb();
+  const [taken] = await db.select({ id: schools.id }).from(schools).where(eq(schools.code, d.code));
+  if (taken && taken.id !== id) return fail("Code déjà utilisé.", { code: "Code déjà utilisé." });
+  if (id) {
+    await db.update(schools).set(data).where(eq(schools.id, id));
+    await audit({
+      actorId: user.id,
+      action: "ecole.modifier",
+      table: "schools",
+      recordId: id,
+      newData: data,
+    });
+  } else {
+    const [s] = await db.insert(schools).values(data).returning({ id: schools.id });
+    await audit({ actorId: user.id, action: "ecole.creer", table: "schools", recordId: s.id, newData: data });
+  }
+  refresh();
+  return ok(id ? "École mise à jour." : "École créée.");
+}
+
+export async function toggleSchool(_: ActionState, form: FormData): Promise<ActionState> {
+  const user = await admin();
+  const id = Number(form.get("id"));
+  const db = requireDb();
+  const [s] = await db.select().from(schools).where(eq(schools.id, id));
+  if (!s) return fail("École introuvable.");
+  await db.transaction(async (tx) => {
+    await tx.update(schools).set({ isActive: !s.isActive }).where(eq(schools.id, id));
+    if (s.isActive) await tx.update(users).set({ isActive: false }).where(eq(users.schoolId, id));
+    await audit(
+      {
+        actorId: user.id,
+        action: "ecole.modifier",
+        table: "schools",
+        recordId: id,
+        newData: { isActive: !s.isActive },
+      },
+      tx,
+    );
+  });
+  refresh();
+  return ok(s.isActive ? "École désactivée (comptes fermés)." : "École réactivée.");
+}
+
+const SchoolAccount = z.object({
+  schoolId: z.coerce.number().int().positive(),
+  fullName: z.string().trim().min(3, "Nom complet obligatoire.").max(80),
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^[a-z0-9._-]{4,40}$/, "4 à 40 caractères : lettres, chiffres, point, tiret."),
+});
+
+/** Compte de connexion d'une école (direction ou secrétariat). */
+export async function createSchoolAccount(_: ActionState, form: FormData): Promise<ActionState> {
+  const user = await admin();
+  const parsed = SchoolAccount.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return fail("Vérifiez le formulaire.", zodErrors(parsed.error.issues));
+  const db = requireDb();
+  const [school] = await db.select().from(schools).where(eq(schools.id, parsed.data.schoolId));
+  if (!school) return fail("École introuvable.");
+  const [taken] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(sql`lower(${users.username}) = ${parsed.data.username}`);
+  if (taken) return fail("Identifiant déjà utilisé.", { username: "Identifiant déjà utilisé." });
+  const password = temporaryPassword();
+  const [account] = await db
+    .insert(users)
+    .values({
+      role: "school",
+      username: parsed.data.username,
+      fullName: parsed.data.fullName,
+      schoolId: school.id,
+      officeId: school.officeId,
+      email: school.email,
+      phone: school.phone,
+      passwordHash: await hashPassword(password),
+      mustChangePassword: true,
+    })
+    .returning({ id: users.id });
+  await audit({
+    actorId: user.id,
+    action: "ecole.compte",
+    table: "users",
+    recordId: account.id,
+    newData: parsed.data,
+  });
+  refresh();
+  return ok(`Compte ${parsed.data.username} créé.`, { secret: password });
 }

@@ -20,7 +20,7 @@ async function staff() {
 
 const ExamInput = z
   .object({
-    serieCode: z.enum(["L", "S", "OSE"]),
+    serieCode: z.string().trim().min(1).max(8),
     subjectId: z.coerce.number().int().positive("Choisissez la matière."),
     startsAt: z
       .string()
