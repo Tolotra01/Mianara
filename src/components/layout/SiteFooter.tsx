@@ -16,6 +16,7 @@ export function SiteFooter({ t }: { t: Dict }) {
     { href: "/guide/resultats", label: "Résultats et après" },
   ];
   const site = [
+    { href: "/resultats", label: "Résultats du Bac" },
     { href: "/actualites", label: t.nav.news },
     { href: "/aide", label: t.nav.help },
     { href: "/connexion", label: t.nav.login },

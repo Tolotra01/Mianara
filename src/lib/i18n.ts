@@ -46,9 +46,9 @@ const fr = {
     lead: "Il répond en français ou en malagasy, à partir des informations officielles du guide.",
     cta: "Discuter avec l'assistant",
     examples: [
-      "Quels documents pour m'inscrire ?",
+      "Quels sont les documents nécessaires pour m'inscrire ?",
       "Quels sont les coefficients en série S ?",
-      "Quelle moyenne pour avoir une mention Bien ?",
+      "Quelle moyenne visée pour avoir une mention Bien ?",
     ],
   },
   news: {

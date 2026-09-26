@@ -33,7 +33,9 @@ export const sources = pgTable("sources", {
 });
 
 export const series = pgTable("series", {
-  code: text("code").primaryKey(), // 'L', 'S', 'OSE'
+  code: text("code").primaryKey(), // 'L', 'S', 'OSE', 'TI', 'TGC'…
+  /** Filière : Bac général (L, S, OSE) ou Bac technique (secteurs du METFP). */
+  track: text("track").notNull().default("general"),
   name: text("name").notNull(),
   nameMg: text("name_mg").notNull(),
   tagline: text("tagline").notNull(),
@@ -68,10 +70,25 @@ export const serieSubjects = pgTable(
   (t) => [primaryKey({ columns: [t.serieCode, t.subjectId] })],
 );
 
+/** Session du Bac : une par an, sans rattrapage (RG-16). Paramètres réglés par l'Admin. */
 export const examSessions = pgTable("exam_sessions", {
   id: serial("id").primaryKey(),
   year: integer("year").notNull().unique(),
   isCurrent: boolean("is_current").notNull().default(false),
+  examsStart: date("exams_start"),
+  examsEnd: date("exams_end"),
+  /** Date et heure de publication des résultats ; les notes sont invisibles avant (RG-09). */
+  resultsPublishAt: timestamp("results_publish_at", { withTimezone: true }),
+  /** Seuil d'admission retenu par le jury : 10 par défaut, jamais sous 9,50 (décret 2021-242). */
+  admissionThreshold: numeric("admission_threshold", { precision: 4, scale: 2, mode: "number" })
+    .notNull()
+    .default(10),
+  /** Ouverture des demandes de relevé : J + n après la publication (RG-11). */
+  transcriptDelayDays: integer("transcript_delay_days").notNull().default(7),
+  transcriptFee: integer("transcript_fee").notNull().default(10000),
+  diplomaFee: integer("diploma_fee").notNull().default(20000),
+  /** Désactivation des comptes ajournés ou exclus, n jours après publication (RG-15). */
+  accountDisableDays: integer("account_disable_days").notNull().default(60),
 });
 
 /* ---------- Guide ---------- */
@@ -136,8 +153,15 @@ export const news = pgTable("news", {
   importance: newsImportanceEnum("importance").notNull().default("normal"),
   illustration: text("illustration").notNull(),
   sourceKey: text("source_key").references(() => sources.key),
-  // Rempli par l'espace Admin / Office du Bac dans la phase suivante.
   authorId: text("author_id"),
+  /**
+   * Circuit de publication : les Offices et les écoles proposent, l'Admin décide.
+   * null = créée par l'Admin ; 'pending' = proposée, en attente ; 'approved' ; 'rejected'.
+   */
+  reviewStatus: text("review_status"),
+  reviewNote: text("review_note"),
+  proposedBy: text("proposed_by"),
+  proposedByLabel: text("proposed_by_label"),
   publishedAt: timestamp("published_at", { withTimezone: true }),
   archivedAt: timestamp("archived_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

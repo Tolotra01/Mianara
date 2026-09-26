@@ -1,8 +1,7 @@
-# Mianara — vitrine publique
+# Mianara
 
-Guide illustré du Baccalauréat malgache (séries L, S, OSE) avec un assistant IA en français et en malagasy.
-C'est la première brique de la plateforme Mianara ; les espaces Candidat, École, Office du Bac et Admin
-viendront se brancher sur la même base.
+Plateforme du Baccalauréat malgache : une vitrine publique (guide illustré, actualités, assistant IA en
+français et en malagasy) et la gestion du Bac (Office du Bac, candidats, surveillants, administration).
 
 Menu : **Accueil · Guide · Actualités · Aide · Connexion**.
 
@@ -22,14 +21,14 @@ Menu : **Accueil · Guide · Actualités · Aide · Connexion**.
 
 ```bash
 pnpm install
-cp .env.example .env      # puis renseignez DATABASE_URL et ANTHROPIC_API_KEY
+cp .env.example .env      # puis renseignez DATABASE_URL et GEMINI_API_KEY
 pnpm db:push              # crée les tables
 pnpm db:seed              # charge les données du Bac
 pnpm dev
 ```
 
 Sans `DATABASE_URL`, le site tourne avec les données de `src/content/bac.ts` : pratique pour travailler
-sur le design sans base. Sans `ANTHROPIC_API_KEY`, l'assistant affiche « pas encore configuré ».
+sur le design sans base. Sans clé d'IA, l'assistant répond à partir des fiches du site (FAQ).
 
 ### Neon
 
@@ -73,14 +72,92 @@ drizzle/               migrations SQL générées
 ## Assistant IA
 
 `POST /api/assistant` : valide la conversation (20 messages max), construit un prompt à partir des
-données en base, puis appelle Claude en streaming. Le modèle se règle avec `ANTHROPIC_MODEL`
-(par défaut `claude-opus-5`, effort bas pour des réponses rapides). Si le modèle décline une question,
-l'API la relance sur le modèle de repli recommandé (`fallbacks: "default"`). Une limite simple de
-20 questions / 10 min / IP protège la clé.
+données en base, puis appelle un fournisseur d'IA en streaming. Une limite simple de 20 questions /
+10 min / IP protège la clé.
+
+| `ASSISTANT_PROVIDER` | Fournisseur | Réglages |
+| --- | --- | --- |
+| `gemini` | Google Gemini, offre gratuite avec quotas | `GEMINI_API_KEY`, `GEMINI_MODEL` (défaut `gemini-flash-latest`) |
+| `claude` | Claude, API payante | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (défaut `claude-opus-5`), `ANTHROPIC_WORKSPACE_ID` |
+| `faq` | Aucune IA : recherche dans les fiches du site | — |
+
+Laissé vide, le fournisseur est choisi selon les clés renseignées (Gemini, puis Claude, puis FAQ).
+Si l'IA échoue avant de répondre (clé invalide, quota gratuit épuisé, crédit à zéro, panne),
+l'élève reçoit la réponse de secours tirée des fiches (`src/lib/assistant-faq.ts` : FAQ, frais,
+calendrier, dossier, séries, mentions) au lieu d'une erreur. En développement, la cause de l'échec
+est ajoutée sous la réponse.
+
+Avec Claude, l'effort est bas pour des réponses rapides, et si le modèle décline une question, l'API
+la relance sur le modèle de repli recommandé (`fallbacks: "default"`).
+
+Si la clé API n'est pas rattachée à un espace de travail, l'API refuse l'appel avec
+« This API key is not scoped to a workspace ». Il faut alors renseigner `ANTHROPIC_WORKSPACE_ID`
+(Console → Settings → Workspaces) : la route l'envoie dans l'en-tête `anthropic-workspace-id`, que le
+SDK n'ajoute pas de lui-même pour une authentification par clé.
 
 L'assistant n'a accès à aucun dossier personnel : il renvoie vers le lycée ou l'Office du Bac.
 
+## Gestion du Bac (phase 2)
+
+Le dépôt et le contrôle des dossiers restent manuels (élève → lycée → Office du Bac). La plateforme
+prend le relais quand l'Office enregistre un candidat validé.
+
+| Espace | Accès | Rôle |
+| --- | --- | --- |
+| École | `/ecole` | Dossiers des élèves (identité, adresse, photo, pièces), envoi par lots à l'Office, suivi (envoyé, incomplet à corriger, non validé, validé), convocations de ses candidats (téléchargement groupé), propositions d'actualités |
+| Office du Bac | `/office` | Traitement des dossiers des écoles (validation groupée, renvoi incomplet, refus), candidats libres, écoles de l'Office, enregistrement des candidats (matricule, identifiants, QR signé et convocation PDF générés d'un coup), centres et salles, surveillants, emploi du temps, épreuves en direct, notes, délibération, publication, demandes de relevé et de diplôme, liste noire |
+| Candidat | `/candidat` | Parcours, convocation, épreuves et présence, résultats, demandes (paiement Mobile Money ou virement, ticket), notifications |
+| Surveillant | `/surveillant` | Ses salles et la liste des candidats. Le scan se fera avec l'application mobile |
+| Administration | `/admin` | Vue nationale agrégée, Offices et agents, visite de l'espace d'un Office (consultation), écoles et leurs comptes, candidats libres, paramètres de session, actualités (et validation des propositions), journal d'audit |
+| Public | `/resultats` | Recherche d'un résultat par matricule, ou nom + prénom + date de naissance |
+
+### Démarrer la démonstration
+
+```bash
+pnpm db:push          # tables (vitrine + gestion)
+pnpm db:seed          # référentiel du Bac
+pnpm db:seed:demo     # Offices, comptes, centres, emploi du temps 2027, 12 candidats
+pnpm db:reset-demo    # remet la gestion à zéro et recharge la démonstration
+```
+
+Comptes (mot de passe `DEMO_PASSWORD`, par défaut `Mianara2027!`) : `admin`, `office.tana`,
+`surveillant.tana1`, `surveillant.tana2`, et les écoles `ecole.andohalo`, `ecole.rabearivelo`,
+`ecole.alarobia` (lycée technique). Les identifiants des candidats sont imprimés
+par le script et figurent sur leur convocation (espace Office → fiche du candidat).
+
+### Règles appliquées
+
+- Matricule `BAC{année}-{série}-{00001}` ; mot de passe temporaire à changer à la 1re connexion ;
+  verrouillage 15 min après 5 échecs.
+- QR de convocation : lisible par n'importe quel lecteur (nom, prénom, adresse, école, session,
+  série, matricule), suivi d'un jeton signé Ed25519 dérivé de `APP_SECRET` que vérifie l'application
+  de scan. Changer ce secret invalide les QR imprimés. Convocation au format A5.
+- Séries : Bac général (L, S, OSE) et Bac technique (TI industriel, TGC génie civil, TT tertiaire,
+  TA agricole, secteurs du METFP ; coefficients provisoires à confirmer). L'EPS (coefficient 2) a son
+  épreuve théorique dans l'emploi du temps.
+- Scans (RG-05 à RG-07) : entrée de −30 min jusqu'à l'heure exacte du début, fin d'épreuve jusqu'à
+  +30 min, pas de fin d'épreuve sans entrée, anti-double scan. La logique est dans
+  `src/lib/bac-rules.ts` et `src/lib/services/scan.ts`, prête pour l'API de l'application mobile.
+- Délibération : moyenne pondérée, note manquante = 0, 0 éliminatoire, seuil du jury (10 par défaut,
+  jamais sous 9,50), mentions, fraude constatée → « Fraude ». Notes invisibles avant publication et
+  verrouillées après ; seule l'Admin peut annuler une publication.
+- Demandes : relevé à J+n après publication (admis seulement), diplôme après retrait du relevé, une
+  demande par document, référence de paiement unique, liste noire bloquante. Documents papier remis
+  au guichet après contrôle d'identité.
+- Chaque écriture est tracée dans `audit_logs`. Les SMS et emails sont simulés (journaux du serveur)
+  en attendant un fournisseur.
+
+Tests des règles : `pnpm test`.
+
+### Limites connues
+
+- Photos et reçus sont stockés en base (`bytea`). En production, prévoir un stockage objet
+  (Supabase Storage, Cloudflare R2).
+- Le contrôle d'accès est fait dans le code serveur (rôle + Office sur chaque requête), pas encore
+  par Row Level Security PostgreSQL.
+- Les tarifs du relevé et du diplôme (10 000 / 20 000 Ar) sont des valeurs de départ à confirmer.
+
 ## Suite
 
-Phase 2 : authentification et espaces Candidat, École, Office du Bac, Admin (cahier des charges
-BacConnect), sur les mêmes tables (`series`, `subjects`, `serie_subjects`, `exam_sessions`, `news`).
+Phase 3 : application mobile de scan (entrée, sorties, fin d'épreuve, fraude, remise au guichet),
+hors ligne avec synchronisation, branchée sur `src/lib/services/scan.ts`.

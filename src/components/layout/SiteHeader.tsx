@@ -36,7 +36,7 @@ export function SiteHeader({ t, lang }: { t: Dict; lang: Lang }) {
           <LangSwitch lang={lang} label={t.langLabel} />
           <Link
             href="/connexion"
-            className="hidden items-center gap-2 rounded-full bg-linear-to-r from-vert to-vert-hover px-5 py-2.5 text-sm font-bold text-on-vert shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:inline-flex"
+            className="hidden items-center gap-2 rounded-full bg-linear-to-r from-vert to-vert-hover px-5 py-2.5 text-sm font-bold text-on-vert shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md md:inline-flex"
           >
             {t.nav.login}
             <ArrowRight className="size-4" />

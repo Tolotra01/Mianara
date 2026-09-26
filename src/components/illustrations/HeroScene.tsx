@@ -27,16 +27,26 @@ import {
  * `slice` rogne les côtés mais garde le bas du viewBox. Le fond reste donc
  * transparent (hérité de `.hero-band`) plutôt que blanc.
  */
-export function HeroScene({ greeting = "Salama !", className }: { greeting?: string; className?: string }) {
+export function HeroScene({
+  greeting = "Salama !",
+  className,
+  framing = "wide",
+}: {
+  greeting?: string;
+  className?: string;
+  framing?: "mobile" | "wide";
+}) {
+  const titleId = `hero-title-${framing}`;
+
   return (
     <svg
       viewBox="10 83 1400 457"
-      preserveAspectRatio="xMidYMax slice"
+      preserveAspectRatio={`${framing === "mobile" ? "xMax" : "xMid"}YMax slice`}
       className={`ill h-full w-full ${className ?? ""}`}
       role="img"
-      aria-labelledby="hero-title"
+      aria-labelledby={titleId}
     >
-      <title id="hero-title">
+      <title id={titleId}>
         Matin sur les Hautes Terres : collines lointaines, rizières en terrasses et route de
         latérite bordée de ravinala ; deux élèves en uniforme attendent un taxi-brousse.
       </title>

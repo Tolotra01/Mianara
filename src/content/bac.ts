@@ -9,7 +9,10 @@
  * l'Office du Bac » et s'affiche comme tel dans l'interface.
  */
 
+/** Séries du Bac général (guide de la vitrine). */
 export type SerieCode = "L" | "S" | "OSE";
+/** Séries du Bac technique (secteurs du METFP). */
+export type TechSerieCode = "TI" | "TGC" | "TT" | "TA";
 export type CandidateType = "tous" | "ecole" | "libre";
 export type NewsImportance = "low" | "normal" | "high" | "urgent";
 
@@ -45,6 +48,10 @@ export const SOURCES = {
   frais2026: {
     label: "Moov.mg — Année scolaire 2025-2026 des candidats au Bacc (14/01/2026)",
     url: "https://moov.mg/article/111203-enseignement-lannee-scolaire-2025-2026-des-candidats-au-baccalaureat-setendra-sur-11-mois",
+  },
+  metfp: {
+    label: "METFP — Parcours diplômants (Bac technologique : industriel, génie civil, tertiaire, agricole)",
+    url: "https://www.metfp.gov.mg/formation/diplomant",
   },
   eps: {
     label: "Newsmada — EPS : coefficient 2 pour les nouvelles séries (11/06/2024)",
@@ -138,11 +145,14 @@ export const SUBJECTS: Subject[] = [
   { code: "SVT", name: "SVT", nameMg: "Siansa momba ny fiainana sy ny tany" },
   { code: "SES", name: "Sciences économiques et sociales", nameMg: "Siansa ara-toekarena sy sosialy" },
   { code: "LV2", name: "Langue vivante 2", nameMg: "Fiteny vahiny faharoa" },
+  { code: "EPS", name: "EPS (épreuve théorique)", nameMg: "Fanatanjahan-tena (andrana teorika)" },
+  { code: "SPE", name: "Enseignement technologique de spécialité", nameMg: "Taranja teknika manokana" },
+  { code: "PRO", name: "Travaux pratiques d'atelier", nameMg: "Asa fanaovana amin'ny atelier" },
   { code: "AUT", name: "Autres disciplines", nameMg: "Taranja hafa" },
 ];
 
 export type SerieSubject = {
-  serieCode: SerieCode;
+  serieCode: SerieCode | TechSerieCode;
   subjectCode: string;
   coefficient: number;
   isCore: boolean;
@@ -151,7 +161,10 @@ export type SerieSubject = {
 };
 
 const AUTRES_NOTE =
-  "Complément jusqu'au total de 30 annoncé (philosophie, EPS…) : répartition exacte à confirmer par l'arrêté officiel.";
+  "Complément jusqu'au total de 30 annoncé (philosophie…) : répartition exacte à confirmer par l'arrêté officiel.";
+const EPS_NOTE =
+  "Coefficient 2 dans les séries L, S et OSE (notée sur 40) ; épreuve théorique inscrite à l'emploi du temps.";
+const TECH_NOTE = "Bac technique : coefficients à confirmer avec le METFP.";
 
 export const SERIE_SUBJECTS: SerieSubject[] = [
   // Série L — total 30
@@ -185,7 +198,8 @@ export const SERIE_SUBJECTS: SerieSubject[] = [
     confirmed: true,
     note: "Espagnol, russe ou allemand",
   },
-  { serieCode: "L", subjectCode: "AUT", coefficient: 4, isCore: false, confirmed: false, note: AUTRES_NOTE },
+  { serieCode: "L", subjectCode: "EPS", coefficient: 2, isCore: false, confirmed: true, note: EPS_NOTE },
+  { serieCode: "L", subjectCode: "AUT", coefficient: 2, isCore: false, confirmed: false, note: AUTRES_NOTE },
 
   // Série S — total 30
   { serieCode: "S", subjectCode: "MATH", coefficient: 5, isCore: true, confirmed: true },
@@ -195,7 +209,8 @@ export const SERIE_SUBJECTS: SerieSubject[] = [
   { serieCode: "S", subjectCode: "FRA", coefficient: 2, isCore: false, confirmed: true },
   { serieCode: "S", subjectCode: "ANG", coefficient: 2, isCore: false, confirmed: true },
   { serieCode: "S", subjectCode: "HG", coefficient: 2, isCore: false, confirmed: true },
-  { serieCode: "S", subjectCode: "AUT", coefficient: 7, isCore: false, confirmed: false, note: AUTRES_NOTE },
+  { serieCode: "S", subjectCode: "EPS", coefficient: 2, isCore: false, confirmed: true, note: EPS_NOTE },
+  { serieCode: "S", subjectCode: "AUT", coefficient: 5, isCore: false, confirmed: false, note: AUTRES_NOTE },
 
   // Série OSE — total 30
   { serieCode: "OSE", subjectCode: "MATH", coefficient: 5, isCore: true, confirmed: true },
@@ -206,15 +221,95 @@ export const SERIE_SUBJECTS: SerieSubject[] = [
   { serieCode: "OSE", subjectCode: "ANG", coefficient: 2, isCore: false, confirmed: true },
   { serieCode: "OSE", subjectCode: "PC", coefficient: 2, isCore: false, confirmed: true },
   { serieCode: "OSE", subjectCode: "SVT", coefficient: 2, isCore: false, confirmed: true },
+  { serieCode: "OSE", subjectCode: "EPS", coefficient: 2, isCore: false, confirmed: true, note: EPS_NOTE },
   {
     serieCode: "OSE",
     subjectCode: "AUT",
-    coefficient: 5,
+    coefficient: 3,
     isCore: false,
     confirmed: false,
     note: AUTRES_NOTE,
   },
 ];
+
+/* ------------------------------------------------------------------ */
+/* Bac technique (secteurs du Bac technologique, METFP)               */
+/* ------------------------------------------------------------------ */
+
+export type TechSerie = Omit<Serie, "code"> & { code: TechSerieCode };
+
+const techSerie = (
+  code: TechSerieCode,
+  name: string,
+  nameMg: string,
+  careers: string[],
+  sortOrder: number,
+): TechSerie => ({
+  code,
+  name,
+  nameMg,
+  tagline: `Bac technique · secteur ${name.toLowerCase()}.`,
+  description: `Baccalauréat technologique du secteur ${name.toLowerCase()} (Ministère de l'Enseignement technique et de la Formation professionnelle).`,
+  forWhom: ["Tu aimes le concret", "Tu veux un métier technique", "Tu apprends en pratiquant"],
+  careers,
+  formerOptions: "Bac technique",
+  sortOrder,
+});
+
+export const TECH_SERIES: TechSerie[] = [
+  techSerie(
+    "TI",
+    "Industriel",
+    "Indostrialy",
+    ["Électricité", "Mécanique", "Maintenance", "Électronique"],
+    11,
+  ),
+  techSerie(
+    "TGC",
+    "Génie civil",
+    "Fanorenana",
+    ["Bâtiment", "Travaux publics", "Topographie", "Conduite de chantier"],
+    12,
+  ),
+  techSerie(
+    "TT",
+    "Tertiaire",
+    "Varotra sy fitantanana",
+    ["Comptabilité", "Commerce", "Gestion", "Secrétariat"],
+    13,
+  ),
+  techSerie(
+    "TA",
+    "Agricole",
+    "Fambolena sy fiompiana",
+    ["Agronomie", "Élevage", "Agroalimentaire", "Environnement"],
+    14,
+  ),
+];
+
+/** Grille provisoire commune aux séries techniques (total 30), à confirmer avec le METFP. */
+export const TECH_SERIE_SUBJECTS: SerieSubject[] = TECH_SERIES.flatMap(({ code }) =>
+  (
+    [
+      ["SPE", 8, true],
+      ["PRO", 6, true],
+      ["MATH", 4, false],
+      [code === "TA" ? "SVT" : code === "TT" ? "HG" : "PC", 3, false],
+      ["FRA", 2, false],
+      ["MLG", 2, false],
+      ["ANG", 2, false],
+      ["EPS", 2, false],
+      ["AUT", 1, false],
+    ] as const
+  ).map(([subjectCode, coefficient, isCore]) => ({
+    serieCode: code,
+    subjectCode,
+    coefficient,
+    isCore,
+    confirmed: false,
+    note: TECH_NOTE,
+  })),
+);
 
 /* ------------------------------------------------------------------ */
 /* Règles de réussite (décret n° 2021-242)                            */

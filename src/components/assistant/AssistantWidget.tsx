@@ -8,7 +8,10 @@ import { AssistantAvatar } from "@/components/illustrations/AssistantAvatar";
 import { AssistantChat } from "./AssistantChat";
 import { ASK_EVENT } from "./events";
 
-/** Assistant flottant, présent sur toutes les pages sauf la page Aide (qui l'intègre). */
+/**
+ * Assistant flottant, présent sur toutes les pages sauf la page Aide (qui l'intègre).
+ * Sur téléphone il s'ouvre en plein écran ; à partir de `sm`, en panneau flottant.
+ */
 export function AssistantWidget({
   t,
   lang,
@@ -37,25 +40,36 @@ export function AssistantWidget({
     };
   }, []);
 
+  // En plein écran (téléphone), la page derrière ne doit pas défiler.
+  useEffect(() => {
+    if (!open || !window.matchMedia("(max-width: 639px)").matches) return;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = overflow;
+    };
+  }, [open]);
+
   if (pathname === "/aide") return null;
 
   return (
     <>
       {open && (
         <section
+          role="dialog"
           aria-label={t.title}
-          className="a-pop fixed right-4 bottom-24 z-50 flex h-[min(620px,calc(100dvh-8rem))] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-line bg-raised shadow-md"
+          className="a-pop fixed inset-0 z-50 flex h-dvh flex-col overflow-hidden bg-raised sm:inset-auto sm:right-4 sm:bottom-24 sm:h-[min(640px,calc(100dvh-8rem))] sm:w-[min(420px,calc(100vw-2rem))] sm:rounded-3xl sm:border sm:border-line sm:shadow-md lg:right-6 lg:w-[440px]"
         >
-          <header className="flex items-center gap-3 bg-vert px-4 py-3 text-on-vert">
-            <AssistantAvatar className="size-10 ring-2 ring-on-vert/40" />
+          <header className="flex items-center gap-3 bg-vert px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 text-on-vert">
+            <AssistantAvatar className="size-10 shrink-0 ring-2 ring-on-vert/40" />
             <div className="min-w-0 flex-1">
-              <p className="font-bold">{t.title}</p>
+              <p className="truncate font-bold">{t.title}</p>
               <p className="truncate text-sm opacity-85">{t.subtitle}</p>
             </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="grid size-10 place-items-center rounded-full hover:bg-white/15"
+              className="grid size-11 shrink-0 place-items-center rounded-full hover:bg-white/15"
               aria-label={t.close}
             >
               <X className="size-5" />
@@ -67,6 +81,7 @@ export function AssistantWidget({
             suggestions={suggestions}
             pending={pending}
             onPendingSent={() => setPending(null)}
+            autoFocus
             className="flex-1"
           />
         </section>
@@ -77,7 +92,7 @@ export function AssistantWidget({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-label={open ? t.close : t.open}
-        className="group fixed right-4 bottom-4 z-50 flex items-center gap-3 rounded-full bg-vert py-2 pr-5 pl-2 text-on-vert shadow-md transition-transform hover:-translate-y-0.5 hover:bg-vert-hover"
+        className={`group fixed right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 items-center gap-3 rounded-full bg-vert p-1.5 text-on-vert shadow-md transition-transform hover:-translate-y-0.5 hover:bg-vert-hover sm:right-4 sm:bottom-4 sm:flex sm:py-2 sm:pr-5 sm:pl-2 lg:right-6 lg:bottom-6 ${open ? "hidden" : "flex"}`}
       >
         <span className="relative">
           <AssistantAvatar className="size-12 ring-2 ring-on-vert/40" />

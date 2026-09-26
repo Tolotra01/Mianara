@@ -37,7 +37,7 @@ function localBacData(): BacData {
   return {
     series: bac.SERIES,
     coefficients: bac.SERIE_SUBJECTS.map((ss) => ({
-      serieCode: ss.serieCode,
+      serieCode: ss.serieCode as bac.SerieCode,
       subjectCode: ss.subjectCode,
       subjectName: subjectName.get(ss.subjectCode) ?? ss.subjectCode,
       coefficient: ss.coefficient,
@@ -65,7 +65,8 @@ export const getBacData = cache(async (): Promise<BacData> => {
   if (!db) return localBacData();
 
   const [series, coefficients, fees, dossier, calendar, tips, faqs, sources] = await Promise.all([
-    db.select().from(t.series).orderBy(asc(t.series.sortOrder)),
+    // La vitrine présente le Bac général ; le Bac technique est géré dans les espaces.
+    db.select().from(t.series).where(eq(t.series.track, "general")).orderBy(asc(t.series.sortOrder)),
     db
       .select({
         serieCode: t.serieSubjects.serieCode,
@@ -78,6 +79,7 @@ export const getBacData = cache(async (): Promise<BacData> => {
       })
       .from(t.serieSubjects)
       .innerJoin(t.subjects, eq(t.serieSubjects.subjectId, t.subjects.id))
+      .innerJoin(t.series, and(eq(t.series.code, t.serieSubjects.serieCode), eq(t.series.track, "general")))
       .orderBy(desc(t.serieSubjects.coefficient), asc(t.subjects.id)),
     db.select().from(t.registrationFees).orderBy(asc(t.registrationFees.amountAriary)),
     db.select().from(t.dossierItems).orderBy(asc(t.dossierItems.sortOrder)),
@@ -88,7 +90,7 @@ export const getBacData = cache(async (): Promise<BacData> => {
   ]);
 
   return {
-    series: series.map((s) => ({ ...s, code: s.code as bac.SerieCode })),
+    series: series.map(({ track: _track, ...s }) => ({ ...s, code: s.code as bac.SerieCode })),
     coefficients: coefficients.map((c) => ({ ...c, serieCode: c.serieCode as bac.SerieCode })),
     fees: fees.map((f) => ({
       candidateType: f.candidateType as bac.Fee["candidateType"],
