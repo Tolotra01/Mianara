@@ -14,7 +14,7 @@ import { PasswordFields } from "./PasswordFields";
 export const metadata: Metadata = { title: "Mon compte" };
 
 export default async function ComptePage() {
-  const user = await requireUser(["admin", "office", "supervisor", "candidate"]);
+  const user = await requireUser(["admin", "office", "supervisor", "candidate", "teacher"]);
   const history = await requireDb()
     .select()
     .from(auditLogs)

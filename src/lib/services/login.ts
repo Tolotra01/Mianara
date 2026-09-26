@@ -5,6 +5,7 @@ import { examSessions } from "@/db/schema";
 import { candidates, users } from "@/db/schema-gestion";
 import { audit } from "@/lib/audit";
 import { LOCK_MINUTES, MAX_FAILED_ATTEMPTS } from "@/lib/auth";
+import { isCandidateAccessClosed } from "@/lib/candidate-access";
 import { checkPassword } from "@/lib/password";
 
 const WRONG = "Identifiant ou mot de passe incorrect.";
@@ -71,14 +72,8 @@ export async function authenticate(
       .innerJoin(examSessions, eq(examSessions.id, candidates.sessionId))
       .where(eq(candidates.userId, user.id))
       .limit(1);
-    const closed =
-      c?.status === "disabled" ||
-      (c &&
-        !c.reactivatedAt &&
-        ["failed", "fraud"].includes(c.status) &&
-        c.publishAt &&
-        Date.now() > c.publishAt.getTime() + c.days * 86400000);
-    if (closed)
+    // RG-15 : compte fermé quelques semaines après un ajournement ou une exclusion.
+    if (c && isCandidateAccessClosed(c))
       return { error: "Votre compte est désactivé. L'Office du Bacc peut le réactiver sur demande." };
   }
 

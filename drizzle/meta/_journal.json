@@ -36,6 +36,27 @@
       "when": 1790429906931,
       "tag": "0004_worthless_quentin_quire",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790432517880,
+      "tag": "0005_mobile_revision_sessions",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790439300000,
+      "tag": "0006_learning_marketplace",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790439360000,
+      "tag": "0007_coaching_payment_settings",
+      "breakpoints": true
     }
   ]
 }
