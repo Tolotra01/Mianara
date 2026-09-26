@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   BookOpen,
+  ChevronRight,
   Compass,
   FolderCheck,
   GraduationCap,
@@ -36,7 +37,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------- Héros ---------- */}
-      <section className="hero-band relative isolate overflow-hidden bg-[#1E3A33]">
+      <section className="hero-band relative isolate overflow-hidden bg-white">
         {/* Panorama : colline lointaine, rizières en terrasses, route de latérite
             et ravinala couvrent toute la largeur. Bande basse sur mobile pour
             laisser la place au titre, plein cadre à partir de lg. */}
@@ -73,41 +74,44 @@ export default async function HomePage() {
       </section>
 
       {/* ---------- Parcours en 5 étapes ---------- */}
-      <section className="bg-raised py-20">
+      <section className="journey-band py-20 overflow-hidden">
         <Container>
           <SectionTitle overline={t.journey.overline} title={t.journey.title} center />
-          <ol className="relative grid gap-8 sm:grid-cols-5">
-            <svg
-              className="pointer-events-none absolute top-12 left-[10%] hidden h-8 w-[80%] sm:block"
-              viewBox="0 0 800 32"
-              preserveAspectRatio="none"
-              aria-hidden
-            >
-              <path
-                d="M0 16 C100 -8 100 40 200 16 C300 -8 300 40 400 16 C500 -8 500 40 600 16 C700 -8 700 40 800 16"
-                fill="none"
-                stroke="var(--line-strong)"
-                strokeWidth="3"
-                strokeDasharray="10 10"
-                className="a-dash"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
-            {JOURNEY.map((step, i) => (
-              <li key={step.href} className="relative">
-                <Link href={step.href} className="group flex flex-col items-center text-center">
-                  <span
-                    className={`relative grid size-24 place-items-center rounded-full ${step.color} shadow-md ring-8 ring-raised transition-transform group-hover:-translate-y-1 group-hover:rotate-3`}
+
+          <ol className="mt-16 flex flex-wrap justify-center gap-6 lg:gap-0 lg:-space-x-8">
+            {JOURNEY.map((step, i) => {
+              const rotations = ["-rotate-6", "-rotate-3", "rotate-0", "rotate-3", "rotate-6"];
+              const offsets = ["lg:translate-y-6", "lg:translate-y-2", "lg:-translate-y-2", "lg:translate-y-2", "lg:translate-y-6"];
+
+              return (
+                <li
+                  key={step.href}
+                  className={`relative transition-all duration-300 hover:z-20 hover:-translate-y-4 hover:rotate-0 hover:scale-105 ${rotations[i]} ${offsets[i]}`}
+                >
+                  <Link
+                    href={step.href}
+                    className="group flex h-64 w-48 flex-col items-center justify-between rounded-3xl border border-line bg-raised p-6 text-center shadow-lg transition-shadow hover:shadow-2xl"
                   >
-                    <step.icon className="size-10" strokeWidth={1.8} />
-                    <span className="absolute -top-1 -right-1 grid size-8 place-items-center rounded-full bg-soleil text-sm font-extrabold text-ink ring-4 ring-raised">
+                    {/* Numéro en haut */}
+                    <span className="self-start text-4xl font-black text-line-strong">
                       {i + 1}
                     </span>
-                  </span>
-                  <span className="t-h3 mt-4 group-hover:text-vert">{t.journey.steps[i]}</span>
-                </Link>
-              </li>
-            ))}
+
+                    {/* Icône centrale */}
+                    <span
+                      className={`grid size-16 place-items-center rounded-2xl shadow-sm ${step.color}`}
+                    >
+                      <step.icon className="size-8" strokeWidth={1.8} />
+                    </span>
+
+                    {/* Texte */}
+                    <span className="t-h3 transition-colors group-hover:text-vert">
+                      {t.journey.steps[i]}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
           </ol>
         </Container>
       </section>

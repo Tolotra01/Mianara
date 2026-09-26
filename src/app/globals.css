@@ -143,7 +143,39 @@
   --line-strong: #6b7f76;
   --soleil-soft: rgb(242 179 61 / 0.18);
   --warning: #f5c35f;
+  /* `body` résout `color: var(--ink)` une fois pour toutes : sans cette
+     déclaration, le titre hériterait du noir du thème clair sur la scène
+     sombre. */
+  color: var(--ink);
   color-scheme: dark;
+}
+
+/* Section « Cinq étapes jusqu'au diplôme » : volontairement claire dans les
+   deux thèmes — elle sert de respiration entre le bandeau sombre du hero et la
+   section « Séries ». Les cartes blanches se posent sur un dégradé vert pâle
+   vers crème, d'où les tokens du thème clair reimposés ici. */
+.journey-band {
+  --surface: #f8f6f1;
+  --surface-raised: #ffffff;
+  --line: #dce3de;
+  --line-strong: #7a8b83;
+  --ink: #12241d;
+  --ink-muted: #4f5e57;
+  --vert: #0e6b4f;
+  --vert-hover: #0a4a37;
+  --vert-soft: #e6f2ec;
+  --on-vert: #ffffff;
+  --tany-mena: #c2492b;
+  --soleil: #f2b33d;
+  --info: #1d5fa8;
+  background: radial-gradient(
+    118% 96% at 50% 0%,
+    #eaf4ee 0%,
+    #f6f4e4 58%,
+    #fdf7e8 100%
+  );
+  color: var(--ink);
+  color-scheme: light;
 }
 
 @theme inline {

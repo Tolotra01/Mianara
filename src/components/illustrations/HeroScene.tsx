@@ -27,7 +27,7 @@ export function HeroScene({ greeting = "Salama !", className }: { greeting?: str
     <svg
       viewBox="0 83 1440 540"
       preserveAspectRatio="xMidYMax slice"
-      className={`ill h-full w-full ${className ?? ""}`}
+      className={`ill h-full w-full ${className ?? ""} bg-white`}
       role="img"
       aria-labelledby="hero-title"
     >
