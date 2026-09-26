@@ -275,7 +275,13 @@ export const scans = pgTable(
       .references(() => users.id),
     type: scanTypeEnum("type").notNull(),
     comment: text("comment"),
+    /** Heure du téléphone au moment du scan (l'application peut synchroniser plus tard). */
     scannedAt: timestamp("scanned_at", { withTimezone: true }).notNull().defaultNow(),
+    /** Réception par le serveur. */
+    syncedAt: timestamp("synced_at", { withTimezone: true }).notNull().defaultNow(),
+    deviceId: text("device_id"),
+    /** Écart entre l'horloge du téléphone et celle du serveur à la synchronisation (secondes). */
+    clockDriftSeconds: integer("clock_drift_seconds"),
   },
   (t) => [index().on(t.examId, t.candidateId, t.type)],
 );

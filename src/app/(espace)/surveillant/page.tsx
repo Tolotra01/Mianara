@@ -45,7 +45,7 @@ export default async function SurveillantPage() {
         description="Les salles que vous surveillez et les candidats qui y sont convoqués."
       />
       <div className="mb-6">
-        <Alert tone="info" title="Le contrôle se fait avec l'application mobile Mianara Scan">
+        <Alert tone="info" title="Le contrôle se fait avec l'application mobile Mianara Contrôle">
           Entrée, sorties, retours, remise des copies et fraude : scannez le QR code de la convocation avec
           l&apos;application, même sans connexion. Utilisez les mêmes identifiants qu&apos;ici.
         </Alert>

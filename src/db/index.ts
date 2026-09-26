@@ -13,7 +13,14 @@ const globalForDb = globalThis as unknown as { mianaraSql?: postgres.Sql };
 
 // `prepare: false` : compatible avec le pooler de Supabase (mode transaction) et avec Neon.
 const client = url
-  ? (globalForDb.mianaraSql ??= postgres(url, { prepare: false, max: 10, connect_timeout: 30 }))
+  ? (globalForDb.mianaraSql ??= postgres(url, {
+      prepare: false,
+      max: 10,
+      connect_timeout: 30,
+      // Le pooler ferme les connexions inactives : on les recycle avant qu'elles ne cassent.
+      idle_timeout: 20,
+      max_lifetime: 60 * 10,
+    }))
   : null;
 
 /** `null` quand DATABASE_URL n'est pas défini : la vitrine lit alors src/content/bac.ts. */

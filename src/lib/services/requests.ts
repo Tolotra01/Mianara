@@ -1,7 +1,15 @@
 import "server-only";
 import { and, eq, gte, isNull, lte, or, sql } from "drizzle-orm";
 import { examSessions } from "@/db/schema";
-import { blacklist, candidates, documentRequests, payments, results, users } from "@/db/schema-gestion";
+import {
+  blacklist,
+  candidates,
+  documentRequests,
+  payments,
+  results,
+  scans,
+  users,
+} from "@/db/schema-gestion";
 import { audit, type Executor, notify, notifyMany } from "@/lib/audit";
 import { formatRequestNumber } from "@/lib/bac-rules";
 
@@ -173,4 +181,62 @@ export async function submitRequest(
     exec,
   );
   return { request, ticketNumber: pay.ticketNumber };
+}
+
+/**
+ * OFF-10 / SCN-06 : remise d'un relevé ou d'un diplôme au guichet, après contrôle
+ * d'identité. Utilisée par le web et par l'application mobile (scan de la convocation).
+ */
+export async function deliverRequest(
+  requestId: string,
+  officeId: number,
+  actorId: string,
+  exec: Executor,
+  device: { deviceId?: string | null } = {},
+) {
+  const [row] = await exec
+    .select({ r: documentRequests, c: candidates })
+    .from(documentRequests)
+    .innerJoin(candidates, eq(candidates.id, documentRequests.candidateId))
+    .where(and(eq(documentRequests.id, requestId), eq(candidates.officeId, officeId)));
+  if (!row) return { error: "Demande introuvable." } as const;
+  if (row.r.status !== "pickup_scheduled")
+    return { error: "Aucun retrait n'est prévu pour cette demande." } as const;
+  const now = new Date();
+  await exec
+    .update(documentRequests)
+    .set({ status: "delivered", deliveredAt: now, deliveredBy: actorId, updatedAt: now })
+    .where(eq(documentRequests.id, requestId));
+  await exec.insert(scans).values({
+    candidateId: row.c.id,
+    requestId,
+    scannedBy: actorId,
+    type: "doc_delivery",
+    scannedAt: now,
+    deviceId: device.deviceId ?? null,
+  });
+  await audit(
+    {
+      actorId,
+      action: "demande.remettre",
+      table: "document_requests",
+      recordId: requestId,
+      newData: { via: device.deviceId ? "mobile" : "web" },
+    },
+    exec,
+  );
+  const label = row.r.type === "transcript" ? "Relevé de notes" : "Diplôme";
+  await notify(
+    row.c.userId,
+    {
+      title: `${label} retiré`,
+      body:
+        row.r.type === "transcript"
+          ? "Relevé remis. Vous pouvez maintenant demander votre diplôme."
+          : "Diplôme remis. Félicitations et bonne continuation !",
+      link: "/candidat/demandes",
+    },
+    exec,
+  );
+  return { ok: true, label } as const;
 }
