@@ -4,6 +4,8 @@ import { CircleAlert, PartyPopper, Scale, Sprout } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { SerieCode } from "@/content/bac";
 import type { Coefficient } from "@/lib/data";
+import { COMMON, mentionLabel, type Lang } from "@/lib/i18n";
+import { subjectName } from "@/lib/i18n-content";
 
 type Mention = { key: string; label: string; min: number; max: number };
 
@@ -14,9 +16,40 @@ type Props = {
   admission: number;
   juryFloor: number;
   initialSerie: SerieCode;
+  lang?: Lang;
 };
 
 const fmt = (n: number) => n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const T = {
+  fr: {
+    zeroTitle: "Note éliminatoire",
+    zeroText: "Un 0 à une épreuve est éliminatoire, sauf décision du jury.",
+    admitted: "Admis · mention",
+    admittedText: "Bravo ! Continue comme ça jusqu'au jour J.",
+    juryTitle: "Entre les mains du jury",
+    juryText: (floor: string) => `Le jury peut abaisser le seuil jusqu'à ${floor}. Mieux vaut viser 10.`,
+    notYetTitle: "Pas encore admis",
+    notYetText: "Chaque point compte : commence par les matières à coefficient 5.",
+    average: "Moyenne simulée",
+    total: (n: number) =>
+      `Total des coefficients : ${n}. Simulation indicative : les « autres disciplines » sont regroupées en attendant l'arrêté officiel.`,
+  },
+  mg: {
+    zeroTitle: "Naoty manala",
+    zeroText: "Manala ny 0 amin'ny fanadinana iray, afa-tsy raha manapa-kevitra hafa ny mpitsara.",
+    admitted: "Afaka · mention",
+    admittedText: "Arahabaina ! Tohizo toy izao hatramin'ny andro J.",
+    juryTitle: "Eo am-pelatanan'ny mpitsara",
+    juryText: (floor: string) =>
+      `Afaka mampidina ny fetra hatramin'ny ${floor} ny mpitsara. Aleo ny 10 no kendrena.`,
+    notYetTitle: "Mbola tsy afaka",
+    notYetText: "Manan-danja ny isa tsirairay : atombohy amin'ireo taranja coefficient 5.",
+    average: "Salan'isa kajiana",
+    total: (n: number) =>
+      `Totalin'ny coefficient : ${n}. Fikajiana ho fanoroana fotsiny : atambatra ny « taranja hafa » mandra-pivoakan'ny didim-pitondrana ofisialy.`,
+  },
+};
 
 /** Simulateur : moyenne = Σ(note × coefficient) / Σ coefficients (décret 2021-242). */
 export function MoyenneSimulator({
@@ -26,7 +59,9 @@ export function MoyenneSimulator({
   admission,
   juryFloor,
   initialSerie,
+  lang = "fr",
 }: Props) {
+  const t = T[lang];
   const [serie, setSerie] = useState<SerieCode>(initialSerie);
   const [notes, setNotes] = useState<Record<string, number>>({});
 
@@ -49,28 +84,28 @@ export function MoyenneSimulator({
     ? {
         tone: "danger",
         icon: CircleAlert,
-        title: "Note éliminatoire",
-        text: "Un 0 à une épreuve est éliminatoire, sauf décision du jury.",
+        title: t.zeroTitle,
+        text: t.zeroText,
       }
     : average >= admission
       ? {
           tone: "success",
           icon: PartyPopper,
-          title: `Admis · mention ${mention?.label ?? ""}`,
-          text: "Bravo ! Continue comme ça jusqu'au jour J.",
+          title: `${t.admitted} ${mention ? mentionLabel(mention.key, mention.label, lang) : ""}`,
+          text: t.admittedText,
         }
       : average >= juryFloor
         ? {
             tone: "warning",
             icon: Scale,
-            title: "Entre les mains du jury",
-            text: `Le jury peut abaisser le seuil jusqu'à ${fmt(juryFloor)}. Mieux vaut viser 10.`,
+            title: t.juryTitle,
+            text: t.juryText(fmt(juryFloor)),
           }
         : {
             tone: "info",
             icon: Sprout,
-            title: "Pas encore admis",
-            text: "Chaque point compte : commence par les matières à coefficient 5.",
+            title: t.notYetTitle,
+            text: t.notYetText,
           };
 
   const toneClass = {
@@ -91,7 +126,11 @@ export function MoyenneSimulator({
 
   return (
     <div className="overflow-hidden rounded-4xl border border-line bg-raised shadow-sm">
-      <div role="tablist" aria-label="Série" className="flex gap-2 border-b border-line bg-sunken p-3">
+      <div
+        role="tablist"
+        aria-label={COMMON[lang].series}
+        className="flex gap-2 border-b border-line bg-sunken p-3"
+      >
         {series.map((s) => (
           <button
             key={s.code}
@@ -118,7 +157,7 @@ export function MoyenneSimulator({
               <li key={r.subjectCode}>
                 <div className="flex items-center justify-between gap-3">
                   <label htmlFor={id} className="font-semibold">
-                    {r.subjectName}
+                    {subjectName(r.subjectCode, r.subjectName, lang)}
                     <span
                       className={`ml-2 rounded-sm px-1.5 py-0.5 text-xs font-bold ${r.isCore ? "bg-vert text-on-vert" : "bg-sunken text-muted"}`}
                     >
@@ -182,7 +221,7 @@ export function MoyenneSimulator({
             </text>
           </svg>
           <p className="text-center">
-            <span className="block text-sm font-semibold text-muted">Moyenne simulée</span>
+            <span className="block text-sm font-semibold text-muted">{t.average}</span>
             <span className="text-5xl font-extrabold tabular-nums">{fmt(average)}</span>
             <span className="text-xl font-bold text-muted">/20</span>
           </p>
@@ -193,10 +232,7 @@ export function MoyenneSimulator({
               <p className="mt-1 text-ink">{verdict.text}</p>
             </div>
           </div>
-          <p className="text-center text-sm text-muted">
-            Total des coefficients : {totalCoef}. Simulation indicative : les « autres disciplines » sont
-            regroupées en attendant l&apos;arrêté officiel.
-          </p>
+          <p className="text-center text-sm text-muted">{t.total(totalCoef)}</p>
         </div>
       </div>
     </div>

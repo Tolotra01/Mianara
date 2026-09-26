@@ -3,19 +3,28 @@
 import { Check, School, UserRound } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 import type { CandidateType, DossierItem } from "@/content/bac";
+import type { Lang } from "@/lib/i18n";
 
 const STORAGE_KEY = "mianara-dossier";
+
+const T = {
+  fr: { iam: "Je suis", ecole: "Candidat d'école", libre: "Candidat libre" },
+  mg: { iam: "Izaho dia", ecole: "Kandida avy any an-tsekoly", libre: "Kandida tsy miankina" },
+};
 
 /** Checklist du dossier ; les cases cochées restent sur cet appareil. */
 export function DossierChecklist({
   items,
   icons,
   confirmBadge,
+  lang = "fr",
 }: {
   items: DossierItem[];
   icons: Record<string, ReactNode>;
   confirmBadge: ReactNode;
+  lang?: Lang;
 }) {
+  const t = T[lang];
   const [type, setType] = useState<Exclude<CandidateType, "tous">>("ecole");
   const [done, setDone] = useState<string[]>([]);
 
@@ -44,11 +53,11 @@ export function DossierChecklist({
   return (
     <div className="overflow-hidden rounded-4xl border border-line bg-raised shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line bg-sunken p-4">
-        <div role="radiogroup" aria-label="Je suis" className="flex gap-2">
+        <div role="radiogroup" aria-label={t.iam} className="flex gap-2">
           {(
             [
-              { value: "ecole", label: "Candidat d'école", icon: School },
-              { value: "libre", label: "Candidat libre", icon: UserRound },
+              { value: "ecole", label: t.ecole, icon: School },
+              { value: "libre", label: t.libre, icon: UserRound },
             ] as const
           ).map((o) => (
             <button

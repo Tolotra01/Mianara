@@ -1,6 +1,7 @@
 import { CircleHelp, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { COMMON, formatDateLang, type Lang } from "@/lib/i18n";
 import { Reveal } from "@/components/Reveal";
 import { PageScene, type SceneName } from "@/components/illustrations/PageScenes";
 
@@ -77,16 +78,22 @@ export const buttonClass = {
 };
 
 /** Badge « À confirmer » : information non vérifiée auprès d'un texte officiel. */
-export function ToConfirm({ label = "À confirmer" }: { label?: string }) {
+export function ToConfirm({ label, lang = "fr" }: { label?: string; lang?: Lang }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-sm bg-warning-soft px-2 py-0.5 text-xs font-bold whitespace-nowrap text-warning">
       <CircleHelp className="size-3.5" aria-hidden />
-      {label}
+      {label ?? COMMON[lang].toConfirm}
     </span>
   );
 }
 
-export function SourceLink({ source }: { source?: { label: string; url: string } | null }) {
+export function SourceLink({
+  source,
+  lang = "fr",
+}: {
+  source?: { label: string; url: string } | null;
+  lang?: Lang;
+}) {
   if (!source) return null;
   return (
     <a
@@ -95,7 +102,7 @@ export function SourceLink({ source }: { source?: { label: string; url: string }
       rel="noreferrer"
       className="inline-flex items-center gap-1 text-sm text-muted underline decoration-line-strong underline-offset-2 hover:text-vert"
     >
-      Source : {source.label}
+      {COMMON[lang].source} : {source.label}
       <ExternalLink className="size-3.5 shrink-0" aria-hidden />
     </a>
   );
@@ -188,9 +195,15 @@ export function PageHero({
   );
 }
 
-export function Breadcrumb({ items }: { items: { href?: string; label: string }[] }) {
+export function Breadcrumb({
+  items,
+  lang = "fr",
+}: {
+  items: { href?: string; label: string }[];
+  lang?: Lang;
+}) {
   return (
-    <nav aria-label="Fil d'Ariane" className="mb-4 text-sm text-muted">
+    <nav aria-label={COMMON[lang].breadcrumb} className="mb-4 text-sm text-muted">
       <ol className="flex flex-wrap items-center gap-1.5">
         {items.map((item, i) => (
           <li key={item.label} className="flex items-center gap-1.5">
@@ -211,10 +224,17 @@ export function Breadcrumb({ items }: { items: { href?: string; label: string }[
   );
 }
 
-export function formatDate(iso: string) {
-  return new Date(`${iso}T12:00:00Z`).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+export function formatDate(iso: string, lang: Lang = "fr") {
+  return formatDateLang(iso, lang);
+}
+
+/** En malagasy : signale que certains contenus (données saisies) restent en français. */
+export function FrenchOnlyNote({ lang, className = "mt-4" }: { lang: Lang; className?: string }) {
+  if (lang !== "mg") return null;
+  return (
+    <p className={`flex items-start gap-2 rounded-2xl bg-info-soft px-4 py-3 text-sm text-info ${className}`}>
+      <CircleHelp className="mt-0.5 size-4 shrink-0" aria-hidden />
+      {COMMON.mg.frenchOnly}
+    </p>
+  );
 }

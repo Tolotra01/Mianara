@@ -679,68 +679,106 @@ function SuiteScene() {
   );
 }
 
-/* ---------- Actualités : Tana au crépuscule, la radio émet ---------- */
+/* ---------- Actualités : le tableau d'affichage de la place ---------- */
+
+/** Communiqué punaisé : feuille, bandeau de titre, lignes de texte. */
+function Notice({
+  x,
+  y,
+  w,
+  h,
+  r = 0,
+  head,
+  label,
+  pin,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  r?: number;
+  head: string;
+  label?: string;
+  pin: string;
+}) {
+  const lines = Math.max(1, Math.floor((h - 34) / 10));
+  return (
+    <g transform={`rotate(${r} ${x + w / 2} ${y})`}>
+      <rect x={x + 3} y={y + 3} width={w} height={h} fill="#00000030" />
+      <rect x={x} y={y} width={w} height={h} fill={P.paper} />
+      <rect x={x} y={y} width={w} height="20" fill={head} />
+      {label && (
+        <text x={x + w / 2} y={y + 14} fontSize="10.5" textAnchor="middle" fill={P.white} style={TXT}>
+          {label}
+        </text>
+      )}
+      {Array.from({ length: lines }, (_, i) => (
+        <rect
+          key={i}
+          x={x + 8}
+          y={y + 30 + i * 10}
+          width={i === lines - 1 ? w * 0.45 : w - 16}
+          height="3.5"
+          rx="1.5"
+          fill="#C9CFCB"
+        />
+      ))}
+      <circle cx={x + w / 2} cy={y + 4} r="4" fill={pin} />
+      <circle cx={x + w / 2 - 1} cy={y + 3} r="1.2" fill="#FFFFFF80" />
+    </g>
+  );
+}
 
 function ActualitesScene() {
-  // Haute ville : les maisons s'étagent sur les deux pentes de la colline,
-  // posées sur sa surface (y = pente), en rangs de plus en plus bas.
-  const surface = (x: number) => (x < 1030 ? 430 - (x - 690) * 0.5 : 260 + (x - 1030) * 0.5);
-  const colors = ["#C98A6A", "#E0C48A", "#B8472A", "#9BB0C8"];
-  const houses = [760, 820, 880, 940, 1120, 1180, 1240, 1300, 800, 870, 1160, 1230].map((x, i) => ({
-    x,
-    y: surface(x + 17) + (i >= 8 ? 46 : 6),
-    c: colors[i % colors.length],
-    lit: i % 3 !== 1,
-  }));
   return (
     <>
-      <Stars count={22} maxY={200} />
-      <path d={FAR} fill="#223050" />
-      {/* Colline de la haute ville, et le Rova au sommet */}
-      <path d="M690 430 L1030 260 L1370 430 L1370 540 L690 540 Z" fill="#34466A" />
-      <path d="M1030 260 L1370 430 L1370 540 L1180 540 Z" fill="#2C3C5E" />
-      <g transform="translate(990 268)">
-        <rect x="0" y="-44" width="80" height="44" fill="#C9A77A" />
-        {[0, 72].map((x) => (
-          <g key={x}>
-            <rect x={x - 4} y="-60" width="12" height="60" fill="#B8956A" />
-            <path d={`M${x - 6} -60 L${x + 2} -70 L${x + 10} -60 Z`} fill={P.roof} />
-          </g>
-        ))}
-        <path d="M-2 -44 L40 -64 L82 -44 Z" fill={P.roof} />
+      <circle cx="1290" cy="160" r="44" fill={P.soleilLight} />
+      <Cloud x={920} y={150} scale={0.9} className="a-float" />
+      <g className="a-float">
+        <Bird x={1130} y={130} />
+        <Bird x={1164} y={150} scale={0.7} />
       </g>
-      {houses.map((h, i) => (
-        <g key={i} transform={`translate(${h.x} ${h.y})`}>
-          <rect x="0" y="-26" width="34" height="30" fill={h.c} />
-          <path d="M-4 -26 L17 -40 L38 -26 Z" fill={P.roof} />
-          <rect x="6" y="-18" width="7" height="8" fill={h.lit ? P.soleilLight : "#2F4F63"} />
-          <rect x="21" y="-18" width="7" height="8" fill={i % 2 ? P.soleilLight : "#2F4F63"} />
-        </g>
-      ))}
-      <path d={MID} fill="#243F4A" transform="translate(0 110)" />
-      <path d={NEAR} fill="#274E3E" />
-      {/* Antenne radio qui diffuse les nouvelles */}
-      <g transform="translate(1260 500)">
-        <path d="M-26 0 L0 -250 L26 0" stroke="#B8C2CC" strokeWidth="4" fill="none" />
-        <path
-          d="M-20 -50 L20 -50 M-14 -110 L14 -110 M-8 -170 L8 -170 M-20 -50 L14 -110 M-14 -110 L8 -170"
-          stroke="#B8C2CC"
-          strokeWidth="2"
-        />
-        <circle cx="0" cy="-254" r="6" fill={P.mena} className="a-glow" />
+      <Hills far="#22435A" mid="#2B5B5A" near="#2F7A5A" />
+      <HighlandHouse x={640} y={446} scale={1.1} />
+      <Jacaranda x={1330} y={456} scale={1.35} />
+
+      {/* Tableau d'affichage de la place, couvert de communiqués */}
+      <g transform="translate(780 486)">
+        <rect x="18" y="-60" width="10" height="60" fill="#5A4636" />
+        <rect x="372" y="-60" width="10" height="60" fill="#5A4636" />
+        <path d="M-14 -262 L200 -300 L414 -262 Z" fill={P.roof} />
+        <rect x="0" y="-262" width="400" height="206" rx="4" fill="#7A5236" />
+        <rect x="12" y="-250" width="376" height="182" fill="#C9A77A" />
+        <Notice x={30} y={-240} w={92} h={112} r={-3} head={P.mena} label="URGENT" pin={P.mena} />
+        <Notice x={140} y={-236} w={108} h={78} r={2} head={P.vert} label="BAC 2027" pin={P.soleil} />
+        <Notice x={266} y={-242} w={100} h={96} r={-2} head={P.navy} label="COMMUNIQUÉ" pin={P.vertLight} />
+        <Notice x={146} y={-148} w={96} h={70} r={-4} head={P.soleil} label="DATES" pin={P.mena} />
+        <Notice x={40} y={-118} w={80} h={44} r={3} head={P.glass} pin={P.soleil} />
+        <Notice x={262} y={-136} w={110} h={58} r={2} head={P.menaDark} label="RÉSULTATS" pin={P.navy} />
+      </g>
+
+      {/* Radio posée sur un banc : elle diffuse les nouvelles */}
+      <g transform="translate(1250 500)">
+        <rect x="-50" y="-30" width="100" height="8" rx="2" fill="#8C6A4A" />
+        <rect x="-44" y="-22" width="6" height="22" fill="#6B4A3A" />
+        <rect x="38" y="-22" width="6" height="22" fill="#6B4A3A" />
+        <rect x="-26" y="-62" width="52" height="32" rx="6" fill={P.mena} />
+        <circle cx="-10" cy="-46" r="9" fill={P.ink} />
+        <circle cx="-10" cy="-46" r="4" fill="#3A4A43" />
+        <rect x="4" y="-54" width="16" height="6" rx="2" fill={P.soleilLight} />
+        <path d="M14 -62 L26 -86" stroke="#C9CFCB" strokeWidth="2" strokeLinecap="round" />
         <g stroke={P.soleilLight} strokeWidth="3" fill="none" strokeLinecap="round" className="a-glow">
-          <path d="M-22 -272 Q-30 -254 -22 -236" />
-          <path d="M22 -272 Q30 -254 22 -236" />
-          <path d="M-38 -286 Q-52 -254 -38 -222" opacity="0.6" />
-          <path d="M38 -286 Q52 -254 38 -222" opacity="0.6" />
+          <path d="M34 -70 Q42 -58 34 -46" />
+          <path d="M44 -78 Q56 -58 44 -38" opacity="0.6" />
         </g>
-      </g>
-      {/* Kiosque à journaux */}
-      <g transform="translate(640 500)">
-        <rect x="0" y="-60" width="90" height="60" fill={P.vert} />
-        <path d="M-10 -60 L100 -60 L90 -78 L0 -78 Z" fill={P.mena} />
-        <rect x="10" y="-50" width="70" height="30" fill={P.paper} />
-        <path d="M18 -42 L48 -42 M18 -35 L60 -35 M18 -28 L40 -28" stroke={P.ink} strokeWidth="2" />
+        {/* Pile de journaux */}
+        <g transform="translate(-100 0)">
+          <rect x="-24" y="-10" width="48" height="10" fill={P.paper} />
+          <rect x="-22" y="-18" width="46" height="8" fill="#E6E0D2" />
+          <rect x="-24" y="-26" width="48" height="8" fill={P.paper} />
+          <path d="M-18 -22 L10 -22" stroke={P.ink} strokeWidth="1.5" />
+          <path d="M-24 -14 L24 -14" stroke={P.mena} strokeWidth="2" />
+        </g>
       </g>
     </>
   );
@@ -881,7 +919,7 @@ const SCENES: Record<SceneName, { sky: string[]; draw: () => ReactNode }> = {
   preparer: { sky: ["#0E1729", "#111C32", "#15223D"], draw: PreparerScene },
   jourj: { sky: ["#1B3640", "#23474F", "#2F5A5E"], draw: JourJScene },
   suite: { sky: ["#271D38", "#3C2746", "#5C3448", "#864A47"], draw: SuiteScene },
-  actualites: { sky: ["#161F36", "#1C2842", "#253450"], draw: ActualitesScene },
+  actualites: { sky: ["#15304A", "#1B3C56", "#244A64"], draw: ActualitesScene },
   aide: { sky: ["#18233B", "#1F2E4C", "#293B5E"], draw: AideScene },
   resultats: { sky: ["#0C1426", "#101B31", "#14223C"], draw: ResultatsScene },
 };

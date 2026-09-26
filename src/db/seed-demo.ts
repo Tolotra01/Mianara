@@ -8,8 +8,9 @@
  * Mot de passe des comptes du personnel : DEMO_PASSWORD (par défaut Mianara2027!).
  */
 import "dotenv/config";
+import { Pool } from "@neondatabase/serverless";
 import { eq, ne } from "drizzle-orm";
-import { requireDb } from "./index";
+import { drizzle } from "drizzle-orm/neon-serverless";
 import { examSessions, news, serieSubjects, subjects } from "./schema";
 import {
   applicationBatches,
@@ -23,9 +24,12 @@ import {
   users,
 } from "./schema-gestion";
 import { hashPassword } from "../lib/password";
+import type { Executor } from "../lib/audit";
 import { PIECES } from "../lib/pieces";
 import { parseLocalDateTime } from "../lib/bac-rules";
 import { assignRooms, registerCandidate } from "../lib/services/candidates";
+import * as vitrine from "./schema";
+import * as gestion from "./schema-gestion";
 
 const PASSWORD = process.env.DEMO_PASSWORD || "Mianara2027!";
 
@@ -236,7 +240,16 @@ const SLOTS = [
 const EPS_SLOT = ["2027-08-21T07:30", "2027-08-21T09:30"] as const;
 
 async function main() {
-  const db = requireDb();
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL manquant (voir .env.example).");
+
+  // `db.transaction()` exige une transaction interactive : le pilote HTTP de
+  // `src/db/index.ts` ne la supporte pas (« No transactions support in neon-http
+  // driver »). On passe donc par `Pool` (WebSocket), comme `src/db/seed.ts` ;
+  // le port 5432 étant injoignable depuis ce réseau, la connexion part sur le 443.
+  const client = new Pool({ connectionString: url });
+  const db = drizzle({ client, schema: { ...vitrine, ...gestion } });
+
   const [existing] = await db.select().from(users).where(eq(users.username, "admin")).limit(1);
   if (existing) {
     console.log(
@@ -246,6 +259,12 @@ async function main() {
   }
 
   await db.transaction(async (tx) => {
+    // Les services attendent un `Executor` typé sur le pilote HTTP, alors que
+    // `tx` vient du pilote WebSocket : les deux ne partagent pas le même type de
+    // résultat de requête. Le cast est local au script ; à l'exécution les deux
+    // pilotes exécutent les mêmes requêtes.
+    const exec = tx as unknown as Executor;
+
     const [session] = await tx
       .update(examSessions)
       .set({ examsStart: "2027-08-16", examsEnd: "2027-08-21" })
@@ -404,11 +423,11 @@ async function main() {
           schoolName: school?.name ?? null,
         },
         agent.id,
-        tx,
+        exec,
       );
       created.push({ matricule: candidate.matricule, password, name: `${firstName} ${lastName}` });
     }
-    await assignRooms(tana.id, agent.id, tx);
+    await assignRooms(tana.id, agent.id, exec);
 
     // Dossiers en cours dans le circuit école → Office
     const batches = new Map<string, number>();

@@ -2,9 +2,28 @@
 
 import { CircleAlert, Eye, EyeOff, LogIn } from "lucide-react";
 import { startTransition, useActionState, useState } from "react";
+import type { Lang } from "@/lib/i18n";
 import { login, type LoginState } from "./actions";
 
-export function LoginForm({ suite }: { suite?: string }) {
+const T = {
+  fr: {
+    id: "Matricule ou identifiant",
+    password: "Mot de passe",
+    hide: "Masquer le mot de passe",
+    show: "Afficher le mot de passe",
+    submit: "Se connecter",
+  },
+  mg: {
+    id: "Laharana na anarana fidirana",
+    password: "Teny miafina",
+    hide: "Afeno ny teny miafina",
+    show: "Asehoy ny teny miafina",
+    submit: "Hiditra",
+  },
+};
+
+export function LoginForm({ suite, lang = "fr" }: { suite?: string; lang?: Lang }) {
+  const t = T[lang];
   const [state, action, pending] = useActionState<LoginState, FormData>(login, null);
   const [show, setShow] = useState(false);
 
@@ -21,7 +40,7 @@ export function LoginForm({ suite }: { suite?: string }) {
       {suite && <input type="hidden" name="suite" value={suite} />}
       <div>
         <label htmlFor="identifiant" className="text-sm font-semibold">
-          Matricule ou identifiant
+          {t.id}
         </label>
         <input
           id="identifiant"
@@ -34,7 +53,7 @@ export function LoginForm({ suite }: { suite?: string }) {
       </div>
       <div>
         <label htmlFor="password" className="text-sm font-semibold">
-          Mot de passe
+          {t.password}
         </label>
         <div className="relative mt-1.5">
           <input
@@ -49,7 +68,7 @@ export function LoginForm({ suite }: { suite?: string }) {
             type="button"
             onClick={() => setShow((s) => !s)}
             className="absolute inset-y-0 right-0 grid w-12 place-items-center text-muted hover:text-ink"
-            aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+            aria-label={show ? t.hide : t.show}
           >
             {show ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
           </button>
@@ -77,7 +96,7 @@ export function LoginForm({ suite }: { suite?: string }) {
         ) : (
           <LogIn className="size-5" />
         )}
-        Se connecter
+        {t.submit}
       </button>
     </form>
   );

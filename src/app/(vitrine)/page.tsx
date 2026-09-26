@@ -16,6 +16,7 @@ import { NewsCard } from "@/components/NewsCard";
 import { Reveal } from "@/components/Reveal";
 import { buttonClass, ButtonLink, Container, SectionTitle } from "@/components/ui";
 import { getBacData, getNews } from "@/lib/data";
+import { serieName, serieText, subjectName } from "@/lib/i18n-content";
 import { getDict } from "@/lib/lang";
 
 /* Les pastilles des étapes portent leur texte en `text-ink` (et non `text-white`) :
@@ -45,7 +46,7 @@ const CORNERS = [
 ] as const;
 
 export default async function HomePage() {
-  const [{ t }, data, news] = await Promise.all([getDict(), getBacData(), getNews(3)]);
+  const [{ t, lang }, data, news] = await Promise.all([getDict(), getBacData(), getNews(3)]);
 
   return (
     // « Nuit malgache » : l'accueil est sombre dans les deux thèmes — `.home-dark`
@@ -230,13 +231,15 @@ export default async function HomePage() {
                           >
                             {s.code}
                           </p>
-                          <h3 className="mt-1.5 text-xl leading-7 font-bold text-balance sm:t-h2">{s.name}</h3>
+                          <h3 className="mt-1.5 text-xl leading-7 font-bold text-balance sm:t-h2">
+                            {serieName(s.code, s.name, lang)}
+                          </h3>
                         </div>
                         <span className="grid size-10 shrink-0 place-items-center rounded-full border border-line/70 text-muted transition-all duration-300 group-hover:border-vert group-hover:bg-vert group-hover:text-on-vert">
                           <ArrowRight className="size-4 -rotate-45 transition-transform duration-300 group-hover:rotate-0" />
                         </span>
                       </div>
-                      <p className="mt-2 text-muted">{s.tagline}</p>
+                      <p className="mt-2 text-muted">{serieText(s, lang).tagline}</p>
 
                       <p className="t-overline mt-6 text-muted">{t.series.core}</p>
                       <ul className="mt-2.5 flex flex-wrap gap-2">
@@ -245,7 +248,7 @@ export default async function HomePage() {
                             key={c.subjectCode}
                             className="rounded-full border border-line/70 bg-sunken/70 px-2.5 py-1 text-[13px] font-semibold sm:px-3 sm:text-sm"
                           >
-                            {c.subjectName}
+                            {subjectName(c.subjectCode, c.subjectName, lang)}
                           </li>
                         ))}
                       </ul>
@@ -381,7 +384,14 @@ export default async function HomePage() {
                 plutôt que comme une grille de cartes. */}
             <div className="rounded-3xl border border-line/60 bg-raised/25 px-5 sm:px-7">
               {news.map((n) => (
-                <NewsCard key={n.slug} news={n} tone="dark" variant="row" readLabel={t.news.read} />
+                <NewsCard
+                  key={n.slug}
+                  news={n}
+                  tone="dark"
+                  variant="row"
+                  readLabel={t.news.read}
+                  lang={lang}
+                />
               ))}
             </div>
           </Reveal>

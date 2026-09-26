@@ -169,3 +169,85 @@ export const dict: Record<Lang, Dict> = { fr, mg };
 export function isLang(value: unknown): value is Lang {
   return value === "fr" || value === "mg";
 }
+
+/* ------------------------------------------------------------------ */
+/* Mots communs aux pages intérieures et utilitaires de langue         */
+/* ------------------------------------------------------------------ */
+
+export const COMMON = {
+  fr: {
+    guide: "Guide",
+    guideHome: "Sommaire du guide",
+    guideNav: "Rubriques du guide",
+    breadcrumb: "Fil d'Ariane",
+    previous: "Précédent",
+    next: "Suivant",
+    step: "Étape",
+    source: "Source",
+    toConfirm: "À confirmer",
+    series: "Série",
+    frenchOnly: "",
+  },
+  mg: {
+    guide: "Torolalana",
+    guideHome: "Lahatahirin'ny torolalana",
+    guideNav: "Fizarana amin'ny torolalana",
+    breadcrumb: "Toerana misy anao",
+    previous: "Teo aloha",
+    next: "Manaraka",
+    step: "Dingana",
+    source: "Loharano",
+    toConfirm: "Mbola hohamafisina",
+    series: "Andiany",
+    frenchOnly:
+      "Mbola amin'ny teny frantsay ny sasany amin'ireo votoaty eto (fanazavana, lisitra, vaovao) : eo am-pandikana izy ireo.",
+  },
+} as const;
+
+const MONTHS_MG = [
+  "Janoary",
+  "Febroary",
+  "Martsa",
+  "Aprily",
+  "Mey",
+  "Jona",
+  "Jolay",
+  "Aogositra",
+  "Septambra",
+  "Oktobra",
+  "Novambra",
+  "Desambra",
+];
+
+/** Date longue (« 18 septembre 2026 » / « 18 Septambra 2026 »). */
+export function formatDateLang(iso: string, lang: Lang = "fr"): string {
+  const d = new Date(`${iso}T12:00:00Z`);
+  if (lang === "mg") return `${d.getUTCDate()} ${MONTHS_MG[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  return d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+}
+
+/** Catégories des actualités (saisies en français dans la base). */
+const NEWS_CATEGORY_MG: Record<string, string> = {
+  Réforme: "Fanavaozana",
+  Inscription: "Fisoratana anarana",
+  Calendrier: "Tetiandro",
+  Épreuves: "Fanadinana",
+  Résultats: "Valiny",
+  Orientation: "Fitarihana",
+};
+
+export function newsCategory(category: string, lang: Lang = "fr"): string {
+  return lang === "mg" ? (NEWS_CATEGORY_MG[category] ?? category) : category;
+}
+
+/** Mentions du Bacc, par clé (`RULES.mentions`). */
+const MENTION_MG: Record<string, string> = {
+  passable: "Antonony",
+  assez_bien: "Tsara ihany",
+  bien: "Tsara",
+  tres_bien: "Tsara dia tsara",
+};
+
+export function mentionLabel(key: string, label: string, lang: Lang = "fr"): string {
+  return lang === "mg" ? (MENTION_MG[key] ?? label) : label;
+}

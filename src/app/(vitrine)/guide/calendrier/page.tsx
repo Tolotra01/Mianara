@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Fragment } from "react";
 import { ClipboardPen, GraduationCap, type LucideIcon, MapPin, PencilLine, Sparkles } from "lucide-react";
 import { GuideNav } from "@/components/GuideNav";
-import { Breadcrumb, Container, PageHero, ToConfirm } from "@/components/ui";
+import { Breadcrumb, Container, FrenchOnlyNote, PageHero, ToConfirm } from "@/components/ui";
 import { getBacData } from "@/lib/data";
+import { COMMON } from "@/lib/i18n";
+import { getLang } from "@/lib/lang";
 
 export const metadata: Metadata = {
   title: "Calendrier du Bacc",
@@ -11,30 +13,57 @@ export const metadata: Metadata = {
     "Inscriptions, épreuves et résultats : les dates clés du Bacc à Madagascar, session 2026 et Bacc 2027.",
 };
 
-const KIND: Record<string, { icon: LucideIcon; label: string; className: string }> = {
-  inscription: { icon: ClipboardPen, label: "Inscription", className: "bg-soleil text-ink" },
-  examen: { icon: PencilLine, label: "Épreuves", className: "bg-mena text-white" },
-  resultats: { icon: GraduationCap, label: "Résultats", className: "bg-vert text-on-vert" },
-  reforme: { icon: Sparkles, label: "Réforme", className: "bg-info text-white" },
+const KIND: Record<string, { icon: LucideIcon; label: { fr: string; mg: string }; className: string }> = {
+  inscription: {
+    icon: ClipboardPen,
+    label: { fr: "Inscription", mg: "Fisoratana anarana" },
+    className: "bg-soleil text-ink",
+  },
+  examen: { icon: PencilLine, label: { fr: "Épreuves", mg: "Fanadinana" }, className: "bg-mena text-white" },
+  resultats: {
+    icon: GraduationCap,
+    label: { fr: "Résultats", mg: "Valiny" },
+    className: "bg-vert text-on-vert",
+  },
+  reforme: { icon: Sparkles, label: { fr: "Réforme", mg: "Fanavaozana" }, className: "bg-info text-white" },
+};
+
+const T = {
+  fr: {
+    overline: "Guide · 4",
+    title: "Les dates à ne pas manquer",
+    accent: "à ne pas manquer",
+    lead: "La session 2026 sert de repère : les dates du Bacc 2027 seront ajoutées dès leur publication.",
+    crumb: "Le calendrier",
+    today: "Aujourd'hui",
+    past: "Passé",
+    toPublish: "Date à publier",
+  },
+  mg: {
+    overline: "Torolalana · 4",
+    title: "Ireo daty tsy tokony hadinoina",
+    accent: "tsy tokony hadinoina",
+    lead: "Ny taom-pianarana 2026 no maridrefy : hampidirina eto ny datin'ny Bacc 2027 raha vao mivoaka izy ireo.",
+    crumb: "Ny tetiandro",
+    today: "Anio",
+    past: "Lasa",
+    toPublish: "Daty mbola hivoaka",
+  },
 };
 
 export default async function CalendrierPage() {
-  const data = await getBacData();
+  const [data, lang] = await Promise.all([getBacData(), getLang()]);
+  const t = T[lang];
   const today = new Date().toISOString().slice(0, 10);
   const events = [...data.calendar].sort((a, b) => a.startsOn.localeCompare(b.startsOn));
   const firstUpcoming = events.findIndex((e) => (e.endsOn ?? e.startsOn) >= today);
 
   return (
     <>
-      <PageHero
-        overline="Guide · 4"
-        title="Les dates à ne pas manquer"
-        accent="à ne pas manquer"
-        lead="La session 2026 sert de repère : les dates du Bacc 2027 seront ajoutées dès leur publication."
-        scene="calendrier"
-      />
+      <PageHero overline={t.overline} title={t.title} accent={t.accent} lead={t.lead} scene="calendrier" />
       <Container className="pt-8">
-        <Breadcrumb items={[{ href: "/guide", label: "Guide" }, { label: "Le calendrier" }]} />
+        <Breadcrumb lang={lang} items={[{ href: "/guide", label: COMMON[lang].guide }, { label: t.crumb }]} />
+        <FrenchOnlyNote lang={lang} />
 
         <div className="mt-4 flex flex-wrap gap-3">
           {Object.entries(KIND).map(([key, k]) => (
@@ -45,7 +74,7 @@ export default async function CalendrierPage() {
               <span className={`grid size-6 place-items-center rounded-full ${k.className}`}>
                 <k.icon className="size-3.5" aria-hidden />
               </span>
-              {k.label}
+              {k.label[lang]}
             </span>
           ))}
         </div>
@@ -58,13 +87,13 @@ export default async function CalendrierPage() {
             return (
               <Fragment key={`${e.startsOn}-${e.title}`}>
                 {i === firstUpcoming && (
-                  <li className="relative pb-8" aria-label="Aujourd'hui">
+                  <li className="relative pb-8" aria-label={t.today}>
                     <div className="-ml-[1.6rem] flex items-center gap-3">
                       <span className="grid size-12 place-items-center rounded-full bg-ink text-surface ring-4 ring-surface">
                         <MapPin className="size-5" aria-hidden />
                       </span>
                       <span className="rounded-full bg-ink px-3 py-1 text-sm font-bold text-surface">
-                        Aujourd&apos;hui
+                        {t.today}
                       </span>
                     </div>
                   </li>
@@ -84,8 +113,8 @@ export default async function CalendrierPage() {
                       <span className="t-overline rounded-full bg-sunken px-2.5 py-1 text-muted">
                         Bacc {e.sessionYear}
                       </span>
-                      {past && <span className="text-sm font-semibold text-muted">Passé</span>}
-                      {!e.confirmed && <ToConfirm label="Date à publier" />}
+                      {past && <span className="text-sm font-semibold text-muted">{t.past}</span>}
+                      {!e.confirmed && <ToConfirm label={t.toPublish} />}
                     </div>
                     <p className="t-h2 mt-2 tabular-nums">{e.dateLabel}</p>
                     <p className="mt-1 t-body-lg">{e.title}</p>
@@ -96,7 +125,7 @@ export default async function CalendrierPage() {
                         rel="noreferrer"
                         className="mt-2 inline-block text-sm text-muted underline hover:text-vert"
                       >
-                        Source : {source.label}
+                        {COMMON[lang].source} : {source.label}
                       </a>
                     )}
                   </div>
@@ -106,7 +135,7 @@ export default async function CalendrierPage() {
           })}
         </ol>
       </Container>
-      <GuideNav current="calendrier" />
+      <GuideNav current="calendrier" lang={lang} />
     </>
   );
 }

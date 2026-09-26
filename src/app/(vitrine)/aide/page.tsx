@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Building2, ChevronDown, School, UserRound } from "lucide-react";
 import { AssistantChat } from "@/components/assistant/AssistantChat";
 import { AssistantAvatar } from "@/components/illustrations/AssistantAvatar";
-import { Container, PageHero } from "@/components/ui";
+import { Container, FrenchOnlyNote, PageHero } from "@/components/ui";
 import { UNIVERSITIES } from "@/content/bac";
 import { getBacData } from "@/lib/data";
 import { getDict } from "@/lib/lang";
@@ -13,19 +13,48 @@ export const metadata: Metadata = {
     "Posez votre question à l'assistant Mianara, consultez les questions fréquentes ou trouvez à qui vous adresser.",
 };
 
+const T = {
+  fr: {
+    overline: "Aide",
+    title: "On est là pour vous aider",
+    accent: "vous aider",
+    lead: "Posez votre question à l'assistant, en français ou en malagasy. Pour votre dossier personnel, adressez-vous à un humain.",
+    faq: "Questions fréquentes",
+    human: "Besoin d'un humain ?",
+    humanLead:
+      "L'assistant ne voit pas votre dossier. Pour une situation personnelle, voici à qui vous adresser.",
+    ecole: "Vous êtes candidat d'école",
+    ecoleText: "Votre lycée (direction ou secrétariat) : il dépose et suit votre dossier.",
+    libre: "Vous êtes candidat libre",
+    libreText: "L'Office du Bac de l'université de votre province.",
+    offices: "Les six Offices du Bac",
+  },
+  mg: {
+    overline: "Fanampiana",
+    title: "Eto izahay hanampy anao",
+    accent: "hanampy anao",
+    lead: "Apetraho amin'ny mpanampy ny fanontanianao, amin'ny teny frantsay na malagasy. Ho an'ny antontan-taratasinao manokana, manatona olona.",
+    faq: "Fanontaniana matetika apetraka",
+    human: "Mila olona ?",
+    humanLead:
+      "Tsy mahita ny antontan-taratasinao ny mpanampy. Raha toe-javatra manokana, ireto no tokony hatonina.",
+    ecole: "Kandida avy any an-tsekoly ianao",
+    ecoleText:
+      "Ny lycée-nao (fitantanana na sekretera) : izy no mametraka sy manaraka ny antontan-taratasinao.",
+    libre: "Kandida tsy miankina ianao",
+    libreText: "Ny Office du Bac an'ny oniversiten'ny faritanao.",
+    offices: "Ireo Office du Bac enina",
+  },
+};
+
 export default async function AidePage() {
   const [{ lang, t }, data] = await Promise.all([getDict(), getBacData()]);
   const categories = [...new Set(data.faqs.map((f) => f.category))];
+  const tr = T[lang];
 
   return (
     <>
-      <PageHero
-        overline="Aide"
-        title="On est là pour vous aider"
-        accent="vous aider"
-        lead="Posez votre question à l'assistant, en français ou en malagasy. Pour votre dossier personnel, adressez-vous à un humain."
-        scene="aide"
-      />
+      <PageHero overline={tr.overline} title={tr.title} accent={tr.accent} lead={tr.lead} scene="aide" />
 
       <Container className="py-8 sm:py-12">
         <section
@@ -42,7 +71,10 @@ export default async function AidePage() {
           <AssistantChat t={t.chat} lang={lang} suggestions={t.assistant.examples} className="flex-1" />
         </section>
 
-        <h2 className="t-h1 mt-20 text-center">Questions fréquentes</h2>
+        <h2 className="t-h1 mt-20 text-center">{tr.faq}</h2>
+        <div className="mx-auto max-w-3xl xl:max-w-4xl">
+          <FrenchOnlyNote lang={lang} />
+        </div>
         <div className="mx-auto mt-8 max-w-3xl space-y-10 xl:max-w-4xl">
           {categories.map((cat) => (
             <div key={cat}>
@@ -70,27 +102,22 @@ export default async function AidePage() {
           ))}
         </div>
 
-        <h2 className="t-h1 mt-20 text-center">Besoin d&apos;un humain ?</h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-muted">
-          L&apos;assistant ne voit pas votre dossier. Pour une situation personnelle, voici à qui vous
-          adresser.
-        </p>
+        <h2 className="t-h1 mt-20 text-center">{tr.human}</h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-muted">{tr.humanLead}</p>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
           <div className="rounded-3xl border border-line bg-raised p-6 shadow-sm">
             <School className="size-10 text-vert" aria-hidden />
-            <p className="t-h3 mt-3">Vous êtes candidat d&apos;école</p>
-            <p className="mt-2 text-muted">
-              Votre lycée (direction ou secrétariat) : il dépose et suit votre dossier.
-            </p>
+            <p className="t-h3 mt-3">{tr.ecole}</p>
+            <p className="mt-2 text-muted">{tr.ecoleText}</p>
           </div>
           <div className="rounded-3xl border border-line bg-raised p-6 shadow-sm">
             <UserRound className="size-10 text-mena" aria-hidden />
-            <p className="t-h3 mt-3">Vous êtes candidat libre</p>
-            <p className="mt-2 text-muted">L&apos;Office du Bac de l&apos;université de votre province.</p>
+            <p className="t-h3 mt-3">{tr.libre}</p>
+            <p className="mt-2 text-muted">{tr.libreText}</p>
           </div>
           <div className="rounded-3xl border border-line bg-raised p-6 shadow-sm">
             <Building2 className="size-10 text-info" aria-hidden />
-            <p className="t-h3 mt-3">Les six Offices du Bac</p>
+            <p className="t-h3 mt-3">{tr.offices}</p>
             <ul className="mt-2 flex flex-wrap gap-2">
               {UNIVERSITIES.map((u) => (
                 <li key={u} className="rounded-full bg-sunken px-3 py-1 text-sm font-semibold">

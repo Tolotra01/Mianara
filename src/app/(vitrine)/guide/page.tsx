@@ -3,7 +3,9 @@ import { ArrowRight, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { Container, PageHero, SectionTitle } from "@/components/ui";
-import { GUIDE_SECTIONS } from "@/lib/guide";
+import { GUIDE_SECTIONS, sectionText } from "@/lib/guide";
+import { COMMON } from "@/lib/i18n";
+import { getLang } from "@/lib/lang";
 
 export const metadata: Metadata = {
   title: "Guide du Bac",
@@ -19,16 +21,39 @@ const TINTS = {
   "bg-info-soft": { plate: "plate-info", marker: "bg-info", ring: "ring-info/30" },
 } as const;
 
-export default function GuidePage() {
+const T = {
+  fr: {
+    overline: "Guide du Bac",
+    title: "Tout le Bac, en sept étapes",
+    accent: "en sept étapes",
+    lead: "Choisis une rubrique. Chaque page va à l'essentiel.",
+    pathOverline: "Le parcours",
+    pathTitle: "De la série au diplôme",
+    pathLead: "Suis les étapes dans l'ordre, ou va directement à celle qui te concerne.",
+    read: "Lire l'étape",
+    finish: "Ton Bacc en poche",
+    finishLead: "Et une nouvelle route qui commence.",
+  },
+  mg: {
+    overline: "Torolalana momba ny Bacc",
+    title: "Ny Bacc manontolo, amin'ny dingana fito",
+    accent: "amin'ny dingana fito",
+    lead: "Misafidiana fizarana iray. Mankany amin'ny tena ilaina avy hatrany ny pejy tsirairay.",
+    pathOverline: "Ny lalana",
+    pathTitle: "Hatramin'ny andiany ka hatramin'ny diplaoma",
+    pathLead: "Araho araka ny filaharany ireo dingana, na mandehana mivantana any amin'izay mahakasika anao.",
+    read: "Vakio ity dingana ity",
+    finish: "Azonao ny Bacc-nao",
+    finishLead: "Ary lalana vaovao no manomboka.",
+  },
+};
+
+export default async function GuidePage() {
+  const lang = await getLang();
+  const t = T[lang];
   return (
     <>
-      <PageHero
-        overline="Guide du Bac"
-        title="Tout le Bac, en sept étapes"
-        accent="en sept étapes"
-        lead="Choisis une rubrique. Chaque page va à l'essentiel."
-        scene="guide"
-      />
+      <PageHero overline={t.overline} title={t.title} accent={t.accent} lead={t.lead} scene="guide" />
 
       {/* Le guide est un parcours : les sept étapes sont des jalons le long
           d'une même route, de la série au diplôme. La route court à gauche sur
@@ -36,12 +61,7 @@ export default function GuidePage() {
           d'autre. */}
       <section className="py-16 lg:py-24">
         <Container>
-          <SectionTitle
-            overline="Le parcours"
-            title="De la série au diplôme"
-            lead="Suis les étapes dans l'ordre, ou va directement à celle qui te concerne."
-            center
-          />
+          <SectionTitle overline={t.pathOverline} title={t.pathTitle} lead={t.pathLead} center />
 
           <ol className="relative mx-auto mt-4 max-w-5xl lg:mt-8">
             {/* La route : un trait en pointillés, du premier jalon à l'arrivée. */}
@@ -53,6 +73,7 @@ export default function GuidePage() {
             {GUIDE_SECTIONS.map((s, i) => {
               const tint = TINTS[s.tint];
               const right = i % 2 === 1;
+              const text = sectionText(s, lang);
               return (
                 <li
                   key={s.slug}
@@ -82,15 +103,17 @@ export default function GuidePage() {
                         <s.Art className="w-full transition-transform duration-500 group-hover:scale-110" />
                       </div>
                       <div className="min-w-0 flex-1 py-1">
-                        <p className="t-overline text-muted">Étape {i + 1}</p>
+                        <p className="t-overline text-muted">
+                          {COMMON[lang].step} {i + 1}
+                        </p>
                         <h2 className="mt-1 text-lg leading-snug font-bold transition-colors group-hover:text-vert sm:t-h2">
-                          {s.title}
+                          {text.title}
                         </h2>
-                        <p className="mt-1 text-sm text-muted sm:text-base">{s.short}</p>
+                        <p className="mt-1 text-sm text-muted sm:text-base">{text.short}</p>
                         <span
                           className={`mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-vert ${right ? "" : "lg:flex-row-reverse"}`}
                         >
-                          Lire l&apos;étape
+                          {t.read}
                           <ArrowRight
                             className={`size-4 transition-transform duration-300 group-hover:translate-x-1 ${right ? "" : "lg:rotate-180 lg:group-hover:-translate-x-1"}`}
                           />
@@ -103,7 +126,7 @@ export default function GuidePage() {
             })}
 
             {/* Arrivée */}
-            <li className="relative pt-4 pl-12 sm:pl-16 lg:pl-0 lg:text-center">
+            <li className="relative pt-4 pl-16 sm:pl-20 lg:pl-0 lg:text-center">
               <span
                 aria-hidden
                 className="absolute top-4 left-5 z-10 grid size-12 sm:left-6 sm:size-14 -translate-x-1/2 place-items-center rounded-full bg-soleil text-on-vert shadow-md ring-8 ring-soleil/25 lg:left-1/2"
@@ -111,8 +134,8 @@ export default function GuidePage() {
                 <GraduationCap className="size-7" />
               </span>
               <div className="pt-1 lg:pt-20">
-                <p className="t-h3">Ton Bacc en poche</p>
-                <p className="mt-1 text-muted">Et une nouvelle route qui commence.</p>
+                <p className="t-h3">{t.finish}</p>
+                <p className="mt-1 text-muted">{t.finishLead}</p>
               </div>
             </li>
           </ol>

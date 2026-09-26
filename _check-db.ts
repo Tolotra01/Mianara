@@ -1,5 +1,8 @@
-import { db } from "./src/db/index.ts";
-import { series } from "./src/db/schema.ts";
+// Script de diagnostic de la connexion (lancé à la main avec `tsx`).
+// Les imports ne portent pas d'extension : `moduleResolution: "bundler"`
+// l'interdit, et `tsx` n'en a pas besoin.
+import { db } from "./src/db/index";
+import { series } from "./src/db/schema";
 
 async function main() {
   console.log("db null ?", db === null);

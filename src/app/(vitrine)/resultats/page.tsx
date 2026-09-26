@@ -6,6 +6,8 @@ import { db } from "@/db";
 import { examSessions } from "@/db/schema";
 import { candidates, results } from "@/db/schema-gestion";
 import { DECISION_LABEL, formatDateTime, MENTION_LABEL } from "@/lib/bac-rules";
+import { COMMON, mentionLabel } from "@/lib/i18n";
+import { getLang } from "@/lib/lang";
 
 export const metadata: Metadata = {
   title: "Résultats du Bac",
@@ -13,8 +15,53 @@ export const metadata: Metadata = {
     "Consultez votre résultat au Baccalauréat par matricule, ou par nom, prénom et date de naissance.",
 };
 
+const DECISION_MG: Record<keyof typeof DECISION_LABEL, string> = {
+  admitted: "Afaka",
+  failed: "Tsy afaka",
+  fraud: "Hosoka",
+  absent: "Tsy tonga",
+};
+
+const T = {
+  fr: {
+    title: "Résultats du Bac",
+    accent: "du Bac",
+    lead: "Recherchez par matricule, ou par nom, prénom et date de naissance.",
+    notYet: "Résultats pas encore publiés",
+    publishOn: (d: string) => `Publication le ${d}.`,
+    announced: "La date de publication sera annoncée dans les actualités.",
+    byMatricule: "Par matricule",
+    matricule: "Matricule",
+    search: "Rechercher",
+    byIdentity: "Par identité",
+    lastName: "Nom",
+    firstName: "Prénoms",
+    birth: "Date de naissance",
+    detail: "Le détail des notes est dans votre espace Mianara.",
+    none: "Aucun résultat : vérifiez l'orthographe ou le matricule.",
+  },
+  mg: {
+    title: "Valin'ny Bacc",
+    accent: "ny Bacc",
+    lead: "Mikaroha amin'ny laharana, na amin'ny anarana, fanampin'anarana ary daty nahaterahana.",
+    notYet: "Mbola tsy navoaka ny valiny",
+    publishOn: (d: string) => `Havoaka ny ${d}.`,
+    announced: "Hambara ao amin'ny vaovao ny daty hamoahana azy.",
+    byMatricule: "Amin'ny laharana",
+    matricule: "Laharana",
+    search: "Hikaroka",
+    byIdentity: "Amin'ny mombamomba anao",
+    lastName: "Anarana",
+    firstName: "Fanampin'anarana",
+    birth: "Daty nahaterahana",
+    detail: "Ao amin'ny toerana manokanao ao amin'ny Mianara ny antsipirian'ny naoty.",
+    none: "Tsy misy valiny : hamarino ny tsipelina na ny laharana.",
+  },
+};
+
 export default async function ResultatsPublicPage({ searchParams }: PageProps<"/resultats">) {
-  const params = await searchParams;
+  const [params, lang] = await Promise.all([searchParams, getLang()]);
+  const t = T[lang];
   const get = (k: string) => (typeof params[k] === "string" ? String(params[k]).trim() : "");
   const matricule = get("matricule").toUpperCase();
   const nom = get("nom");
@@ -62,28 +109,28 @@ export default async function ResultatsPublicPage({ searchParams }: PageProps<"/
     <>
       <PageHero
         overline={`Bac ${session?.year ?? ""}`}
-        title="Résultats du Bac"
-        accent="du Bac"
-        lead="Recherchez par matricule, ou par nom, prénom et date de naissance."
+        title={t.title}
+        accent={t.accent}
+        lead={t.lead}
         scene="resultats"
       />
       <Container className="py-12">
         {!published ? (
           <div className="mx-auto flex max-w-xl flex-col items-center rounded-3xl border border-line bg-raised p-10 text-center shadow-sm">
             <Clock className="size-12 text-warning" />
-            <h2 className="t-h2 mt-4">Résultats pas encore publiés</h2>
+            <h2 className="t-h2 mt-4">{t.notYet}</h2>
             <p className="mt-2 text-muted">
               {session?.resultsPublishAt
-                ? `Publication le ${formatDateTime(session.resultsPublishAt)}.`
-                : "La date de publication sera annoncée dans les actualités."}
+                ? t.publishOn(formatDateTime(session.resultsPublishAt))
+                : t.announced}
             </p>
           </div>
         ) : (
           <div className="mx-auto grid max-w-4xl gap-8 lg:grid-cols-2 xl:max-w-5xl">
             <form className="rounded-3xl border border-line bg-raised p-6 shadow-sm">
-              <h2 className="t-h3">Par matricule</h2>
+              <h2 className="t-h3">{t.byMatricule}</h2>
               <label htmlFor="matricule" className="sr-only">
-                Matricule
+                {t.matricule}
               </label>
               <input
                 id="matricule"
@@ -96,31 +143,31 @@ export default async function ResultatsPublicPage({ searchParams }: PageProps<"/
                 type="submit"
                 className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-vert font-semibold text-on-vert hover:bg-vert-hover"
               >
-                <Search className="size-5" /> Rechercher
+                <Search className="size-5" /> {t.search}
               </button>
             </form>
             <form className="rounded-3xl border border-line bg-raised p-6 shadow-sm">
-              <h2 className="t-h3">Par identité</h2>
+              <h2 className="t-h3">{t.byIdentity}</h2>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <input
                   name="nom"
-                  aria-label="Nom"
+                  aria-label={t.lastName}
                   defaultValue={nom}
-                  placeholder="Nom"
+                  placeholder={t.lastName}
                   required
                   className="field-input"
                 />
                 <input
                   name="prenom"
-                  aria-label="Prénoms"
+                  aria-label={t.firstName}
                   defaultValue={prenom}
-                  placeholder="Prénoms"
+                  placeholder={t.firstName}
                   required
                   className="field-input"
                 />
               </div>
               <label className="mt-3 block text-sm font-semibold">
-                Date de naissance
+                {t.birth}
                 <input
                   name="naissance"
                   type="date"
@@ -133,7 +180,7 @@ export default async function ResultatsPublicPage({ searchParams }: PageProps<"/
                 type="submit"
                 className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-line-strong font-semibold hover:border-vert hover:text-vert"
               >
-                <Search className="size-5" /> Rechercher
+                <Search className="size-5" /> {t.search}
               </button>
             </form>
 
@@ -145,21 +192,20 @@ export default async function ResultatsPublicPage({ searchParams }: PageProps<"/
                   >
                     {found.decision === "admitted" && <PartyPopper className="mx-auto size-10 text-soleil" />}
                     <p className="mt-2 font-semibold opacity-90">
-                      {found.name} · <span className="font-mono">{found.matricule}</span> · série{" "}
-                      {found.serie}
+                      {found.name} · <span className="font-mono">{found.matricule}</span> ·{" "}
+                      {COMMON[lang].series.toLowerCase()} {found.serie}
                     </p>
                     <p className="t-display mt-2">
-                      {DECISION_LABEL[found.decision]}
-                      {found.mention ? ` · ${MENTION_LABEL[found.mention]}` : ""}
+                      {lang === "mg" ? DECISION_MG[found.decision] : DECISION_LABEL[found.decision]}
+                      {found.mention
+                        ? ` · ${mentionLabel(found.mention, MENTION_LABEL[found.mention], lang)}`
+                        : ""}
                     </p>
-                    <p className="mt-2 text-sm opacity-80">
-                      Le détail des notes est dans votre espace Mianara.
-                    </p>
+                    <p className="mt-2 text-sm opacity-80">{t.detail}</p>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center gap-3 rounded-3xl border border-line bg-raised p-8 text-muted">
-                    <SearchX className="size-6" /> Aucun résultat : vérifiez l&apos;orthographe ou le
-                    matricule.
+                    <SearchX className="size-6" /> {t.none}
                   </div>
                 )}
               </div>

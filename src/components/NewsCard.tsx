@@ -3,10 +3,11 @@ import Link from "next/link";
 import { NEWS_ART } from "@/components/illustrations/Spots";
 import { formatDate } from "@/components/ui";
 import type { News } from "@/lib/data";
+import { newsCategory, type Lang } from "@/lib/i18n";
 
-const IMPORTANCE: Record<News["importance"], { label: string; className: string } | null> = {
-  urgent: { label: "Important", className: "bg-danger-soft text-danger" },
-  high: { label: "À savoir", className: "bg-info-soft text-info" },
+const IMPORTANCE: Record<News["importance"], { label: Record<Lang, string>; className: string } | null> = {
+  urgent: { label: { fr: "Important", mg: "Zava-dehibe" }, className: "bg-danger-soft text-danger" },
+  high: { label: { fr: "À savoir", mg: "Tokony ho fantatra" }, className: "bg-info-soft text-info" },
   normal: null,
   low: null,
 };
@@ -29,17 +30,22 @@ type NewsCardProps = {
   featured?: boolean;
   /** Libellé du lien de lecture ; l'appel n'apparaît que s'il est fourni. */
   readLabel?: string;
+  lang?: Lang;
 };
 
 /** Catégorie, importance et date — communes aux deux présentations. */
-function Meta({ news }: { news: News }) {
+function Meta({ news, lang }: { news: News; lang: Lang }) {
   const badge = IMPORTANCE[news.importance];
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm">
-      <span className="rounded-full bg-vert-soft px-2.5 py-0.5 font-bold text-vert">{news.category}</span>
-      {badge && <span className={`rounded-full px-2.5 py-0.5 font-bold ${badge.className}`}>{badge.label}</span>}
+      <span className="rounded-full bg-vert-soft px-2.5 py-0.5 font-bold text-vert">
+        {newsCategory(news.category, lang)}
+      </span>
+      {badge && (
+        <span className={`rounded-full px-2.5 py-0.5 font-bold ${badge.className}`}>{badge.label[lang]}</span>
+      )}
       <time dateTime={news.publishedAt} className="font-mono text-xs text-muted">
-        {formatDate(news.publishedAt)}
+        {formatDate(news.publishedAt, lang)}
       </time>
     </div>
   );
@@ -51,11 +57,13 @@ function NewsTile({
   tone,
   featured,
   readLabel,
+  lang,
 }: {
   news: News;
   tone: "surface" | "dark";
   featured: boolean;
   readLabel?: string;
+  lang: Lang;
 }) {
   const Art = NEWS_ART[news.illustration] ?? NEWS_ART.reforme;
   const dark = tone === "dark";
@@ -68,9 +76,9 @@ function NewsTile({
     featured ? "rounded-3xl lg:grid lg:grid-cols-[1.1fr_1fr]" : "flex h-full flex-col rounded-2xl",
   ].join(" ");
 
-  // Sur l'accueil, la tache de l'illustration est remontée en « plaque » claire
-  // (cf. `.plate`) : c'est elle qui détache le dessin de la page nuit.
-  const art = dark ? "plate plate-plain relative overflow-hidden" : "relative overflow-hidden bg-sunken";
+  // L'illustration est toujours montée sur une plaque claire (cf. `.plate`) :
+  // sa tache de fond pastel reste lisible dans les deux thèmes.
+  const art = "plate plate-plain relative overflow-hidden";
   const artPad = featured ? "px-8 pt-4 pb-6 lg:flex lg:items-center lg:px-12 lg:py-2" : "px-8 pt-5";
 
   return (
@@ -79,7 +87,7 @@ function NewsTile({
         <Art className="w-full transition-transform duration-500 group-hover:scale-[1.06]" />
       </div>
       <div className={`flex flex-1 flex-col ${featured ? "p-7 sm:p-9" : "p-5"}`}>
-        <Meta news={news} />
+        <Meta news={news} lang={lang} />
         <h3
           className={`${featured ? "t-h2" : "t-h3"} mt-3 text-balance transition-colors group-hover:text-vert`}
         >
@@ -99,12 +107,9 @@ function NewsTile({
 
 /** Fil éditorial : une ligne par actualité. La vignette garde le rapport 4:3
  *  des illustrations (Spots), la plaque claire les détache de la page nuit. */
-function NewsRow({ news, tone, readLabel }: { news: News; tone: "surface" | "dark"; readLabel?: string }) {
+function NewsRow({ news, readLabel, lang }: { news: News; readLabel?: string; lang: Lang }) {
   const Art = NEWS_ART[news.illustration] ?? NEWS_ART.reforme;
-  const art =
-    tone === "dark"
-      ? "plate plate-plain aspect-[4/3] w-24 sm:w-36"
-      : "aspect-[4/3] w-24 bg-sunken sm:w-36";
+  const art = "plate plate-plain aspect-[4/3] w-24 sm:w-36";
 
   return (
     <Link
@@ -120,7 +125,7 @@ function NewsRow({ news, tone, readLabel }: { news: News; tone: "surface" | "dar
         <Art className="w-full" />
       </div>
       <div className="min-w-0 flex-1">
-        <Meta news={news} />
+        <Meta news={news} lang={lang} />
         <h3 className="t-h3 mt-2 text-balance transition-colors group-hover:text-vert">{news.title}</h3>
         <p className="mt-1.5 line-clamp-2 text-sm text-muted">{news.excerpt}</p>
       </div>
@@ -136,7 +141,14 @@ function NewsRow({ news, tone, readLabel }: { news: News; tone: "surface" | "dar
   );
 }
 
-export function NewsCard({ news, tone = "surface", variant = "card", featured = false, readLabel }: NewsCardProps) {
-  if (variant === "row") return <NewsRow news={news} tone={tone} readLabel={readLabel} />;
-  return <NewsTile news={news} tone={tone} featured={featured} readLabel={readLabel} />;
+export function NewsCard({
+  news,
+  tone = "surface",
+  variant = "card",
+  featured = false,
+  readLabel,
+  lang = "fr",
+}: NewsCardProps) {
+  if (variant === "row") return <NewsRow news={news} readLabel={readLabel} lang={lang} />;
+  return <NewsTile news={news} tone={tone} featured={featured} readLabel={readLabel} lang={lang} />;
 }
