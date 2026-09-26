@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { and, asc, count, eq, ilike, or, type SQL } from "drizzle-orm";
-import { UserRound } from "lucide-react";
+import { Plus, UserRound } from "lucide-react";
+import Link from "next/link";
 import { BarList } from "@/components/app/charts";
 import { Pagination } from "@/components/app/Pagination";
 import { SearchInput } from "@/components/app/SearchInput";
-import { Card, DataTable, EmptyState, Mono, PageHeader, StatusBadge } from "@/components/app/ui";
+import { Card, DataTable, EmptyState, LinkButton, Mono, PageHeader, StatusBadge } from "@/components/app/ui";
 import { requireDb } from "@/db";
 import { candidates, offices } from "@/db/schema-gestion";
 import { requireUser } from "@/lib/auth";
@@ -54,7 +55,12 @@ export default async function CandidatsLibresPage({ searchParams }: PageProps<"/
     <>
       <PageHeader
         title="Candidats libres"
-        description="Personnes qui se présentent au Bacc sans établissement, enregistrées directement par les Offices."
+        description="Personnes qui se présentent au Bacc sans établissement. Enregistrez-les, corrigez leur dossier ou gérez leur compte."
+        actions={
+          <LinkButton href="/admin/candidats-libres/nouveau">
+            <Plus className="size-5" /> Nouveau candidat libre
+          </LinkButton>
+        }
       />
       <div className="grid gap-6 xl:grid-cols-[1fr_2fr]">
         <Card title="Par Office">
@@ -65,7 +71,11 @@ export default async function CandidatsLibresPage({ searchParams }: PageProps<"/
             <SearchInput placeholder="Nom, matricule…" />
           </div>
           {rows.length === 0 ? (
-            <EmptyState icon={UserRound} title="Aucun candidat libre" />
+            <EmptyState
+              icon={UserRound}
+              title="Aucun candidat libre"
+              description="Enregistrez un candidat avec le bouton « Nouveau candidat libre »."
+            />
           ) : (
             <DataTable>
               <thead>
@@ -75,15 +85,19 @@ export default async function CandidatsLibresPage({ searchParams }: PageProps<"/
                   <th>Série</th>
                   <th>Office</th>
                   <th>Statut</th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
                 {rows.map(({ c, office }) => (
                   <tr key={c.id}>
                     <td>
-                      <span className="font-bold">
+                      <Link
+                        href={`/admin/candidats-libres/${c.id}`}
+                        className="font-bold hover:text-vert hover:underline"
+                      >
                         {c.lastName} {c.firstName}
-                      </span>
+                      </Link>
                       <span className="block text-xs text-muted">
                         Né(e) le {formatDate(c.birthDate)} · {c.address ?? c.birthPlace}
                       </span>
@@ -97,6 +111,11 @@ export default async function CandidatsLibresPage({ searchParams }: PageProps<"/
                       <StatusBadge tone={CANDIDATE_STATUS[c.status].tone}>
                         {CANDIDATE_STATUS[c.status].label}
                       </StatusBadge>
+                    </td>
+                    <td className="text-right">
+                      <LinkButton href={`/admin/candidats-libres/${c.id}`} variant="secondary" size="sm">
+                        Gérer
+                      </LinkButton>
                     </td>
                   </tr>
                 ))}

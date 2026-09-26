@@ -66,7 +66,7 @@ export default async function AdminLearning() {
           <p className="text-sm text-muted">{fullName} ({username}) · {listing.kind} · {listing.subjectCode} · séries {listing.series.join(", ")}</p>
           <p className="mt-2">{listing.description}</p><details className="mt-2"><summary className="cursor-pointer font-semibold">Contenu</summary><p className="whitespace-pre-wrap">{listing.content}</p></details>
           <div className="mt-3 flex flex-wrap items-end gap-3"><label className="grid text-sm">Prix final MGA<input className="field-input" name="priceAmount" type="number" min="0" max="100000000" defaultValue={listing.priceAmount ?? ""} /></label>
-            <label className="grid flex-1 text-sm">Note à l'enseignant<input className="field-input" name="note" maxLength={500} /></label>
+            <label className="grid flex-1 text-sm">Note à l&apos;enseignant<input className="field-input" name="note" maxLength={500} /></label>
             <button name="decision" value="approve" className="rounded bg-vert px-4 py-2 font-bold text-on-vert">Approuver</button>
             <button name="decision" value="reject" className="rounded bg-danger-soft px-4 py-2 font-bold text-danger">Refuser</button>
           </div>

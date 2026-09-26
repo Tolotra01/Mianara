@@ -29,7 +29,7 @@ export default async function TeacherCoachingChat({ params }: PageProps<"/enseig
     senderId: coachingMessages.senderId, text: coachingMessages.text, createdAt: coachingMessages.createdAt,
   }).from(coachingMessages).where(eq(coachingMessages.sessionId, id)).orderBy(asc(coachingMessages.createdAt));
   return <section className="mx-auto max-w-3xl">
-    <Link href="/enseignant" className="text-sm font-bold text-vert underline">← Retour à l'espace enseignant</Link>
+    <Link href="/enseignant" className="text-sm font-bold text-vert underline">← Retour à l&apos;espace enseignant</Link>
     <h1 className="t-h1 mt-4">Coaching : {session.title}</h1>
     <p className="mt-1 text-sm text-muted">Candidat de série {session.serie}. Les noms et identifiants ne sont pas partagés.</p>
     <div aria-live="polite" className="mt-6 min-h-56 space-y-3 rounded-2xl border border-line bg-raised p-4">
