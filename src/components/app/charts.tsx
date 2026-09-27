@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
  * Graphiques légers en HTML (pas de bibliothèque) :
  *  - BarList : comparer des effectifs (une seule teinte, valeur au bout de la barre) ;
  *  - StackedBar : répartition d'un tout par statut (légende + effectifs toujours visibles).
+ *  - Ring : taux unique sur une jauge circulaire.
  * Chaque segment a une info-bulle au survol et le détail chiffré reste lisible en texte.
  */
 

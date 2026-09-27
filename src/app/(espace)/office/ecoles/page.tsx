@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { asc, eq, sql } from "drizzle-orm";
-import { MapPin, School, UserRound } from "lucide-react";
+import { FileStack, MapPin, School, UserRound } from "lucide-react";
 import Link from "next/link";
-import { Ring } from "@/components/app/charts";
 import { Alert, Card, EmptyState, PageHeader, StatCard, StatusBadge } from "@/components/app/ui";
 import { requireDb } from "@/db";
 import { candidates, schools } from "@/db/schema-gestion";
@@ -32,16 +31,6 @@ export default async function EcolesOfficePage() {
   ]);
   const withCandidates = list.filter((l) => l.candidates > 0 || l.pending > 0);
   const ecoleLabel = withCandidates.length > 1 ? "établissements" : "établissement";
-  const totals = list.reduce(
-    (acc, l) => ({
-      candidats: acc.candidats + l.candidates,
-      aTraiter: acc.aTraiter + l.pending,
-      incomplets: acc.incomplets + l.incomplete,
-    }),
-    { candidats: 0, aTraiter: 0, incomplets: 0 },
-  );
-  const dossiers = totals.aTraiter + totals.incomplets;
-  const completion = dossiers > 0 ? Math.round((totals.aTraiter / dossiers) * 100) : 0;
 
   return (
     <>
@@ -51,26 +40,8 @@ export default async function EcolesOfficePage() {
         description="Les établissements rattachés à votre Office et les candidats qu'ils présentent au Bacc."
       />
 
-      <div className="stagger mb-6 grid gap-4 lg:grid-cols-3">
-        <div style={{ "--i": 0 } as React.CSSProperties} className="lg:col-span-2">
-          <div className="flex h-full flex-wrap items-center gap-6 rounded-2xl border border-line bg-raised p-5 shadow-sm">
-            <Ring value={completion} label="dossiers" size={104} />
-            <div className="min-w-0 flex-1">
-              <p className="t-overline text-vert">Suivi des dossiers</p>
-              <p className="t-h2 mt-1 text-balance">
-                {dossiers === 0
-                  ? "Aucun dossier en attente"
-                  : `${totals.aTraiter} dossier${totals.aTraiter > 1 ? "s" : ""} à traiter`}
-              </p>
-              <p className="mt-1.5 text-sm text-muted">
-                {dossiers === 0
-                  ? "Les écoles de votre Office n'ont encore soumis aucune candidature."
-                  : `${totals.incomplets} incomplet${totals.incomplets > 1 ? "s" : ""} à relancer · ${totals.candidats} candidat${totals.candidats > 1 ? "s" : ""} enregistré${totals.candidats > 1 ? "s" : ""}`}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div style={{ "--i": 1 } as React.CSSProperties}>
+      <div className="stagger mb-6 grid gap-4 sm:grid-cols-2">
+        <div style={{ "--i": 0 } as React.CSSProperties}>
           <StatCard
             label={`${ecoleLabel} avec candidats`}
             value={withCandidates.length}
@@ -81,6 +52,15 @@ export default async function EcolesOfficePage() {
                 ? "Aucune école rattachée"
                 : `sur ${list.length} rattachée${list.length > 1 ? "s" : ""} à votre Office`
             }
+          />
+        </div>
+        <div style={{ "--i": 1 } as React.CSSProperties}>
+          <StatCard
+            label="Dossiers à traiter"
+            value={list.reduce((n, l) => n + l.pending, 0)}
+            icon={FileStack}
+            tone="soleil"
+            hint="Dossiers soumis par vos écoles"
           />
         </div>
       </div>

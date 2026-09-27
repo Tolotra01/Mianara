@@ -121,6 +121,59 @@
 }
 
 /* ------------------------------------------------------------------
+   Espace de gestion (après connexion)
+   ------------------------------------------------------------------
+   L'interface de travail est toujours en thème clair, sur un fond crème
+   #F8F0DF, quel que soit le thème du système. Le site vitrine, lui,
+   conserve ses tokens : ce bloc ne s'atteint que par la classe posée
+   par le layout (espace).
+
+   Pourquoi tout le jeu de jetons, et pas seulement `--surface` : en
+   thème sombre, `--ink` vaut #eef3ef (blanc). Ne surcharger que le fond
+   donnerait du texte blanc sur du crème, illisible. On réimpose donc
+   l'ensemble des jetons clairs — même technique que `.home-dark` sur
+   l'accueil — en n'écartant que `--surface` au bénéfice du crème demandé.
+   Les utilitaires Tailwind (bg-surface, text-ink, border-line…) résolvent
+   ces jetons par cascade : rien n'est codé en dur dans le JSX.
+   ------------------------------------------------------------------ */
+.espace-gestion {
+  --surface: #f8f0df;
+  --surface-raised: #ffffff;
+  --surface-sunken: #efebe3;
+  --line: #dce3de;
+  --line-strong: #7a8b83;
+  --ink: #12241d;
+  --ink-muted: #4f5e57;
+  --vert: #0e6b4f;
+  --vert-hover: #0a4a37;
+  --vert-soft: #e6f2ec;
+  --on-vert: #ffffff;
+  --tany-mena: #c2492b;
+  --tany-mena-soft: #fbeae4;
+  --soleil: #f2b33d;
+  --soleil-soft: #fef4dc;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --warning: #8a5a00;
+  --warning-soft: #fef4dc;
+  --info: #1d5fa8;
+  --info-soft: #e8f0fa;
+  --focus-ring: #1d5fa8;
+  --shadow-sm: 0 1px 2px rgba(18, 36, 29, 0.08);
+  --shadow-md: 0 6px 20px rgba(18, 36, 29, 0.12);
+  /* Le logo lit --logo-* : ces trois jetons suivent le thème sombre, le
+     « livre » y deviendrait blanc sur fond crème. On les ramène au clair. */
+  --logo-feuille: #0e6b4f;
+  --logo-livre: #c2492b;
+  --logo-tranche: #8f331d;
+  /* `body` a résolu `color` une fois pour toutes : sans cette ligne, le
+     texte hériterait du blanc du thème sombre et deviendrait illisible
+     sur le fond crème. Même correctif que `.home-dark` (cf. plus bas). */
+  color: var(--ink);
+  color-scheme: light;
+}
+
+/* ------------------------------------------------------------------
    Accueil « Nuit malgache »
    ------------------------------------------------------------------
    La page d'accueil est volontairement sombre dans les deux thèmes : ses

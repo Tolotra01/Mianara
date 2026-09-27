@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { headers } from "next/headers";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { subjects } from "@/db/schema";
 import { learningListings, teacherDocuments, teacherProfiles, users } from "@/db/schema-gestion";
 import { audit } from "@/lib/audit";
@@ -33,7 +33,7 @@ export async function registerTeacher(form: FormData): Promise<void> {
   if (!subject) redirect("/enseignant/inscription?erreur=matiere");
   let userId: string;
   try {
-    userId = await db.transaction(async (tx) => {
+    userId = await requireTxDb().transaction(async (tx) => {
       const [user] = await tx.insert(users).values({
         role: "teacher", username: parsed.data.username, fullName: parsed.data.fullName,
         passwordHash: await hashPassword(parsed.data.password), mustChangePassword: false,
@@ -106,7 +106,7 @@ export async function submitTeacherProof(_: ActionState, form: FormData): Promis
     return fail("Choisissez un fichier PDF, JPEG ou PNG de 3 Mo maximum.");
   const bytes = Buffer.from(await file.arrayBuffer());
   if (!validSignature(file.type, bytes)) return fail("Format ou contenu du fichier invalide.");
-  const db = requireDb();
+  const db = requireTxDb();
   await db.transaction(async (tx) => {
     await tx.insert(teacherDocuments).values({
       teacherId: user.id, kind, fileName: file.name.replace(/[^\p{L}\p{N}._ -]/gu, "").slice(0, 120) || "justificatif",

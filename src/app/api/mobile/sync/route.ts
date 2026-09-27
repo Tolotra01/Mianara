@@ -1,5 +1,5 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { serieSubjects, subjects } from "@/db/schema";
 import { mobileRevisionSessions } from "@/db/schema-gestion";
 import {
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     const revisions = parsed.data.revisions;
     const clientIds = revisions.map(({ id }) => id);
     if (revisions.length) {
-      await db.transaction(async (tx) => {
+      await requireTxDb().transaction(async (tx) => {
         await tx
           .insert(mobileRevisionSessions)
           .values(

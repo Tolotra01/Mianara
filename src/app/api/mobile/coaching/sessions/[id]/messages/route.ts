@@ -1,5 +1,5 @@
 import { and, asc, eq } from "drizzle-orm";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { coachingMessages, coachingPayments, coachingSessions, learningListings, teacherProfiles, users } from "@/db/schema-gestion";
 import { getCurrentUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
@@ -75,7 +75,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (body.tooLarge) return mobileJson({ error: "Requête trop volumineuse." }, 413);
     const parsed = coachingMessageInput.safeParse(body.value);
     if (!parsed.success) return mobileJson({ error: "Message invalide." }, 400);
-    const message = await requireDb().transaction(async (tx) => {
+    const message = await requireTxDb().transaction(async (tx) => {
       const [created] = await tx.insert(coachingMessages).values({
         sessionId: id, senderId: principal.userId, text: parsed.data.text,
       }).returning({ id: coachingMessages.id, text: coachingMessages.text, createdAt: coachingMessages.createdAt });

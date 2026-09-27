@@ -1,5 +1,5 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { coachingPayments, coachingSessions, learningListings, teacherProfiles, users } from "@/db/schema-gestion";
 import { audit } from "@/lib/audit";
 import { clientIp, getMobilePrincipal, hasOversizedBody, mobileJson, mobileRateLimited, readJsonBody } from "@/lib/mobile-api";
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       .where(and(eq(coachingPayments.candidateId, principal.candidateId), eq(coachingPayments.listingId, listing.id),
         inArray(coachingPayments.status, ["pending", "approved"]))).limit(1);
     if (existing) return mobileJson({ error: "Un paiement pour ce coaching est déjà en cours ou validé." }, 409);
-    const [payment] = await db.transaction(async (tx) => {
+    const [payment] = await requireTxDb().transaction(async (tx) => {
       const [created] = await tx.insert(coachingPayments).values({
         listingId: listing.id, candidateId: principal.candidateId,
         transactionReference: parsed.data.transactionReference, amount: listing.price!,

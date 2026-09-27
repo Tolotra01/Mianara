@@ -102,7 +102,7 @@ export default async function EspaceLayout({ children }: { children: React.React
 
   return (
     <Toaster>
-      <div className="min-h-dvh bg-surface">
+      <div className="espace-gestion min-h-dvh bg-surface">
         <Sidebar
           role={user.role}
           user={{ fullName: user.fullName, username: user.username, subtitle }}
