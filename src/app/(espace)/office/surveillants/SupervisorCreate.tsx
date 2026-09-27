@@ -1,9 +1,10 @@
 "use client";
 
-import { Copy, KeyRound, Plus } from "lucide-react";
+import { KeyRound, Plus } from "lucide-react";
 import { useState } from "react";
 import { ActionForm, FieldError, SubmitButton } from "@/components/app/ActionForm";
 import { ModalButton } from "@/components/app/ConfirmAction";
+import { CopyButton } from "@/components/app/CopyButton";
 import { buttonClass } from "@/components/app/ui";
 import { createSupervisor } from "./actions";
 
@@ -28,14 +29,11 @@ export function SupervisorCreate() {
               <dt className="mt-3 text-xs font-bold text-muted uppercase">Mot de passe temporaire</dt>
               <dd className="flex items-center gap-2 font-mono text-lg font-bold">
                 {secret.password}
-                <button
-                  type="button"
-                  onClick={() => navigator.clipboard?.writeText(secret.password)}
-                  className="text-muted hover:text-vert"
-                  aria-label="Copier le mot de passe"
-                >
-                  <Copy className="size-4" />
-                </button>
+                <CopyButton
+                  value={secret.password}
+                  label="Copier le mot de passe"
+                  iconClassName="size-4"
+                />
               </dd>
             </dl>
             <div className="flex justify-end">

@@ -1,6 +1,7 @@
 "use server";
 
 import { eq, sql } from "drizzle-orm";
+import type { BatchItem } from "drizzle-orm/batch";
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { requireDb } from "@/db";
@@ -54,24 +55,31 @@ export async function toggleOffice(_: ActionState, form: FormData): Promise<Acti
   const db = requireDb();
   const [o] = await db.select().from(offices).where(eq(offices.id, id));
   if (!o) return fail("Office introuvable.");
-  await db.transaction(async (tx) => {
-    await tx.update(offices).set({ isActive: !o.isActive }).where(eq(offices.id, id));
-    // Désactiver un Office ferme aussi les comptes de ses agents.
-    if (o.isActive)
-      await tx
+  // Le pilote HTTP de Neon n'a pas de transaction interactive : `db.transaction(cb)`
+  // y lève « No transactions support in neon-http driver ». `db.batch()` envoie
+  // les requêtes dans un seul aller-retour et Neon les exécute dans une
+  // transaction implicite : l'Office et ses agents basculent ensemble, ou pas du
+  // tout.
+  const statements: BatchItem<"pg">[] = [
+    db.update(offices).set({ isActive: !o.isActive }).where(eq(offices.id, id)),
+  ];
+  // Désactiver un Office ferme aussi les comptes de ses agents.
+  if (o.isActive)
+    statements.push(
+      db
         .update(users)
         .set({ isActive: false })
-        .where(sql`${users.officeId} = ${id} and ${users.role} = 'office'`);
-    await audit(
-      {
-        actorId: user.id,
-        action: "office.modifier",
-        table: "offices",
-        recordId: id,
-        newData: { isActive: !o.isActive },
-      },
-      tx,
+        .where(sql`${users.officeId} = ${id} and ${users.role} = 'office'`),
     );
+  await db.batch(statements as [BatchItem<"pg">, ...BatchItem<"pg">[]]);
+  // La trace d'audit suit l'écriture : elle lit les en-têtes de la requête, elle
+  // ne peut donc pas rejoindre le lot ci-dessus.
+  await audit({
+    actorId: user.id,
+    action: "office.modifier",
+    table: "offices",
+    recordId: id,
+    newData: { isActive: !o.isActive },
   });
   refresh();
   return ok(o.isActive ? "Office désactivé (comptes agents fermés)." : "Office réactivé.");

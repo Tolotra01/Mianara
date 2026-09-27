@@ -282,9 +282,15 @@ export function EmptyState({
   );
 }
 
-export function KeyValues({ items }: { items: { label: string; value: ReactNode; mono?: boolean }[] }) {
+export function KeyValues({
+  items,
+  className,
+}: {
+  items: { label: string; value: ReactNode; mono?: boolean }[];
+  className?: string;
+}) {
   return (
-    <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+    <dl className={`grid gap-x-6 gap-y-4 sm:grid-cols-2 ${className ?? ""}`}>
       {items.map((i) => (
         <div key={i.label}>
           <dt className="text-xs font-bold tracking-wide text-muted uppercase">{i.label}</dt>

@@ -1,12 +1,12 @@
 "use client";
 
-import { ArrowLeft, LogOut, Menu, X } from "lucide-react";
+import { ArrowLeft, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
-import { logout } from "@/app/actions/auth";
 import { ROLE_LABEL, type Role } from "@/lib/auth-shared";
+import { LogoutButton } from "./LogoutButton";
 import { Avatar } from "./ui";
 import { type BadgeKey, NAV } from "./nav";
 
@@ -95,16 +95,7 @@ function NavContent({ role, user, badges, visit, onNavigate }: Props & { onNavig
             <p className="truncate text-sm font-bold">{user.fullName}</p>
             <p className="truncate font-mono text-xs text-muted">{user.username}</p>
           </div>
-          <form action={logout}>
-            <button
-              type="submit"
-              className="grid size-9 place-items-center rounded-lg text-muted transition-colors hover:bg-danger-soft hover:text-danger"
-              aria-label="Se déconnecter"
-              title="Se déconnecter"
-            >
-              <LogOut className="size-[18px]" />
-            </button>
-          </form>
+          <LogoutButton />
         </div>
       </div>
       <div className="lamba h-2" aria-hidden />

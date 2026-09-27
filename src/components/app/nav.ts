@@ -66,6 +66,10 @@ export const NAV: Record<Role, NavGroup[]> = {
         { href: "/office/actualites", label: "Proposer une actualité", icon: Newspaper },
       ],
     },
+    {
+      label: "Compte",
+      items: [{ href: "/compte", label: "Mon compte", icon: UserCog }],
+    },
   ],
   school: [
     {
@@ -111,6 +115,10 @@ export const NAV: Record<Role, NavGroup[]> = {
         { href: "/admin/actualites", label: "Actualités", icon: Newspaper, badgeKey: "news" },
         { href: "/admin/journal", label: "Journal d'audit", icon: ScrollText },
       ],
+    },
+    {
+      label: "Compte",
+      items: [{ href: "/compte", label: "Mon compte", icon: UserCog }],
     },
   ],
 };

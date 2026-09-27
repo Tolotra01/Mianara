@@ -1,9 +1,10 @@
 "use client";
 
-import { Copy, KeyRound } from "lucide-react";
+import { KeyRound } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import type { ActionState } from "@/lib/action";
 import { ActionForm } from "./ActionForm";
+import { CopyButton } from "./CopyButton";
 import { buttonClass } from "./ui";
 
 /** Formulaire de création de compte : affiche une seule fois le mot de passe temporaire généré. */
@@ -29,14 +30,7 @@ export function SecretForm({
         </div>
         <p className="flex items-center justify-center gap-3 rounded-xl border border-line p-4 font-mono text-xl font-bold">
           {secret}
-          <button
-            type="button"
-            onClick={() => navigator.clipboard?.writeText(secret)}
-            className="text-muted hover:text-vert"
-            aria-label="Copier"
-          >
-            <Copy className="size-5" />
-          </button>
+          <CopyButton value={secret} label="Copier le mot de passe" />
         </p>
         <div className="flex justify-end">
           <button
