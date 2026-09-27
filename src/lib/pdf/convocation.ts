@@ -40,7 +40,7 @@ async function loadConvocation(candidateId: string) {
   return row ?? null;
 }
 
-/** Texte du QR (lisible par tout lecteur, jeton signé en dernière ligne). */
+/** Texte du QR : l'identité du candidat, lisible par tout lecteur. */
 export async function candidateQrText(candidateId: string) {
   const row = await loadConvocation(candidateId);
   if (!row) return null;
@@ -268,7 +268,7 @@ export async function convocationPdf(candidateId: string): Promise<Uint8Array | 
   });
   text(
     page,
-    `Générée le ${now} · QR signé électroniquement : toute copie modifiée est détectée.`,
+    `Générée le ${now} · Au contrôle, la photo affichée au surveillant doit correspondre au candidat.`,
     M,
     16,
     fonts.regular,

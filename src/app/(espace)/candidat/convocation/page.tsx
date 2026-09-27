@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Ma convocation" };
 
 export default async function ConvocationPage() {
   const { candidate: c } = await requireCandidate();
-  const qr = await QRCode.toDataURL((await candidateQrText(c.id)) ?? c.qrToken, {
+  const qr = await QRCode.toDataURL((await candidateQrText(c.id)) ?? c.matricule, {
     margin: 4,
     width: 360,
     errorCorrectionLevel: "M",
