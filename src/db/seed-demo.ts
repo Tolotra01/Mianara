@@ -7,6 +7,7 @@
  *
  * Mot de passe des comptes du personnel : DEMO_PASSWORD (par défaut Mianara2027!).
  */
+
 import "dotenv/config";
 import { Pool } from "@neondatabase/serverless";
 import { eq, ne } from "drizzle-orm";

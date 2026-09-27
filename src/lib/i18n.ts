@@ -7,7 +7,14 @@ export type Lang = "fr" | "mg";
 export const LANG_COOKIE = "mianara-lang";
 
 const fr = {
-  nav: { home: "Accueil", guide: "Guide", news: "Actualités", help: "Aide", login: "Connexion" },
+  nav: {
+    home: "Accueil",
+    guide: "Guide",
+    news: "Actualités",
+    help: "Aide",
+    login: "Connexion",
+    space: "Mon espace",
+  },
   skip: "Aller au contenu",
   menu: "Menu",
   langLabel: "Langue",
@@ -84,7 +91,14 @@ const fr = {
 export type Dict = typeof fr;
 
 const mg: Dict = {
-  nav: { home: "Fandraisana", guide: "Torolalana", news: "Vaovao", help: "Fanampiana", login: "Hiditra" },
+  nav: {
+    home: "Fandraisana",
+    guide: "Torolalana",
+    news: "Vaovao",
+    help: "Fanampiana",
+    login: "Hiditra",
+    space: "Ny toerako",
+  },
   skip: "Mankany amin'ny votoaty",
   menu: "Menio",
   langLabel: "Fiteny",

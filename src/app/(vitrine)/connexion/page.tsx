@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight, Building, GraduationCap, HelpCircle, School, ShieldCheck, Sparkles } from "lucide-react";
-import { redirect } from "next/navigation";
 import { LoginArt } from "@/components/illustrations/Spots";
-import { getCurrentUser, HOME_BY_ROLE } from "@/lib/auth";
 import { Container } from "@/components/ui";
 import { getLang } from "@/lib/lang";
 import { LoginForm } from "./LoginForm";
@@ -60,8 +58,8 @@ const T = {
 };
 
 export default async function ConnexionPage({ searchParams }: PageProps<"/connexion">) {
-  const user = await getCurrentUser();
-  if (user) redirect(user.mustChangePassword ? "/compte/mot-de-passe" : HOME_BY_ROLE[user.role]);
+  // Pas de renvoi vers l'espace de l'utilisateur déjà connecté : le bouton
+  // « Connexion » du site public doit toujours ouvrir cette page.
   const [{ suite }, lang] = await Promise.all([searchParams, getLang()]);
   const t = T[lang];
 

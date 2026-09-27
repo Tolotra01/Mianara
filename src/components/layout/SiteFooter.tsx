@@ -6,7 +6,7 @@ import type { Dict } from "@/lib/i18n";
 const LINK =
   "group inline-flex items-center gap-1.5 font-medium text-ink/80 transition-colors hover:text-vert";
 
-export function SiteFooter({ t }: { t: Dict }) {
+export function SiteFooter({ t, spaceHref }: { t: Dict; spaceHref?: string }) {
   const guide = [
     { href: "/guide/series", label: "Séries L, S, OSE" },
     { href: "/guide/coefficients", label: "Coefficients" },
@@ -19,7 +19,9 @@ export function SiteFooter({ t }: { t: Dict }) {
     { href: "/resultats", label: "Résultats du Bacc" },
     { href: "/actualites", label: t.nav.news },
     { href: "/aide", label: t.nav.help },
-    { href: "/connexion", label: t.nav.login },
+    spaceHref
+      ? { href: spaceHref, label: t.nav.space }
+      : { href: "/connexion", label: t.nav.login },
   ];
   const official = [
     { href: "https://bacc.digital.gov.mg/", label: t.footer.results },
