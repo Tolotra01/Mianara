@@ -139,7 +139,7 @@ export default async function CandidatPage({ params, searchParams }: PageProps<"
   const isNew = sp.nouveau === "1";
   const editing = sp.modifier === "1";
   const tempPassword = c.tempPasswordEnc ? decrypt(c.tempPasswordEnc) : null;
-  const qr = await QRCode.toDataURL((await candidateQrText(id)) ?? c.qrToken, {
+  const qr = await QRCode.toDataURL((await candidateQrText(id)) ?? "", {
     margin: 2,
     width: 220,
     errorCorrectionLevel: "M",

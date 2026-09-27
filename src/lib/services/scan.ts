@@ -26,7 +26,7 @@ import {
   type ScanType,
 } from "@/lib/bac-rules";
 import { verifyQr } from "@/lib/crypto";
-import { extractToken } from "@/lib/qr-content";
+import { extractMatricule, extractToken } from "@/lib/qr-content";
 
 export type ScanCard = {
   candidate: {
@@ -46,15 +46,22 @@ export type ScanCard = {
   warning: string | null;
 };
 
-/** Retrouve un candidat à partir du QR (signature vérifiée) ou de son matricule. */
+/** Retrouve un candidat à partir du QR scanné, du jeton signé ou du matricule. */
 export async function findCandidate(code: string, user: CurrentUser) {
   const value = code.trim();
   const db = requireDb();
-  // Le QR contient l'identité en clair puis le jeton signé : seul le jeton fait foi.
+
+  // Le QR contient l'identité en clair : le matricule en est extrait. Les
+  // convocations de l'ancien format portaient en plus un jeton signé, encore
+  // accepté en priorité car il est infalsifiable.
   const token = extractToken(value);
   const byQr = token ? verifyQr(token) : null;
   if (token && !byQr) return { error: "QR code invalide ou falsifié : signature incorrecte." } as const;
-  const where = byQr ? eq(candidates.id, byQr) : eq(candidates.matricule, value.toUpperCase());
+
+  const matricule = byQr ? null : extractMatricule(value);
+  if (!byQr && !matricule) return { error: "Aucun candidat ne correspond à ce code." } as const;
+
+  const where = byQr ? eq(candidates.id, byQr) : eq(candidates.matricule, matricule!);
   const [c] = await db.select().from(candidates).where(where).limit(1);
   if (!c) return { error: "Aucun candidat ne correspond à ce code." } as const;
   if (user.role !== "admin" && c.officeId !== user.officeId)

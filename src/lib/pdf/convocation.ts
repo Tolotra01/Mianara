@@ -40,7 +40,7 @@ async function loadConvocation(candidateId: string) {
   return row ?? null;
 }
 
-/** Texte du QR (lisible par tout lecteur, matricule en dernière ligne). */
+/** Texte du QR de la convocation (identité en clair, lisible par tout lecteur). */
 export async function candidateQrText(candidateId: string) {
   const row = await loadConvocation(candidateId);
   if (!row) return null;
@@ -156,6 +156,7 @@ export async function convocationPdf(candidateId: string): Promise<Uint8Array | 
     text(page, label.toUpperCase(), idX, iy, fonts.bold, 5.5, C.muted);
     iy = wrap(page, value, idX, iy - 8.5, idW, fonts.bold, 7.5, C.ink, 1.25) - 3;
   }
+  // QR lisible : l'identité en clair, sans jeton signé (cf. src/lib/qr-content.ts).
   const qr = await qrPng(pdf, qrText({ ...c, serieName: serie.name, sessionYear: session.year }));
   page.drawImage(qr, { x: qrX, y: top - qrSize + 6, width: qrSize, height: qrSize });
   y = Math.min(top - photoH, iy, top - qrSize + 6) - 10;

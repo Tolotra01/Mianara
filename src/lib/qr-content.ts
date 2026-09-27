@@ -1,10 +1,27 @@
 /**
  * Contenu du QR de la convocation.
- * Lu par un lecteur QR ordinaire, il affiche l'identité du candidat en clair et
- * se termine par le matricule ; la ligne juste au-dessus (MIA1.…) est le jeton
- * signé Ed25519 que vérifie l'application de scan : un QR modifié ou recopié à
- * la main est détecté.
+ *
+ * Le QR est un document lisible : n'importe quel lecteur — l'application de
+ * scan, mais aussi l'appareil photo d'un téléphone — affiche l'identité du
+ * candidat. C'est volontairement le but : au contrôle d'entrée, le surveillant
+ * voit immédiatement de qui il s'agit, sans application particulière.
+ *
+ * Il ne contient volontairement **aucun jeton signé** : rien à copier ni à
+ * rejouer, et aucun identifiant technique exposé à la lecture. Le matricule
+ * fait foi ; `findCandidate()` le retrouve dans le texte scanné.
+ *
+ * Conséquence assumée : le matricule n'étant plus signé, il peut être recopié
+ * ou saisi à la main. La signature Ed25519 (`signQr`/`verifyQr`, RG-04) reste
+ * en place, et `extractToken()` continue de reconnaître les convocations
+ * imprimées avant ce changement.
  */
+
+/** Préfixe historique : les anciennes convocations portaient ce schéma. */
+export const QR_SCHEME = "mianara://candidat/";
+
+/** Année scolaire d'une session : Bacc 2027 → 2026-2027. */
+export const schoolYear = (year: number) => `${year - 1}-${year}`;
+
 export type QrCandidate = {
   lastName: string;
   firstName: string;
@@ -15,30 +32,38 @@ export type QrCandidate = {
   serieName: string;
   sessionYear: number;
   matricule: string;
-  qrToken: string;
 };
 
-/** Année scolaire d'une session : Bacc 2027 → 2026-2027. */
-export const schoolYear = (year: number) => `${year - 1}-${year}`;
-
-export function qrText(c: QrCandidate) {
-  // Le matricule est volontairement la dernière ligne : un lecteur de QR affiche
-  // le texte brut, et c'est cette ligne qu'on retient d'un coup d'œil. Le jeton
-  // signé le précède — `findCandidate()` le cherche dans tout le texte, donc
-  // l'ordre n'a aucune incidence sur la validation.
+/**
+ * Texte encodé dans le QR : l'identité en clair, lisible par tout lecteur.
+ *
+ * L'ordre est fixe : `findCandidate()` retrouve le matricule par son étiquette
+ * « Matricule : », quel que soit le lecteur utilisé.
+ */
+export function qrText(c: QrCandidate): string {
   return [
-    `MIANARA - Convocation ${schoolYear(c.sessionYear)}`,
+    "MIANARA - Convocation",
     `Nom : ${c.lastName}`,
     `Prénom : ${c.firstName}`,
     `Adresse : ${c.address || "-"}`,
     `École : ${c.kind === "libre" ? "Candidat libre" : c.schoolName || "-"}`,
+    `Session : ${schoolYear(c.sessionYear)}`,
     `Série : ${c.serieCode} (${c.serieName})`,
-    c.qrToken,
     `Matricule : ${c.matricule}`,
   ].join("\n");
 }
 
-/** Extrait le jeton signé d'un QR lu (texte complet) ou d'un jeton seul. */
+/** Extrait le matricule d'un QR lu : ligne complète, ou code saisi seul. */
+export function extractMatricule(scanned: string): string | null {
+  const depuisQr = scanned.match(/Matricule\s*:\s*([A-Z0-9-]+)/i)?.[1];
+  if (depuisQr) return depuisQr.toUpperCase();
+  // Saisie directe du matricule au clavier, sans passer par un QR.
+  const seul = scanned.trim().toUpperCase();
+  return /^BAC\d{4}-[A-Z0-9]+-\d{5}$/.test(seul) ? seul : null;
+}
+
+/** Extrait le jeton signé d'un QR lu (convocations de l'ancien format). */
 export function extractToken(scanned: string) {
   return scanned.match(/MIA1\.[A-Za-z0-9_-]+/)?.[0] ?? null;
 }
+
