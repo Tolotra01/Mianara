@@ -3,7 +3,7 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { applicationBatches, applications, users } from "@/db/schema-gestion";
 import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
 import { audit, notifyMany } from "@/lib/audit";
@@ -125,7 +125,7 @@ export async function sendApplications(): Promise<ActionState> {
 
   const session = await currentSession(db);
   const now = new Date();
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     const [batch] = await tx
       .insert(applicationBatches)
       .values({ schoolId: user.schoolId, sessionId: session.id, count: drafts.length, sentBy: user.id })

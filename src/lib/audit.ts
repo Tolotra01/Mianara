@@ -6,8 +6,9 @@ import { headers } from "next/headers";
 /**
  * Base de travail des services : l'exécutable HTTP de `requireDb()`, ou la
  * transaction en cours. Les transactions du pilote WebSocket (utilisées par
- * `db:seed` et `db:seed:demo`) n'ont pas le même type de résultat de requête :
- * `seed-demo.ts` fait donc un cast explicite en passant `tx` à ces services.
+ * `db:seed`, `db:seed:demo` et `requireTxDb()`) n'ont pas le même type de
+ * résultat de requête : `requireTxDb()` se présente comme le client HTTP, et
+ * `seed-demo.ts` fait un cast explicite en passant `tx` à ces services.
  */
 export type Tx = Parameters<Parameters<ReturnType<typeof requireDb>["transaction"]>[0]>[0];
 export type Executor = ReturnType<typeof requireDb> | Tx;

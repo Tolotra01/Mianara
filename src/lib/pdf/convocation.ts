@@ -40,7 +40,7 @@ async function loadConvocation(candidateId: string) {
   return row ?? null;
 }
 
-/** Texte du QR (lisible par tout lecteur, jeton signé en dernière ligne). */
+/** Texte du QR (lisible par tout lecteur, matricule en dernière ligne). */
 export async function candidateQrText(candidateId: string) {
   const row = await loadConvocation(candidateId);
   if (!row) return null;

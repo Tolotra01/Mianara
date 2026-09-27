@@ -2,7 +2,7 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { refresh } from "next/cache";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { applications, schools } from "@/db/schema-gestion";
 import { type ActionState, fail, ok } from "@/lib/action";
 import { requireOfficeAgent } from "@/lib/auth";
@@ -28,7 +28,7 @@ export async function validateApplications(_: ActionState, form: FormData): Prom
   if (!rows.length) return fail("Aucun dossier à valider dans la sélection.");
 
   const bySchool = new Map<number, number>();
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     for (const r of rows) {
       const res = await validateApplication(r.id, user.officeId, user.id, tx);
       if ("error" in res) throw new Error(res.error);
@@ -46,7 +46,7 @@ export async function reviewApplication(_: ActionState, form: FormData): Promise
   const status = form.get("status") === "rejected" ? "rejected" : "incomplete";
   const note = String(form.get("note") ?? "").trim();
   if (note.length < 5) return fail("Indiquez le motif pour l'école (5 caractères au moins).");
-  const res = await requireDb().transaction((tx) =>
+  const res = await requireTxDb().transaction((tx) =>
     returnApplication(id, status, note, user.officeId, user.id, tx),
   );
   if ("error" in res) return fail(res.error!);

@@ -2,7 +2,7 @@
 
 import { and, count, eq, inArray } from "drizzle-orm";
 import { refresh } from "next/cache";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { examSessions, serieSubjects } from "@/db/schema";
 import { candidates, grades, results } from "@/db/schema-gestion";
 import { type ActionState, fail, ok } from "@/lib/action";
@@ -66,7 +66,7 @@ export async function saveGrades(_: ActionState, form: FormData): Promise<Action
   }
   if (Object.keys(errors).length) return fail(`${Object.keys(errors).length} note(s) invalide(s).`, errors);
 
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     for (const g of toSave) {
       await tx
         .insert(grades)
@@ -99,7 +99,7 @@ export async function runDeliberation(): Promise<ActionState> {
   const db = requireDb();
   const session = await currentSession(db);
   if (isPublished(session)) return fail("Résultats déjà publiés : la délibération est close.");
-  const { total, byDecision } = await db.transaction((tx) =>
+  const { total, byDecision } = await requireTxDb().transaction((tx) =>
     deliberate(user.officeId, session.id, session.admissionThreshold, user.id, tx),
   );
   refresh();

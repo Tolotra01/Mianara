@@ -1,5 +1,6 @@
-import { neon, neonConfig } from "@neondatabase/serverless";
+import { neon, neonConfig, Pool } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle as drizzleWs } from "drizzle-orm/neon-serverless";
 import * as vitrine from "./schema";
 import * as gestion from "./schema-gestion";
 
@@ -56,4 +57,41 @@ export type Db = NonNullable<typeof db>;
 export function requireDb(): Db {
   if (!db) throw new Error("DATABASE_URL manquant : la gestion du Bacc nécessite une base PostgreSQL.");
   return db;
+}
+
+/**
+ * Client transactionnel, pour les actions dont l'enchaînement doit être atomique
+ * (convoquer un dossier : `nextval` → matricule → compte → candidat → dossier).
+ *
+ * `neon-http` ne connaît que `db.batch()`, qui exige de connaître toutes les
+ * requêtes *avant* de les envoyer : impossible ici, chaque étape consomme le
+ * résultat de la précédente — d'où `tx`. Le pilote WebSocket est le seul à même
+ * de l'exécuter, comme dans le seed ; il passe lui aussi par le 443.
+ *
+ * Coût : une connexion maintenue côté serveur, là où le client HTTP n'en garde
+ * aucune. Le pool est donc réservé aux écritures qui ne peuvent pas être
+ * réécrites en `db.batch()` ; `requireDb()` reste le client par défaut.
+ *
+ * Le type est celui du client HTTP : à l'exécution les deux pilotes exécutent
+ * les mêmes requêtes et rendent les mêmes résultats (`returning()` renvoie un
+ * tableau des deux côtés, `execute()` expose `.rows` des deux côtés). Ils ne
+ * partagent simplement pas la même déclaration de type de résultat.
+ */
+function createTxDb() {
+  const pool = new Pool({
+    connectionString: url,
+    max: 5,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 10_000,
+  });
+  return drizzleWs(pool, { schema }) as unknown as Db;
+}
+
+let txDb: Db | null = null;
+
+/** Client WebSocket, créé au premier usage pour ne pas ouvrir de pool au chargement. */
+export function requireTxDb(): Db {
+  if (!url) throw new Error("DATABASE_URL manquant : la gestion du Bacc nécessite une base PostgreSQL.");
+  txDb ??= createTxDb();
+  return txDb;
 }

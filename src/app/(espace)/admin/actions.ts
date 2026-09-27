@@ -4,7 +4,7 @@ import { eq, sql } from "drizzle-orm";
 import type { BatchItem } from "drizzle-orm/batch";
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { examSessions, news } from "@/db/schema";
 import { offices, schools, users } from "@/db/schema-gestion";
 import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
@@ -55,9 +55,8 @@ export async function toggleOffice(_: ActionState, form: FormData): Promise<Acti
   const db = requireDb();
   const [o] = await db.select().from(offices).where(eq(offices.id, id));
   if (!o) return fail("Office introuvable.");
-  // Le pilote HTTP de Neon n'a pas de transaction interactive : `db.transaction(cb)`
-  // y lève « No transactions support in neon-http driver ». `db.batch()` envoie
-  // les requêtes dans un seul aller-retour et Neon les exécute dans une
+  // Aucune valeur ne dépend d'une autre ici : un seul `db.batch()` suffit, plus
+  // rapide que d'ouvrir une transaction WebSocket. Neon exécute le lot dans une
   // transaction implicite : l'Office et ses agents basculent ensemble, ou pas du
   // tout.
   const statements: BatchItem<"pg">[] = [
@@ -336,7 +335,7 @@ export async function toggleSchool(_: ActionState, form: FormData): Promise<Acti
   const db = requireDb();
   const [s] = await db.select().from(schools).where(eq(schools.id, id));
   if (!s) return fail("École introuvable.");
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     await tx.update(schools).set({ isActive: !s.isActive }).where(eq(schools.id, id));
     if (s.isActive) await tx.update(users).set({ isActive: false }).where(eq(users.schoolId, id));
     await audit(

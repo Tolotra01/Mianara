@@ -3,7 +3,7 @@
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { examCenters, rooms, supervisorRooms, users } from "@/db/schema-gestion";
 import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
 import { audit } from "@/lib/audit";
@@ -75,7 +75,7 @@ export async function assignSupervisor(_: ActionState, form: FormData): Promise<
       .where(and(inArray(rooms.id, roomIds), eq(examCenters.officeId, user.officeId)));
     if (allowed.length !== roomIds.length) return fail("Salle invalide.");
   }
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     await tx.delete(supervisorRooms).where(eq(supervisorRooms.supervisorId, supervisorId));
     if (roomIds.length)
       await tx.insert(supervisorRooms).values(roomIds.map((roomId) => ({ supervisorId, roomId })));

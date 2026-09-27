@@ -1,8 +1,9 @@
 /**
  * Contenu du QR de la convocation.
- * Lu par un lecteur QR ordinaire, il affiche l'identité du candidat en clair ;
- * la dernière ligne (MIA1.…) est le jeton signé Ed25519 que vérifie l'application
- * de scan : un QR modifié ou recopié à la main est détecté.
+ * Lu par un lecteur QR ordinaire, il affiche l'identité du candidat en clair et
+ * se termine par le matricule ; la ligne juste au-dessus (MIA1.…) est le jeton
+ * signé Ed25519 que vérifie l'application de scan : un QR modifié ou recopié à
+ * la main est détecté.
  */
 export type QrCandidate = {
   lastName: string;
@@ -21,16 +22,19 @@ export type QrCandidate = {
 export const schoolYear = (year: number) => `${year - 1}-${year}`;
 
 export function qrText(c: QrCandidate) {
+  // Le matricule est volontairement la dernière ligne : un lecteur de QR affiche
+  // le texte brut, et c'est cette ligne qu'on retient d'un coup d'œil. Le jeton
+  // signé le précède — `findCandidate()` le cherche dans tout le texte, donc
+  // l'ordre n'a aucune incidence sur la validation.
   return [
-    `MIANARA - Convocation Bacc ${c.sessionYear}`,
+    `MIANARA - Convocation ${schoolYear(c.sessionYear)}`,
     `Nom : ${c.lastName}`,
     `Prénom : ${c.firstName}`,
     `Adresse : ${c.address || "-"}`,
     `École : ${c.kind === "libre" ? "Candidat libre" : c.schoolName || "-"}`,
-    `Session : ${schoolYear(c.sessionYear)}`,
     `Série : ${c.serieCode} (${c.serieName})`,
-    `Matricule : ${c.matricule}`,
     c.qrToken,
+    `Matricule : ${c.matricule}`,
   ].join("\n");
 }
 

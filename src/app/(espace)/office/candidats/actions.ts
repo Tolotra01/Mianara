@@ -4,7 +4,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { candidatePhotos, candidates, examCenters, rooms, schools, users } from "@/db/schema-gestion";
 import { IdentityInput, serieExists } from "@/lib/candidate-input";
 import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
@@ -77,7 +77,7 @@ export async function createCandidate(_: ActionState, form: FormData): Promise<A
     .limit(1);
   if (twin) return fail(`Ce candidat est déjà enregistré pour cette session (${twin.matricule}).`);
 
-  const { candidate } = await db.transaction((tx) =>
+  const { candidate } = await requireTxDb().transaction((tx) =>
     registerCandidate(
       {
         ...parsed.data,
@@ -126,7 +126,7 @@ export async function updateCandidate(_: ActionState, form: FormData): Promise<A
     schoolName: school?.name ?? null,
     updatedAt: new Date(),
   };
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     await tx.update(candidates).set(changes).where(eq(candidates.id, id));
     if (before.userId) {
       await tx
@@ -165,7 +165,7 @@ export async function resetPassword(_: ActionState, form: FormData): Promise<Act
     .from(candidates)
     .where(and(eq(candidates.id, id), eq(candidates.officeId, user.officeId)));
   if (!c) return fail("Candidat introuvable.");
-  await db.transaction((tx) => resetCandidatePassword(id, user.id, tx));
+  await requireTxDb().transaction((tx) => resetCandidatePassword(id, user.id, tx));
   refresh();
   return ok("Nouveau mot de passe temporaire généré : imprimez la nouvelle convocation.");
 }
@@ -220,7 +220,7 @@ export async function placeCandidate(_: ActionState, form: FormData): Promise<Ac
 
 export async function autoAssign(): Promise<ActionState> {
   const user = await requireOfficeAgent();
-  const { placed, remaining } = await requireDb().transaction((tx) =>
+  const { placed, remaining } = await requireTxDb().transaction((tx) =>
     assignRooms(user.officeId, user.id, tx),
   );
   refresh();

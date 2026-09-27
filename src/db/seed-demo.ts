@@ -244,10 +244,9 @@ async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL manquant (voir .env.example).");
 
-  // `db.transaction()` exige une transaction interactive : le pilote HTTP de
-  // `src/db/index.ts` ne la supporte pas (« No transactions support in neon-http
-  // driver »). On passe donc par `Pool` (WebSocket), comme `src/db/seed.ts` ;
-  // le port 5432 étant injoignable depuis ce réseau, la connexion part sur le 443.
+  // Le seed a besoin d'une transaction interactive que le pilote HTTP de
+  // `src/db/index.ts` ne fournit pas ; on passe donc par `Pool` (WebSocket).
+  // Le port 5432 étant injoignable depuis ce réseau, la connexion part sur le 443.
   const client = new Pool({ connectionString: url });
   const db = drizzle({ client, schema: { ...vitrine, ...gestion } });
 
@@ -260,10 +259,6 @@ async function main() {
   }
 
   await db.transaction(async (tx) => {
-    // Les services attendent un `Executor` typé sur le pilote HTTP, alors que
-    // `tx` vient du pilote WebSocket : les deux ne partagent pas le même type de
-    // résultat de requête. Le cast est local au script ; à l'exécution les deux
-    // pilotes exécutent les mêmes requêtes.
     const exec = tx as unknown as Executor;
 
     const [session] = await tx

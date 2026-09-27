@@ -3,7 +3,7 @@
 import { and, eq } from "drizzle-orm";
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { candidates, documentRequests, payments, scans } from "@/db/schema-gestion";
 import { type ActionState, fail, ok } from "@/lib/action";
 import { audit, notify } from "@/lib/audit";
@@ -31,7 +31,7 @@ export async function validateRequest(_: ActionState, form: FormData): Promise<A
   if (row.r.status !== "pending") return fail("Cette demande a déjà été traitée.");
   if (await activeBlacklist(row.c.id, db))
     return fail("Candidat en liste noire : la demande doit être rejetée.");
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     await tx
       .update(payments)
       .set({ status: "verified", verifiedBy: user.id, verifiedAt: new Date() })
@@ -61,11 +61,11 @@ export async function validateRequest(_: ActionState, form: FormData): Promise<A
 export async function rejectRequest(_: ActionState, form: FormData): Promise<ActionState> {
   const reason = String(form.get("reason") ?? "").trim();
   if (reason.length < 5) return fail("Indiquez le motif du rejet.");
-  const { user, db, row } = await load(String(form.get("id")));
+  const { user, row } = await load(String(form.get("id")));
   if (!row) return fail("Demande introuvable.");
   if (!["pending", "validated"].includes(row.r.status))
     return fail("Cette demande ne peut plus être rejetée.");
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     await tx
       .update(payments)
       .set({ status: "rejected", verifiedBy: user.id, verifiedAt: new Date() })
@@ -115,10 +115,10 @@ export async function schedulePickup(_: ActionState, form: FormData): Promise<Ac
   if (!parsed.success) return fail(parsed.error.issues[0].message);
   const at = parseLocalDateTime(parsed.data.pickupAt);
   if (!at || at <= new Date()) return fail("Choisissez une date de retrait à venir.");
-  const { user, db, row } = await load(String(form.get("id")));
+  const { user, row } = await load(String(form.get("id")));
   if (!row) return fail("Demande introuvable.");
   if (!["validated", "pickup_scheduled"].includes(row.r.status)) return fail("Validez d'abord le paiement.");
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     await tx
       .update(documentRequests)
       .set({
@@ -158,11 +158,11 @@ export async function schedulePickup(_: ActionState, form: FormData): Promise<Ac
  */
 export async function markDelivered(_: ActionState, form: FormData): Promise<ActionState> {
   if (form.get("identity") !== "on") return fail("Confirmez le contrôle de l'identité du candidat.");
-  const { user, db, row } = await load(String(form.get("id")));
+  const { user, row } = await load(String(form.get("id")));
   if (!row) return fail("Demande introuvable.");
   if (row.r.status !== "pickup_scheduled") return fail("Aucun retrait n'est prévu pour cette demande.");
   const now = new Date();
-  await db.transaction(async (tx) => {
+  await requireTxDb().transaction(async (tx) => {
     await tx
       .update(documentRequests)
       .set({ status: "delivered", deliveredAt: now, deliveredBy: user.id, updatedAt: now })

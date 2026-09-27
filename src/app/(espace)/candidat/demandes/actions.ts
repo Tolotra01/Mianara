@@ -2,7 +2,7 @@
 
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { requireDb } from "@/db";
+import { requireDb, requireTxDb } from "@/db";
 import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
 import { requireCandidate } from "@/lib/auth";
 import { eligibility, METHODS, submitRequest } from "@/lib/services/requests";
@@ -42,7 +42,7 @@ export async function submitDocumentRequest(_: ActionState, form: FormData): Pro
 
   const data = Buffer.from(await file.arrayBuffer());
   try {
-    await db.transaction((tx) =>
+    await requireTxDb().transaction((tx) =>
       submitRequest(
         candidate.id,
         user.id,
