@@ -9,6 +9,7 @@ import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { checkPassword, getCurrentUser, hashPassword, HOME_BY_ROLE } from "@/lib/auth";
 import { passwordProblem } from "@/lib/password";
+import { phoneField } from "@/lib/phone";
 import { refresh } from "next/cache";
 
 const ChangePassword = z
@@ -57,7 +58,7 @@ export async function changePassword(_: ActionState, form: FormData): Promise<Ac
 
 const Contact = z.object({
   email: z.union([z.literal(""), z.email("Adresse email invalide.")]),
-  phone: z.string().trim().max(20),
+  phone: phoneField(),
 });
 
 /** Coordonnées modifiables par l'utilisateur (nom, naissance et série ne le sont pas : CAN-13). */

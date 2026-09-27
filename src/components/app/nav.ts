@@ -12,6 +12,7 @@ import {
   FileStack,
   FileText,
   FolderOpen,
+  GraduationCap,
   Inbox,
   School,
   UserRound,
@@ -28,7 +29,7 @@ import {
 } from "lucide-react";
 import type { Role } from "@/lib/auth-shared";
 
-export type BadgeKey = "requests" | "notifications" | "applications" | "news";
+export type BadgeKey = "requests" | "notifications" | "applications" | "news" | "enrollments";
 export type NavItem = {
   href: string;
   label: string;
@@ -87,6 +88,7 @@ export const NAV: Record<Role, NavGroup[]> = {
       items: [
         { href: "/candidat", label: "Accueil", icon: Home },
         { href: "/candidat/convocation", label: "Ma convocation", icon: Ticket },
+        { href: "/candidat/cours", label: "Cours", icon: GraduationCap },
         { href: "/candidat/epreuves", label: "Mes épreuves", icon: CalendarDays },
         { href: "/candidat/resultats", label: "Mes résultats", icon: Award },
         { href: "/candidat/demandes", label: "Relevé et diplôme", icon: FileText },
@@ -103,6 +105,16 @@ export const NAV: Record<Role, NavGroup[]> = {
       ],
     },
   ],
+  teacher: [
+    {
+      items: [
+        { href: "/enseignant", label: "Mes cours", icon: LayoutDashboard },
+        { href: "/enseignant/inscriptions", label: "Réservations", icon: Users, badgeKey: "enrollments" },
+        { href: "/enseignant/profil", label: "Mon profil", icon: UserCog },
+        { href: "/compte", label: "Mon compte", icon: Settings2 },
+      ],
+    },
+  ],
   admin: [
     { items: [{ href: "/admin", label: "Tableau de bord", icon: LayoutDashboard }] },
     {
@@ -111,6 +123,7 @@ export const NAV: Record<Role, NavGroup[]> = {
         { href: "/admin/offices", label: "Offices du Bacc", icon: Building },
         { href: "/admin/ecoles", label: "Écoles", icon: School },
         { href: "/admin/candidats-libres", label: "Candidats libres", icon: UserRound },
+        { href: "/admin/enseignants", label: "Enseignants libres", icon: GraduationCap },
         { href: "/admin/session", label: "Paramètres de session", icon: Settings2 },
         { href: "/admin/actualites", label: "Actualités", icon: Newspaper, badgeKey: "news" },
         { href: "/admin/journal", label: "Journal d'audit", icon: ScrollText },

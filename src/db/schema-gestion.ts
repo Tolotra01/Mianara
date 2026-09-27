@@ -32,7 +32,14 @@ const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () =>
 
 /* ---------- Types énumérés ---------- */
 
-export const userRoleEnum = pgEnum("user_role", ["admin", "office", "supervisor", "candidate", "school"]);
+export const userRoleEnum = pgEnum("user_role", [
+  "admin",
+  "office",
+  "supervisor",
+  "teacher",
+  "candidate",
+  "school",
+]);
 export const candidateStatusEnum = pgEnum("candidate_status", [
   "active",
   "admitted",
@@ -68,6 +75,12 @@ export const applicationStatusEnum = pgEnum("application_status", [
   "validated",
 ]);
 export const paymentStatusEnum = pgEnum("payment_status", ["pending", "verified", "rejected"]);
+
+/** Cours publié par un enseignant libre : brouillon → ouvert aux réservations → clos. */
+export const courseStatusEnum = pgEnum("course_status", ["draft", "open", "closed"]);
+/** Réservation d'un candidat à un cours, confirmée ou annulée par l'enseignant. */
+export const enrollmentStatusEnum = pgEnum("enrollment_status", ["pending", "confirmed", "cancelled"]);
+export const courseFormatEnum = pgEnum("course_format", ["presentiel", "en_ligne", "mixte"]);
 
 /** Numéro séquentiel des matricules (BAC2027-S-00042). */
 export const candidateNumberSeq = pgSequence("candidate_number_seq", { startWith: 1 });
@@ -459,4 +472,93 @@ export const applications = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index().on(t.schoolId, t.status)],
+);
+
+/* ---------- Enseignants libres et cours suivis ---------- */
+
+/**
+ * Enseignant libre : professeur indépendant, sans rattachement à un
+ * établissement ni à un Office du Bacc. Validé par l'Administration, il publie
+ * des cours que les candidat·es réservent depuis leur espace.
+ */
+export const teachers = pgTable(
+  "teachers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: "cascade" }),
+    city: text("city"),
+    bio: text("bio"),
+    yearsExperience: smallint("years_experience").notNull().default(0),
+    createdBy: uuid("created_by").references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index().on(t.createdAt)],
+);
+
+/** Matières qu'un enseignant libre déclare enseigner. */
+export const teacherSubjects = pgTable(
+  "teacher_subjects",
+  {
+    teacherId: uuid("teacher_id")
+      .notNull()
+      .references(() => teachers.id, { onDelete: "cascade" }),
+    subjectId: integer("subject_id")
+      .notNull()
+      .references(() => subjects.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.teacherId, t.subjectId] })],
+);
+
+/** Offre de cours : le contenu que l'enseignant publie et que les candidat·es réservent. */
+export const courses = pgTable(
+  "courses",
+  {
+    id: serial("id").primaryKey(),
+    teacherId: uuid("teacher_id")
+      .notNull()
+      .references(() => teachers.id, { onDelete: "cascade" }),
+    subjectId: integer("subject_id")
+      .notNull()
+      .references(() => subjects.id),
+    /** Série visée (L, S, OSE…) ; `null` = toutes les séries. */
+    serieCode: text("serie_code").references(() => series.code),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    format: courseFormatEnum("format").notNull().default("presentiel"),
+    /** Prix en Ariary ; 0 = cours gratuit. */
+    priceAriary: integer("price_ariary").notNull().default(0),
+    /** Places offertes ; `null` = sans limite. */
+    capacity: smallint("capacity"),
+    status: courseStatusEnum("status").notNull().default("draft"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index().on(t.teacherId), index().on(t.status, t.subjectId)],
+);
+
+/** Réservation d'un candidat à un cours. Un candidat ne réserve qu'une fois par cours. */
+export const courseEnrollments = pgTable(
+  "course_enrollments",
+  {
+    id: serial("id").primaryKey(),
+    courseId: integer("course_id")
+      .notNull()
+      .references(() => courses.id, { onDelete: "cascade" }),
+    candidateId: uuid("candidate_id")
+      .notNull()
+      .references(() => candidates.id, { onDelete: "cascade" }),
+    status: enrollmentStatusEnum("status").notNull().default("pending"),
+    message: text("message"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique().on(t.courseId, t.candidateId),
+    index().on(t.courseId, t.status),
+    index().on(t.candidateId),
+  ],
 );

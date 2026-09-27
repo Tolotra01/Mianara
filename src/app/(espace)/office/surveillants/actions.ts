@@ -9,6 +9,7 @@ import { type ActionState, fail, ok, zodErrors } from "@/lib/action";
 import { audit } from "@/lib/audit";
 import { hashPassword, requireOfficeAgent } from "@/lib/auth";
 import { temporaryPassword } from "@/lib/crypto";
+import { phoneField } from "@/lib/phone";
 
 const Supervisor = z.object({
   fullName: z.string().trim().min(3, "Nom complet obligatoire.").max(80),
@@ -17,7 +18,7 @@ const Supervisor = z.object({
     .trim()
     .toLowerCase()
     .regex(/^[a-z0-9._-]{4,40}$/, "4 à 40 caractères : lettres, chiffres, point, tiret."),
-  phone: z.string().trim().max(20).optional(),
+  phone: phoneField(),
 });
 
 /** OFF-11 : compte surveillant. Le mot de passe temporaire n'est affiché qu'une fois. */

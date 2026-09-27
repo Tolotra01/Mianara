@@ -6,6 +6,7 @@ import { ActionForm } from "@/components/app/ActionForm";
 import { ModalButton } from "@/components/app/ConfirmAction";
 import { SecretForm } from "@/components/app/SecretForm";
 import { buttonClass } from "@/components/app/ui";
+import { PHONE_INPUT } from "@/lib/phone";
 import { createAgent, saveOffice } from "../actions";
 
 type Office = {
@@ -22,11 +23,13 @@ function Field({
   label,
   defaultValue,
   required = true,
+  inputProps,
 }: {
   name: string;
   label: string;
   defaultValue?: string | null;
   required?: boolean;
+  inputProps?: React.ComponentProps<"input">;
 }) {
   return (
     <label className="block">
@@ -36,6 +39,7 @@ function Field({
         required={required}
         defaultValue={defaultValue ?? ""}
         className="field-input mt-1.5"
+        {...inputProps}
       />
       <FieldError name={name} />
     </label>
@@ -58,7 +62,13 @@ export function OfficeDialog({ office }: { office?: Office }) {
           <Field name="university" label="Université de rattachement" defaultValue={office?.university} />
           <div className="grid gap-4 sm:grid-cols-2">
             <Field name="city" label="Ville" defaultValue={office?.city} />
-            <Field name="phone" label="Téléphone" defaultValue={office?.phone} required={false} />
+            <Field
+              name="phone"
+              label="Téléphone"
+              defaultValue={office?.phone}
+              required={false}
+              inputProps={PHONE_INPUT}
+            />
           </div>
           <Field name="address" label="Adresse" defaultValue={office?.address} required={false} />
           <div className="flex justify-end gap-2">

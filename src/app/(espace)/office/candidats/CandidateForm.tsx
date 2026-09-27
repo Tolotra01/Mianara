@@ -6,6 +6,7 @@ import { ActionForm, FieldError, SubmitButton } from "@/components/app/ActionFor
 import { buttonClass } from "@/components/app/ui";
 import type { ActionState } from "@/lib/action";
 import { PIECES } from "@/lib/pieces";
+import { PHONE_INPUT } from "@/lib/phone";
 
 type Values = {
   id?: string;
@@ -204,9 +205,9 @@ export function CandidateForm({
           <Input
             name="phone"
             label="Téléphone (facultatif)"
-            type="tel"
             defaultValue={values.phone ?? ""}
-            hint="Pour les notifications par SMS."
+            hint="Pour les notifications par SMS. Indicatifs : 032, 037, 033, 034, 038, 036."
+            {...PHONE_INPUT}
           />
           <Input name="email" label="Email (facultatif)" type="email" defaultValue={values.email ?? ""} />
         </fieldset>

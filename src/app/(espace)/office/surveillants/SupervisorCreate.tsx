@@ -6,6 +6,7 @@ import { ActionForm, FieldError, SubmitButton } from "@/components/app/ActionFor
 import { ModalButton } from "@/components/app/ConfirmAction";
 import { CopyButton } from "@/components/app/CopyButton";
 import { buttonClass } from "@/components/app/ui";
+import { PHONE_INPUT } from "@/lib/phone";
 import { createSupervisor } from "./actions";
 
 export function SupervisorCreate() {
@@ -89,7 +90,8 @@ export function SupervisorCreate() {
             </label>
             <label className="block">
               <span className="text-sm font-semibold">Téléphone</span>
-              <input name="phone" type="tel" className="field-input mt-1.5" />
+              <input name="phone" className="field-input mt-1.5" placeholder="034 00 000 00" {...PHONE_INPUT} />
+              <FieldError name="phone" />
             </label>
             <div className="flex justify-end gap-2">
               <button type="button" onClick={close} className={buttonClass("ghost")}>

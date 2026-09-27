@@ -18,6 +18,7 @@ import { examSessions } from "@/db/schema";
 import { requireUser, ROLE_LABEL } from "@/lib/auth";
 import { formatDate, formatDateTime } from "@/lib/bac-rules";
 import { actionLabel } from "@/lib/labels";
+import { PHONE_INPUT } from "@/lib/phone";
 import { changePassword, updateContact } from "./actions";
 import { PasswordFields } from "./PasswordFields";
 
@@ -70,6 +71,9 @@ export default async function ComptePage() {
       : []),
     ...(user.role === "school"
       ? [{ label: "Établissement", value: user.schoolName }]
+      : []),
+    ...(user.role === "teacher"
+      ? [{ label: "Rattachement", value: "Aucun — enseignant libre" }]
       : []),
     ...(c
       ? [
@@ -131,10 +135,10 @@ export default async function ComptePage() {
                 <input
                   id="phone"
                   name="phone"
-                  type="tel"
                   defaultValue={user.phone ?? ""}
                   placeholder="034 00 000 00"
                   className="field-input mt-1.5"
+                  {...PHONE_INPUT}
                 />
                 <FieldError name="phone" />
               </div>

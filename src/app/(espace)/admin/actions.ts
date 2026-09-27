@@ -12,6 +12,7 @@ import { audit } from "@/lib/audit";
 import { hashPassword, requireUser } from "@/lib/auth";
 import { parseLocalDateTime } from "@/lib/bac-rules";
 import { temporaryPassword } from "@/lib/crypto";
+import { phoneField } from "@/lib/phone";
 
 const admin = () => requireUser(["admin"]);
 
@@ -22,7 +23,7 @@ const OfficeInput = z.object({
   university: z.string().trim().min(3, "Université obligatoire.").max(100),
   city: z.string().trim().min(2, "Ville obligatoire.").max(60),
   address: z.string().trim().max(160).optional(),
-  phone: z.string().trim().max(20).optional(),
+  phone: phoneField(),
 });
 
 export async function saveOffice(_: ActionState, form: FormData): Promise<ActionState> {
@@ -292,7 +293,7 @@ const SchoolInput = z.object({
   commune: z.string().trim().min(2, "Commune obligatoire.").max(80),
   address: z.string().trim().max(160).optional(),
   contactName: z.string().trim().max(80).optional(),
-  phone: z.string().trim().max(20).optional(),
+  phone: phoneField(),
   email: z.union([z.literal(""), z.email("Email invalide.")]).optional(),
 });
 

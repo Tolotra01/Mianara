@@ -4,7 +4,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { requireDb } from "@/db";
-import { authSessions, candidates, offices, schools, users } from "@/db/schema-gestion";
+import { authSessions, candidates, offices, schools, teachers, users } from "@/db/schema-gestion";
 import { sessionToken, sha256 } from "./crypto";
 
 import type { Role } from "./auth-shared";
@@ -21,6 +21,7 @@ export const HOME_BY_ROLE: Record<Role, string> = {
   admin: "/admin",
   office: "/office",
   supervisor: "/surveillant",
+  teacher: "/enseignant",
   candidate: "/candidat",
   school: "/ecole",
 };
@@ -161,6 +162,18 @@ export async function requireSchool() {
   if (!user.schoolId || !user.officeId) throw new Error("Compte école sans établissement.");
   return { ...user, schoolId: user.schoolId, officeId: user.officeId };
 }
+
+/** Fiche enseignant libre de l'utilisateur connecté. */
+export const requireTeacher = cache(async () => {
+  const user = await requireUser(["teacher"]);
+  const [teacher] = await requireDb()
+    .select()
+    .from(teachers)
+    .where(eq(teachers.userId, user.id))
+    .limit(1);
+  if (!teacher) redirect("/connexion");
+  return { user, teacher };
+});
 
 /** Fiche candidat de l'utilisateur connecté. */
 export const requireCandidate = cache(async () => {

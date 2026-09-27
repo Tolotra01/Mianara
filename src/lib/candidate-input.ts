@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { series } from "@/db/schema";
 import type { Executor } from "./audit";
+import { phoneField } from "./phone";
 
 const text = (label: string, max = 80) => z.string().trim().min(1, `${label} obligatoire.`).max(max);
 const optional = (max = 80) =>
@@ -23,7 +24,7 @@ export const IdentityInput = z
     address: text("Adresse", 160),
     serieCode: z.string({ error: "Choisissez la série." }).trim().min(1, "Choisissez la série.").max(8),
     cin: optional(20),
-    phone: optional(20),
+    phone: phoneField(),
     email: z
       .union([z.literal(""), z.email("Email invalide.")])
       .optional()

@@ -54,6 +54,16 @@ const ACTIONS: Record<string, string> = {
   "ecole.creer": "Création d'une école",
   "ecole.modifier": "Modification d'une école",
   "ecole.compte": "Création d'un compte école",
+  "enseignant.creer": "Création d'un enseignant libre",
+  "enseignant.modifier": "Modification d'un enseignant libre",
+  "enseignant.profil": "Profil d'un enseignant libre",
+  "cours.creer": "Création d'un cours",
+  "cours.modifier": "Modification d'un cours",
+  "cours.publier": "Publication d'un cours",
+  "cours.clos": "Clôture d'un cours",
+  "cours.reserver": "Réservation d'un cours",
+  "cours.annuler": "Annulation d'une réservation",
+  "cours.confirmer": "Confirmation d'une réservation",
   "dossier.creer": "Dossier créé par l'école",
   "dossier.modifier": "Dossier modifié par l'école",
   "dossier.supprimer": "Brouillon supprimé",
@@ -89,6 +99,24 @@ export const PAYMENT_STATUS: Record<string, { label: string; tone: Tone }> = {
 };
 
 export const DOC_LABEL: Record<string, string> = { transcript: "Relevé de notes", diploma: "Diplôme" };
+
+export const COURSE_STATUS: Record<string, { label: string; tone: Tone }> = {
+  draft: { label: "Brouillon", tone: "neutral" },
+  open: { label: "Ouvert aux réservations", tone: "success" },
+  closed: { label: "Clos", tone: "warning" },
+};
+
+export const ENROLLMENT_STATUS: Record<string, { label: string; tone: Tone }> = {
+  pending: { label: "En attente", tone: "warning" },
+  confirmed: { label: "Confirmée", tone: "success" },
+  cancelled: { label: "Annulée", tone: "neutral" },
+};
+
+export const COURSE_FORMAT: Record<string, string> = {
+  presentiel: "Présentiel",
+  en_ligne: "En ligne",
+  mixte: "Mixte",
+};
 
 export const PAYMENT_METHOD: Record<string, string> = {
   mvola: "MVola",

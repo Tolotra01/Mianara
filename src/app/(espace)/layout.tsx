@@ -13,10 +13,13 @@ import { examSessions, news } from "@/db/schema";
 import {
   applications,
   candidates,
+  courseEnrollments,
+  courses,
   documentRequests,
   notifications,
   offices,
   schools,
+  teachers,
 } from "@/db/schema-gestion";
 import { getCurrentUser, OFFICE_VISIT_COOKIE } from "@/lib/auth";
 import { formatDateTime } from "@/lib/bac-rules";
@@ -30,7 +33,7 @@ export default async function EspaceLayout({ children }: { children: React.React
     user.role === "admin" ? Number((await cookies()).get(OFFICE_VISIT_COOKIE)?.value) || null : null;
   const badgeOfficeId = user.role === "office" ? user.officeId : visitId;
 
-  const [recent, [{ unread }], [session], pending, [visitOffice], [appCount], [newsCount]] =
+  const [recent, [{ unread }], [session], pending, [visitOffice], [appCount], [newsCount], [enrollCount]] =
     await Promise.all([
       db
         .select()
@@ -72,15 +75,30 @@ export default async function EspaceLayout({ children }: { children: React.React
       user.role === "admin"
         ? db.select({ n: count() }).from(news).where(eq(news.reviewStatus, "pending"))
         : Promise.resolve([{ n: 0 }]),
+      user.role === "teacher"
+        ? db
+            .select({ n: count() })
+            .from(courseEnrollments)
+            .innerJoin(courses, eq(courses.id, courseEnrollments.courseId))
+            .innerJoin(teachers, eq(teachers.id, courses.teacherId))
+            .where(
+              and(
+                eq(teachers.userId, user.id),
+                eq(courseEnrollments.status, "pending"),
+              ),
+            )
+        : Promise.resolve([{ n: 0 }]),
     ]);
 
   const notifHref = user.role === "candidate" ? "/candidat/notifications" : "/compte";
   const subtitle =
     user.role === "candidate"
       ? `Session ${session?.year ?? ""}`
-      : user.role === "school"
-        ? user.schoolName
-        : user.officeName;
+      : user.role === "teacher"
+        ? "Enseignant libre"
+        : user.role === "school"
+          ? user.schoolName
+          : user.officeName;
 
   return (
     <Toaster>
@@ -93,6 +111,7 @@ export default async function EspaceLayout({ children }: { children: React.React
             notifications: unread,
             applications: appCount?.n ?? 0,
             news: newsCount?.n ?? 0,
+            enrollments: enrollCount?.n ?? 0,
           }}
           visit={visitOffice ? { officeName: visitOffice.name } : null}
         />

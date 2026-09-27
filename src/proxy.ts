@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 const SESSION_COOKIE = "mianara_session";
-const PROTECTED = ["/candidat", "/office", "/admin", "/surveillant", "/compte"];
+const PROTECTED = ["/candidat", "/office", "/admin", "/surveillant", "/enseignant", "/compte"];
 
 /**
  * Vérification optimiste : sans cookie de session, on renvoie vers la connexion.
@@ -22,5 +22,12 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/candidat/:path*", "/office/:path*", "/admin/:path*", "/surveillant/:path*", "/compte/:path*"],
+  matcher: [
+    "/candidat/:path*",
+    "/office/:path*",
+    "/admin/:path*",
+    "/surveillant/:path*",
+    "/enseignant/:path*",
+    "/compte/:path*",
+  ],
 };

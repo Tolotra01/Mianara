@@ -806,7 +806,16 @@ dialog.modal {
   background: transparent;
   max-width: min(560px, calc(100vw - 2rem));
   width: 100%;
+  max-height: calc(100dvh - 2rem);
   overflow: visible;
+}
+/* Le panneau intérieur défile : sur un écran court, le bas d'un formulaire
+   (bouton de validation) resterait sinon hors d'atteinte. `overflow` reste
+   visible sur la fenêtre pour ne pas rogner l'ombre du panneau. */
+dialog.modal > * {
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 dialog.modal[open] {
   animation: scale-in 220ms cubic-bezier(0.2, 0.7, 0.2, 1);

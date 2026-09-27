@@ -5,6 +5,7 @@ import { ActionForm, FieldError, SubmitButton } from "@/components/app/ActionFor
 import { ModalButton } from "@/components/app/ConfirmAction";
 import { SecretForm } from "@/components/app/SecretForm";
 import { buttonClass } from "@/components/app/ui";
+import { PHONE_INPUT } from "@/lib/phone";
 import { createSchoolAccount, saveSchool } from "../actions";
 
 type School = {
@@ -26,12 +27,14 @@ function Field({
   defaultValue,
   required = true,
   className,
+  inputProps,
 }: {
   name: string;
   label: string;
   defaultValue?: string | null;
   required?: boolean;
   className?: string;
+  inputProps?: React.ComponentProps<"input">;
 }) {
   return (
     <label className={`block ${className ?? ""}`}>
@@ -41,6 +44,7 @@ function Field({
         required={required}
         defaultValue={defaultValue ?? ""}
         className="field-input mt-1.5"
+        {...inputProps}
       />
       <FieldError name={name} />
     </label>
@@ -108,7 +112,13 @@ export function SchoolDialog({
               defaultValue={school?.contactName}
               required={false}
             />
-            <Field name="phone" label="Téléphone" defaultValue={school?.phone} required={false} />
+            <Field
+              name="phone"
+              label="Téléphone"
+              defaultValue={school?.phone}
+              required={false}
+              inputProps={PHONE_INPUT}
+            />
             <Field name="email" label="Email" defaultValue={school?.email} required={false} />
           </div>
           <div className="flex justify-end gap-2">
