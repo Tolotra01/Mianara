@@ -1,5 +1,4 @@
-import { LayoutGrid } from "lucide-react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LayoutGrid } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import type { Dict, Lang } from "@/lib/i18n";
