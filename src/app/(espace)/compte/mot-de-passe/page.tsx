@@ -9,7 +9,7 @@ import { PasswordFields } from "../PasswordFields";
 export const metadata: Metadata = { title: "Choisir un mot de passe" };
 
 export default async function MotDePassePage() {
-  const user = await requireUser(["admin", "office", "supervisor", "candidate", "school"], {
+  const user = await requireUser(["admin", "office", "supervisor", "candidate", "school", "teacher"], {
     allowPasswordChange: true,
   });
   return (

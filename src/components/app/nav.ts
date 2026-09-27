@@ -19,6 +19,7 @@ import {
   Home,
   LayoutDashboard,
   type LucideIcon,
+  MessagesSquare,
   Newspaper,
   ScrollText,
   Settings2,
@@ -108,8 +109,9 @@ export const NAV: Record<Role, NavGroup[]> = {
   teacher: [
     {
       items: [
-        { href: "/enseignant", label: "Mes cours", icon: LayoutDashboard },
+        { href: "/enseignant", label: "Mon espace", icon: LayoutDashboard },
         { href: "/enseignant/inscriptions", label: "Réservations", icon: Users, badgeKey: "enrollments" },
+        { href: "/enseignant/sessions", label: "Coaching", icon: MessagesSquare },
         { href: "/enseignant/profil", label: "Mon profil", icon: UserCog },
         { href: "/compte", label: "Mon compte", icon: Settings2 },
       ],
@@ -126,6 +128,7 @@ export const NAV: Record<Role, NavGroup[]> = {
         { href: "/admin/enseignants", label: "Enseignants libres", icon: GraduationCap },
         { href: "/admin/session", label: "Paramètres de session", icon: Settings2 },
         { href: "/admin/actualites", label: "Actualités", icon: Newspaper, badgeKey: "news" },
+        { href: "/admin/apprentissage", label: "Enseignants et offres", icon: GraduationCap },
         { href: "/admin/journal", label: "Journal d'audit", icon: ScrollText },
       ],
     },

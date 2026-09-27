@@ -19,7 +19,7 @@ type Props = {
 };
 
 function isActive(pathname: string, href: string) {
-  const roots = ["/office", "/candidat", "/admin", "/surveillant", "/enseignant", "/ecole"];
+  const roots = ["/office", "/candidat", "/admin", "/surveillant", "/ecole", "/enseignant"];
   return roots.includes(href) ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 }
 

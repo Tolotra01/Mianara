@@ -46,7 +46,7 @@ async function candidateProfile(userId: string) {
 }
 
 export default async function ComptePage() {
-  const user = await requireUser(["admin", "office", "supervisor", "candidate", "school"]);
+  const user = await requireUser(["admin", "office", "supervisor", "candidate", "school", "teacher"]);
   const db = requireDb();
 
   const [history, candidate] = await Promise.all([

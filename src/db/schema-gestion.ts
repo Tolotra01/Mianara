@@ -6,8 +6,10 @@
  * Les droits sont appliqués côté serveur (src/lib/auth.ts) : chaque requête est
  * filtrée par rôle et par Office.
  */
+import { sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   customType,
   date,
   index,
@@ -23,6 +25,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
   bigserial,
 } from "drizzle-orm/pg-core";
@@ -75,6 +78,12 @@ export const applicationStatusEnum = pgEnum("application_status", [
   "validated",
 ]);
 export const paymentStatusEnum = pgEnum("payment_status", ["pending", "verified", "rejected"]);
+export const teacherVerificationStatusEnum = pgEnum("teacher_verification_status", ["pending", "verified", "rejected"]);
+export const teacherDocumentKindEnum = pgEnum("teacher_document_kind", ["identity", "qualification"]);
+export const teacherDocumentStatusEnum = pgEnum("teacher_document_status", ["pending", "approved", "rejected"]);
+export const learningKindEnum = pgEnum("learning_kind", ["course", "training", "coaching"]);
+export const learningReviewStatusEnum = pgEnum("learning_review_status", ["pending", "approved", "rejected"]);
+export const coachingPaymentStatusEnum = pgEnum("coaching_payment_status", ["pending", "approved", "rejected"]);
 
 /** Cours publié par un enseignant libre : brouillon → ouvert aux réservations → clos. */
 export const courseStatusEnum = pgEnum("course_status", ["draft", "open", "closed"]);
@@ -150,6 +159,157 @@ export const authSessions = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index().on(t.userId)],
+);
+
+/** Sessions de révision synchronisées par l'application mobile (écritures immuables et idempotentes). */
+export const mobileRevisionSessions = pgTable(
+  "mobile_revision_sessions",
+  {
+    clientId: uuid("client_id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    candidateId: uuid("candidate_id")
+      .notNull()
+      .references(() => candidates.id, { onDelete: "cascade" }),
+    subjectId: integer("subject_id")
+      .notNull()
+      .references(() => subjects.id),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
+    endedAt: timestamp("ended_at", { withTimezone: true }).notNull(),
+    progress: smallint("progress").notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    check("mobile_revision_sessions_progress_check", sql`${t.progress} between 0 and 100`),
+    index().on(t.candidateId, t.receivedAt),
+  ],
+);
+
+export const teacherProfiles = pgTable("teacher_profiles", {
+  userId: uuid("user_id").primaryKey().references(() => users.id, { onDelete: "cascade" }),
+  subjectCode: text("subject_code").notNull().references(() => subjects.code),
+  verificationStatus: teacherVerificationStatusEnum("verification_status").notNull().default("pending"),
+  reviewedBy: uuid("reviewed_by").references(() => users.id),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const teacherDocuments = pgTable(
+  "teacher_documents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    teacherId: uuid("teacher_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    kind: teacherDocumentKindEnum("kind").notNull(),
+    fileName: text("file_name").notNull(),
+    mime: text("mime").notNull(),
+    data: bytea("data").notNull(),
+    status: teacherDocumentStatusEnum("status").notNull().default("pending"),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }).notNull().defaultNow(),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  },
+  (t) => [unique("teacher_documents_teacher_kind_unique").on(t.teacherId, t.kind), index().on(t.status, t.submittedAt)],
+);
+
+export const learningListings = pgTable(
+  "learning_listings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    teacherId: uuid("teacher_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    kind: learningKindEnum("kind").notNull(),
+    subjectCode: text("subject_code").notNull().references(() => subjects.code),
+    series: text("series").array().notNull(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    content: text("content").notNull(),
+    priceAmount: integer("price_amount"),
+    durationMinutes: integer("duration_minutes"),
+    reviewStatus: learningReviewStatusEnum("review_status").notNull().default("pending"),
+    reviewNote: text("review_note"),
+    reviewedBy: uuid("reviewed_by").references(() => users.id),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    check("learning_listings_price_check", sql`${t.priceAmount} is null or ${t.priceAmount} >= 0`),
+    check("learning_listings_duration_check", sql`${t.durationMinutes} is null or ${t.durationMinutes} > 0`),
+    index().on(t.reviewStatus, t.createdAt),
+    index().on(t.teacherId, t.createdAt),
+  ],
+);
+
+export const coachingPayments = pgTable(
+  "coaching_payments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    listingId: uuid("listing_id").notNull().references(() => learningListings.id),
+    candidateId: uuid("candidate_id").notNull().references(() => candidates.id, { onDelete: "cascade" }),
+    transactionReference: text("transaction_reference").notNull().unique(),
+    amount: integer("amount").notNull(),
+    status: coachingPaymentStatusEnum("status").notNull().default("pending"),
+    reviewedBy: uuid("reviewed_by").references(() => users.id),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    check("coaching_payments_amount_check", sql`${t.amount} > 0`),
+    index().on(t.status, t.createdAt),
+    index().on(t.candidateId, t.listingId),
+    uniqueIndex("coaching_payments_one_open_per_candidate_listing")
+      .on(t.candidateId, t.listingId)
+      .where(sql`${t.status} in ('pending', 'approved')`),
+  ],
+);
+
+export const coachingPaymentSettings = pgTable(
+  "coaching_payment_settings",
+  {
+    id: smallint("id").primaryKey().default(1),
+    merchantNumber: text("merchant_number").notNull(),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    check("coaching_payment_settings_singleton_check", sql`${t.id} = 1`),
+    check(
+      "coaching_payment_settings_number_check",
+      sql`length(trim(${t.merchantNumber})) between 5 and 25`,
+    ),
+  ],
+);
+
+export const coachingSessions = pgTable(
+  "coaching_sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    paymentId: uuid("payment_id").notNull().unique("coaching_sessions_payment_id_unique").references(() => coachingPayments.id, { onDelete: "cascade" }),
+    listingId: uuid("listing_id").notNull().references(() => learningListings.id),
+    candidateId: uuid("candidate_id").notNull().references(() => candidates.id, { onDelete: "cascade" }),
+    status: text("status").notNull().default("pending_payment"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    check(
+      "coaching_sessions_status_check",
+      sql`${t.status} in ('pending_payment', 'active')`,
+    ),
+    index().on(t.candidateId, t.createdAt),
+  ],
+);
+
+export const coachingMessages = pgTable(
+  "coaching_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    sessionId: uuid("session_id").notNull().references(() => coachingSessions.id, { onDelete: "cascade" }),
+    senderId: uuid("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    text: text("text").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    check("coaching_messages_text_check", sql`length(${t.text}) between 1 and 4000`),
+    index().on(t.sessionId, t.createdAt),
+  ],
 );
 
 /* ---------- Centres et salles ---------- */

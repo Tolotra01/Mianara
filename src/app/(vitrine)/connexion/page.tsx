@@ -207,6 +207,7 @@ export default async function ConnexionPage({ searchParams }: PageProps<"/connex
               </div>
             </div>
           </div>
+          <p className="mt-5 text-sm text-muted">Vous enseignez ? <a href="/enseignant/inscription" className="font-bold text-vert underline">Créer un compte enseignant gratuit</a>.</p>
         </div>
       </div>
     </Container>

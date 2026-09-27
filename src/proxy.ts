@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 const SESSION_COOKIE = "mianara_session";
-const PROTECTED = ["/candidat", "/office", "/admin", "/surveillant", "/enseignant", "/compte"];
+const PROTECTED = ["/candidat", "/office", "/admin", "/surveillant", "/compte", "/enseignant"];
 
 /**
  * Vérification optimiste : sans cookie de session, on renvoie vers la connexion.
@@ -27,7 +27,7 @@ export const config = {
     "/office/:path*",
     "/admin/:path*",
     "/surveillant/:path*",
-    "/enseignant/:path*",
     "/compte/:path*",
+    "/enseignant/:path*",
   ],
 };
