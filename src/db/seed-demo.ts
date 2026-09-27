@@ -26,6 +26,7 @@ import { hashPassword } from "../lib/password";
 import { PIECES } from "../lib/pieces";
 import { parseLocalDateTime } from "../lib/bac-rules";
 import { assignRooms, registerCandidate } from "../lib/services/candidates";
+import { seedLearning } from "./seed-learning";
 
 const PASSWORD = process.env.DEMO_PASSWORD || "Mianara2027!";
 
@@ -459,6 +460,9 @@ async function main() {
       proposedByLabel: tana.name,
     });
 
+    // Apprentissage (application Mianara Mobile) : enseignants, contenus, tutorat
+    await seedLearning(tx, hash);
+
     console.log("\n✓ Jeu de démonstration chargé.\n");
     console.log(`Personnel et écoles (mot de passe : ${PASSWORD})`);
     console.log("  admin               Administration nationale");
@@ -466,7 +470,8 @@ async function main() {
     console.log("  surveillant.tana1   Surveillant (Salles 1 et 2)");
     console.log("  ecole.andohalo      Lycée Andohalo (dossiers envoyés, un incomplet)");
     console.log("  ecole.rabearivelo   Lycée Jean-Joseph Rabearivelo");
-    console.log("  ecole.alarobia      Lycée technique d'Alarobia (Bac technique)\n");
+    console.log("  ecole.alarobia      Lycée technique d'Alarobia (Bac technique)");
+    console.log("  prof.maths · prof.francais · prof.philo   Enseignants (application Mianara Mobile)\n");
     console.log("Candidats (mot de passe temporaire, à changer à la 1re connexion)");
     for (const c of created.slice(0, 4)) console.log(`  ${c.matricule}   ${c.password}   ${c.name}`);
     console.log("  … les autres identifiants figurent sur leur convocation.\n");

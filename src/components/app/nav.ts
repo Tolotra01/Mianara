@@ -1,6 +1,10 @@
 import {
   Activity,
   Award,
+  BookOpen,
+  CreditCard,
+  GraduationCap,
+  MessagesSquare,
   Ban,
   Bell,
   Building,
@@ -28,7 +32,8 @@ import {
 } from "lucide-react";
 import type { Role } from "@/lib/auth-shared";
 
-export type BadgeKey = "requests" | "notifications" | "applications" | "news";
+export type BadgeKey =
+  "requests" | "notifications" | "applications" | "news" | "learning" | "payments" | "coaching";
 export type NavItem = {
   href: string;
   label: string;
@@ -110,6 +115,29 @@ export const NAV: Record<Role, NavGroup[]> = {
         { href: "/admin/session", label: "Paramètres de session", icon: Settings2 },
         { href: "/admin/actualites", label: "Actualités", icon: Newspaper, badgeKey: "news" },
         { href: "/admin/journal", label: "Journal d'audit", icon: ScrollText },
+      ],
+    },
+    {
+      label: "Apprentissage",
+      items: [
+        { href: "/admin/enseignants", label: "Enseignants", icon: GraduationCap },
+        { href: "/admin/apprentissage", label: "Contenus à valider", icon: BookOpen, badgeKey: "learning" },
+        {
+          href: "/admin/apprentissage/paiements",
+          label: "Paiements Orange Money",
+          icon: CreditCard,
+          badgeKey: "payments",
+        },
+      ],
+    },
+  ],
+  teacher: [
+    {
+      items: [
+        { href: "/enseignant", label: "Tableau de bord", icon: LayoutDashboard },
+        { href: "/enseignant/contenus", label: "Mes contenus", icon: BookOpen },
+        { href: "/enseignant/tutorat", label: "Tutorat", icon: MessagesSquare, badgeKey: "coaching" },
+        { href: "/compte", label: "Mon compte", icon: UserCog },
       ],
     },
   ],

@@ -19,6 +19,7 @@ import {
   schools,
 } from "@/db/schema-gestion";
 import { getCurrentUser, OFFICE_VISIT_COOKIE } from "@/lib/auth";
+import { learningBadges } from "@/lib/services/learning";
 import { formatDateTime } from "@/lib/bac-rules";
 
 export default async function EspaceLayout({ children }: { children: React.ReactNode }) {
@@ -74,13 +75,16 @@ export default async function EspaceLayout({ children }: { children: React.React
         : Promise.resolve([{ n: 0 }]),
     ]);
 
+  const learning = await learningBadges(user);
   const notifHref = user.role === "candidate" ? "/candidat/notifications" : "/compte";
   const subtitle =
     user.role === "candidate"
       ? `Session ${session?.year ?? ""}`
       : user.role === "school"
         ? user.schoolName
-        : user.officeName;
+        : user.role === "teacher"
+          ? learning.teacherSubject
+          : user.officeName;
 
   return (
     <Toaster>
@@ -93,6 +97,9 @@ export default async function EspaceLayout({ children }: { children: React.React
             notifications: unread,
             applications: appCount?.n ?? 0,
             news: newsCount?.n ?? 0,
+            learning: learning.items,
+            payments: learning.payments,
+            coaching: learning.coaching,
           }}
           visit={visitOffice ? { officeName: visitOffice.name } : null}
         />

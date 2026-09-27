@@ -3,8 +3,9 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as vitrine from "./schema";
 import * as gestion from "./schema-gestion";
+import * as learning from "./schema-learning";
 
-const schema = { ...vitrine, ...gestion };
+const schema = { ...vitrine, ...gestion, ...learning };
 
 const url = process.env.DATABASE_URL;
 

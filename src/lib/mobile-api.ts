@@ -43,10 +43,23 @@ export async function mobileUser(
   return user as CurrentUser & { officeId: number; role: MobileRole };
 }
 
-const NETWORK_CODES = new Set(["ETIMEDOUT", "ECONNRESET", "ECONNREFUSED", "ENETUNREACH", "EAI_AGAIN", "CONNECT_TIMEOUT", "CONNECTION_CLOSED", "CONNECTION_ENDED"]);
+const NETWORK_CODES = new Set([
+  "ETIMEDOUT",
+  "ECONNRESET",
+  "ECONNREFUSED",
+  "ENETUNREACH",
+  "EAI_AGAIN",
+  "CONNECT_TIMEOUT",
+  "CONNECTION_CLOSED",
+  "CONNECTION_ENDED",
+]);
 
-function isDbUnreachable(err: unknown): boolean {
-  for (let e = err as { code?: string; cause?: unknown } | undefined, i = 0; e && i < 5; e = e.cause as typeof e, i++) {
+export function isDbUnreachable(err: unknown): boolean {
+  for (
+    let e = err as { code?: string; cause?: unknown } | undefined, i = 0;
+    e && i < 5;
+    e = e.cause as typeof e, i++
+  ) {
     if (e.code && NETWORK_CODES.has(e.code)) return true;
   }
   return false;

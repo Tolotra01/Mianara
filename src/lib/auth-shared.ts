@@ -1,5 +1,5 @@
 /** Types et libellés partagés entre serveur et navigateur (sans dépendance serveur). */
-export type Role = "admin" | "office" | "supervisor" | "candidate" | "school";
+export type Role = "admin" | "office" | "supervisor" | "candidate" | "school" | "teacher";
 
 export const ROLE_LABEL: Record<Role, string> = {
   admin: "Administration",
@@ -7,4 +7,5 @@ export const ROLE_LABEL: Record<Role, string> = {
   supervisor: "Surveillant",
   candidate: "Candidat",
   school: "Établissement",
+  teacher: "Enseignant",
 };

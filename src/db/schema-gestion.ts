@@ -32,7 +32,14 @@ const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () =>
 
 /* ---------- Types énumérés ---------- */
 
-export const userRoleEnum = pgEnum("user_role", ["admin", "office", "supervisor", "candidate", "school"]);
+export const userRoleEnum = pgEnum("user_role", [
+  "admin",
+  "office",
+  "supervisor",
+  "candidate",
+  "school",
+  "teacher",
+]);
 export const candidateStatusEnum = pgEnum("candidate_status", [
   "active",
   "admitted",

@@ -12,7 +12,8 @@ import { requireDb } from "./index";
 async function main() {
   const db = requireDb();
   await db.execute(sql`
-    truncate table audit_logs, notifications, payments, document_requests, blacklist, results, grades,
+    truncate table coaching_messages, coaching_sessions, learning_payments, learning_items, teachers,
+      revision_sessions, platform_settings, audit_logs, notifications, payments, document_requests, blacklist, results, grades,
       scans, supervisor_rooms, exams, applications, application_batches, candidate_photos, candidates,
       auth_sessions, rooms, exam_centers, users, schools, offices restart identity cascade
   `);

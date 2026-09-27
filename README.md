@@ -168,6 +168,29 @@ flutter test                                # QR signé et règles de contrôle
 L'adresse du serveur se change aussi depuis l'écran de connexion. En production, servir l'API en HTTPS
 et retirer `usesCleartextTraffic` du manifeste Android.
 
+## Apprentissage (application Mianara Mobile)
+
+L'application candidat (dépôt `../Mianara_Mobile_Surveillant--lucia`) utilise la même base par
+`src/app/api/mobile/*` (hors `v1`, réservé à Mianara Contrôle).
+
+| Espace | Accès | Rôle |
+| --- | --- | --- |
+| Enseignant | `/enseignant` | Cours, exercices et offres de tutorat (envoyés à la validation) ; chat avec les élèves, sous pseudonyme |
+| Administration | `/admin/enseignants`, `/admin/apprentissage` | Comptes enseignants, validation des contenus, numéro marchand Orange Money, vérification des paiements |
+
+| Route | Rôle |
+| --- | --- |
+| `POST auth/login`, `auth/logout`, `auth/change-password`, `GET me` | Connexion des candidats (matricule) et des enseignants ; profil |
+| `POST sync` | Séances de révision du téléphone (idempotent) ; matières de la série |
+| `GET learning` | Catalogue validé de la série du candidat ; contenu livré seulement une fois acquis |
+| `POST coaching/payments` | Référence Orange Money d'un achat ; le tutorat ouvre une séance en attente |
+| `GET coaching/sessions`, `GET/POST coaching/sessions/:id/messages`, `POST …/close` | Tutorat, pour l'élève et l'enseignant |
+
+L'assistant mobile appelle `POST /api/assistant`, comme le site. Tables : `teachers`, `learning_items`,
+`learning_payments`, `coaching_sessions`, `coaching_messages`, `revision_sessions`, `platform_settings`
+(migration `drizzle/0005_*`). Démonstration : `pnpm db:seed:learning` ajoute `prof.maths`, `prof.francais`,
+`prof.philo`, cinq contenus publiés, un contenu à valider et le numéro marchand (inclus dans `db:reset-demo`).
+
 ## Suite
 
 - Version iOS de l'application (le code Flutter est prêt, il faut un Mac pour la compiler).
