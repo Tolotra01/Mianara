@@ -161,3 +161,4 @@ Tests des règles : `pnpm test`.
 
 Phase 3 : application mobile de scan (entrée, sorties, fin d'épreuve, fraude, remise au guichet),
 hors ligne avec synchronisation, branchée sur `src/lib/services/scan.ts`.
+"# SHD" 
